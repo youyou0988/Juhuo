@@ -1,0 +1,128 @@
+ <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:background="@drawable/bg_brey"
+    android:orientation="vertical"
+    tools:context=".LoginActivity" >
+
+    <include layout="@layout/title_bar" >
+    </include>
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_margin="@dimen/login_layout_margin"
+        android:background="@drawable/bg_text_2lines"
+        android:orientation="vertical" >
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_weight="1.0"
+            android:orientation="horizontal" >
+
+            <ImageView
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:layout_margin="@dimen/pic_margin"
+                android:layout_weight="7.5"
+                android:background="@drawable/icon_username" />
+
+            <EditText
+                android:id="@+id/user_name"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:layout_weight="1.0"
+                android:background="@color/transparent"
+                android:hint="@string/login_username_hint"
+                android:textColor="@color/gray" />
+        </LinearLayout>
+
+        <View
+            android:layout_width="fill_parent"
+            android:layout_height="0.5dp"
+            android:background="@drawable/divider" />
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_weight="1.0"
+            android:orientation="horizontal" >
+
+            <ImageView
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:layout_margin="@dimen/pic_margin"
+                android:layout_weight="7.5"
+                android:background="@drawable/icon_password" />
+
+            <EditText
+                android:id="@+id/user_password"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:layout_weight="1.0"
+                android:background="@color/transparent"
+                android:hint="@string/login_password_hint" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_marginBottom="@dimen/login_layout_margin"
+        android:layout_marginLeft="@dimen/login_layout_margin"
+        android:layout_marginRight="@dimen/login_layout_margin"
+        android:orientation="vertical" >
+
+        <Button
+            android:id="@+id/login_btn"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_weight="1.5"
+            android:background="@drawable/bg_button"
+            android:gravity="center"
+            android:text="@string/login_name"
+            android:textColor="@color/white"
+            android:textSize="20sp" />
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_weight="1.5"
+            android:layout_marginTop="@dimen/login_layout_margin"
+            android:orientation="horizontal" >
+
+            <TextView
+                android:id="@+id/register_free"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:layout_weight="1.0"
+                android:gravity="right"
+                android:text="@string/register_free"
+                android:textColor="@color/darkgreen" />
+
+            <ImageView
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:layout_marginLeft="9dp"
+                android:layout_weight="12.0"
+                android:background="@drawable/icon_next_grey" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_weight="2.0"
+         >
+        
+    </LinearLayout> 
+
+    <!-- <TextView android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:text="@string/footer_name"
+        android:textColor="@color/gray"
+        android:gravity="center"/> -->
+    <include layout="@layout/footer2"></include>
+</LinearLayout>
