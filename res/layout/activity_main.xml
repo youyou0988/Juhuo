@@ -10,7 +10,7 @@
     tools:context=".MainActivity"
     android:orientation="vertical" >
 
-    <LinearLayout android:layout_height="match_parent"
+    <!-- <LinearLayout android:layout_height="match_parent"
         android:layout_width="match_parent"
         android:layout_weight="2.0"
         android:gravity="center">
@@ -23,24 +23,31 @@
             android:textSize="45sp"
             android:textStyle="bold" />
 
-    </LinearLayout>
+    </LinearLayout> -->
     <LinearLayout android:layout_height="match_parent"
         android:layout_width="match_parent"
         android:layout_weight="1.0"
         android:orientation="vertical"
         android:gravity="center">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/slash_name"
+            android:textColor="@color/lightwhite"
+            android:textSize="45sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="150dp" />
         <LinearLayout android:id="@+id/sl_login"
             android:layout_height="wrap_content"
             android:layout_width="wrap_content"
             android:background="@drawable/bg_login"
-            android:layout_marginBottom="@dimen/slash_vertical_margin"
             android:orientation="vertical"
             android:gravity="center"
             android:visibility="invisible">
             <ImageView android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="@drawable/icon_login"
-                android:layout_marginBottom="@dimen/slash_vertical_margin"/>
+                android:layout_marginBottom="@dimen/slash_vertical_margin_bottom"/>
             <TextView android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/slash_login"
@@ -52,14 +59,13 @@
             android:layout_height="wrap_content"
             android:layout_width="wrap_content"
             android:background="@drawable/bg_skip_login"
-            android:layout_marginBottom="@dimen/slash_vertical_margin"
             android:gravity="center"
             android:orientation="vertical"
             android:visibility="invisible">
             <ImageView android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="@drawable/icon_skip_login"
-                android:layout_marginBottom="@dimen/slash_vertical_margin"/>
+                android:layout_marginBottom="@dimen/slash_vertical_margin_bottom"/>
             <TextView android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/slash_skil_login"

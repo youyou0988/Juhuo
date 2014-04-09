@@ -6,12 +6,20 @@
     android:orientation="vertical"
     tools:context=".LoginActivity" >
 
-    <include layout="@layout/title_bar" >
+    <include
+        android:layout_height="37dp"
+        layout="@layout/title_bar" >
+
     </include>
+    <!-- Dummy item to prevent AutoCompleteTextView from receiving focus -->
+	<LinearLayout
+    android:focusable="true" android:focusableInTouchMode="true"
+    android:layout_width="0px" android:layout_height="0px"/>
 
     <LinearLayout
+        android:id="@+id/login_input"
         android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
+        android:layout_height="80dp"
         android:layout_margin="@dimen/login_layout_margin"
         android:background="@drawable/bg_text_2lines"
         android:orientation="vertical" >
@@ -34,9 +42,13 @@
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent"
                 android:layout_weight="1.0"
+                android:padding="@dimen/pic_margin"
                 android:background="@color/transparent"
                 android:hint="@string/login_username_hint"
-                android:textColor="@color/gray" />
+                android:textSize="16sp"
+                android:textColor="@color/gray"
+                android:singleLine="true"
+                 />
         </LinearLayout>
 
         <View
@@ -62,8 +74,12 @@
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent"
                 android:layout_weight="1.0"
+                android:padding="@dimen/pic_margin"
                 android:background="@color/transparent"
-                android:hint="@string/login_password_hint" />
+                android:hint="@string/login_password_hint"
+                android:textSize="16sp"
+                android:singleLine="true"
+                android:password="true" />
         </LinearLayout>
     </LinearLayout>
 
@@ -80,7 +96,7 @@
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
             android:layout_weight="1.5"
-            android:background="@drawable/bg_button"
+            android:background="@drawable/click_btn"
             android:gravity="center"
             android:text="@string/login_name"
             android:textColor="@color/white"

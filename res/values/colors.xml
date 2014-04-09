@@ -2,6 +2,7 @@
 <resources>
     <color name="transparent">#00000000</color><!-- 透明色 -->
     <color name="darkgreen">#00CC99</color><!-- 深绿色 -->
+    <color name="black">#000000</color><!--黑色 -->
     <color name="ivory">#FFFFF0</color><!--象牙色 -->
     <color name="lightyellow">#FFFFE0</color><!--亮黄色 -->
     <color name="yellow">#FFFF00</color><!--黄色 -->
@@ -160,6 +161,8 @@
     <color name="sunday_saturday_color">#FF0000</color>
     <color name="sunday_saturday_prev_next_month_day_color">#990000</color>
     <color name="white">#ffffff</color>
+    <color name="click_green">#BFDEDA</color>
+    <color name="lightwhite">#F0F0F0</color>
     <color name="bgcolor">#ffffff</color>
     <color name="txtcolor">#000000</color>
     <color name="red">#ff0000</color>

@@ -1,8 +1,13 @@
 package com.juhuo.welcome;
 
+import com.juhuo.tool.Tool;
+
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Point;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.Display;
 import android.view.Menu;
 import android.view.View;
 import android.view.animation.Animation;
@@ -13,13 +18,36 @@ import android.widget.LinearLayout;
 public class MainActivity extends Activity {
 	private LinearLayout login;
 	private LinearLayout skipLogin;
+	private int width,height;
+	private String TAG="MainActivity";
 	Animation animationSlideInTop,animationSlideInTop2;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
+		getSize();
+		initComponents();
+		setListener();
+	}
+	private void getSize(){
+		Display display = getWindowManager().getDefaultDisplay(); 
+		Point size = new Point(); 
+		display.getSize(size); 
+		width =size.x; //px
+		height = size.y;//px
+	}
+	
+	private void initComponents(){
+		Log.i(TAG, String.valueOf(Tool.px2dip(MainActivity.this, width)));
+		Log.i(TAG, String.valueOf(Tool.px2dip(MainActivity.this, height)));
 		login = (LinearLayout)findViewById(R.id.sl_login);
+		LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
+			     LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+
+		layoutParams.setMargins(0, 0, 0, height/50);
+		login.setLayoutParams(layoutParams);
 		skipLogin = (LinearLayout)findViewById(R.id.sl_skip_login);
+		skipLogin.setLayoutParams(layoutParams);
 		animationSlideInTop = AnimationUtils.loadAnimation(this,R.anim.slidedown_in);
 		animationSlideInTop.setDuration(1000);
 		animationSlideInTop.setAnimationListener(animationSlideInTopListener);
@@ -29,9 +57,8 @@ public class MainActivity extends Activity {
 //		animationSlideInTop2.setStartOffset(1000);
 		animationSlideInTop2.setAnimationListener(animationSlideInTopListener2);
 		
-		login.startAnimation(animationSlideInTop);
-		login.setVisibility(View.VISIBLE);
-		setListener();
+		skipLogin.startAnimation(animationSlideInTop);
+		skipLogin.setVisibility(View.VISIBLE);
 	}
 	
 	private void setListener(){
@@ -62,9 +89,9 @@ public class MainActivity extends Activity {
 		@Override
 		public void onAnimationEnd(Animation animation) {
 			// TODO Auto-generated method stub
-			login.clearAnimation();
-			skipLogin.startAnimation(animationSlideInTop2);
-			skipLogin.setVisibility(View.VISIBLE);
+			skipLogin.clearAnimation();
+			login.startAnimation(animationSlideInTop2);
+			login.setVisibility(View.VISIBLE);
 //			skipLogin.clearAnimation();
 		}
 
@@ -86,7 +113,7 @@ public class MainActivity extends Activity {
 		@Override
 		public void onAnimationEnd(Animation animation) {
 			// TODO Auto-generated method stub
-			skipLogin.clearAnimation();
+			login.clearAnimation();
 		}
 
 		@Override
