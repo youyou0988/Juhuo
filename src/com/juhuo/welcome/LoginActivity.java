@@ -19,6 +19,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.juhuo.tool.JuhuoConfig;
@@ -33,7 +34,8 @@ public class LoginActivity extends Activity {
 	private TextView registerFree;
 	private Resources mResources;
 	private ProgressDialog mPgDialog;
-	private LinearLayout loginInput,titleBar;
+	private LinearLayout loginInput;
+	private RelativeLayout titleBar;
 	private String TAG = "LoginActivity";
 	private String PRECELL = "+86";
 	private int WIDTH,HEIGHT;
@@ -55,14 +57,11 @@ public class LoginActivity extends Activity {
 	private void initComponents(){
 		mResources = getResources();
 		loginInput = (LinearLayout)findViewById(R.id.login_input);
-		titleBar = (LinearLayout)findViewById(R.id.titlebar);
+		titleBar = (RelativeLayout)findViewById(R.id.titlebar);
 		LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
 			     LinearLayout.LayoutParams.MATCH_PARENT, HEIGHT/7);
 		layoutParams.setMargins(WIDTH/18, HEIGHT/30, WIDTH/18, HEIGHT/30);
 		loginInput.setLayoutParams(layoutParams);
-		LinearLayout.LayoutParams layoutParams2 = new LinearLayout.LayoutParams(
-			     LinearLayout.LayoutParams.MATCH_PARENT, HEIGHT/12);
-		titleBar.setLayoutParams(layoutParams2);
 		
 		action_title_img = (ImageView)findViewById(R.id.action_title_img);
 		mUserName = (EditText)findViewById(R.id.user_name);
@@ -71,6 +70,9 @@ public class LoginActivity extends Activity {
 		registerFree = (TextView)findViewById(R.id.register_free);
 		mPgDialog = new ProgressDialog(this);
         mPgDialog.setMessage(mResources.getString(R.string.loginning));
+        //just for test
+        mUserName.setText("+8615210588692");
+        mPassword.setText("123456");
 	}
 	private void setListener(){
 		mUserName.setOnFocusChangeListener(new View.OnFocusChangeListener() {

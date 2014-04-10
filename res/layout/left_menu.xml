@@ -1,0 +1,43 @@
+<RelativeLayout android:layout_height="match_parent"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:background="@color/white"
+    >
+    <RelativeLayout android:id="@+id/navi_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bg_navi_title"
+        android:padding="5dp">
+        <RelativeLayout android:id="@+id/navi_title"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:background="@drawable/bg_profile_icon">
+            <ImageView android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_ju_icon"
+                android:layout_centerInParent="true"/>
+            <TextView android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/slash_name"
+                android:textColor="@color/white"
+                android:layout_centerInParent="true"/>
+        </RelativeLayout>
+        <TextView android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:textColor="@color/mgray"
+            android:gravity="center"
+            android:text="Jacky"
+            android:textSize="22sp"
+            android:textStyle="bold"
+            android:layout_centerInParent="true"/>
+    </RelativeLayout>
+    <ListView android:id="@+id/navi_list"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/navi_title"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="50dp"
+        android:listSelector="#0000"/>
+</RelativeLayout>
+    

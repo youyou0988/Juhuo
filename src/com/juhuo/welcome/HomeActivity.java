@@ -8,10 +8,11 @@ import android.view.Display;
 import android.view.View;
 
 import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
+import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu.OnCloseListener;
+import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu.OnOpenListener;
 import com.jeremyfeinstein.slidingmenu.lib.app.SlidingFragmentActivity;
 import com.juhuo.fragment.HotEventsFragment;
 import com.juhuo.fragment.LeftMenuFragment;
-import com.juhuo.tool.Tool;
 
 public class HomeActivity extends SlidingFragmentActivity {
 	private int WIDTH,HEIGHT;
@@ -40,7 +41,7 @@ public class HomeActivity extends SlidingFragmentActivity {
 			setBehindContentView(R.layout.menu_frame);
 			getSlidingMenu().setSlidingEnabled(true);
 			getSlidingMenu()
-					.setTouchModeAbove(SlidingMenu.TOUCHMODE_FULLSCREEN);
+					.setTouchModeAbove(SlidingMenu.TOUCHMODE_MARGIN);
 //			// show home as up so we can toggle
 //			getActionBar().setDisplayHomeAsUpEnabled(true);
 		} else {
@@ -70,9 +71,23 @@ public class HomeActivity extends SlidingFragmentActivity {
 
 		// 设置滑动菜单的属性值
 		SlidingMenu sm = getSlidingMenu();
-		Log.i("dimension", String.valueOf(Tool.px2dip(HomeActivity.this, WIDTH*0.74)));
 		sm.setBehindOffsetRes(R.dimen.slidingmenu_offset);
 		sm.setShadowDrawable(R.drawable.shadow);
+		sm.setShadowWidthRes(R.dimen.slidingmenu_shadow);
 		sm.setFadeDegree(0.35f);
+		sm.setOnOpenListener(new OnOpenListener() {
+	        @Override
+	        public void onOpen() {
+	        	Log.i("sliding menu", "open");
+	        	((HotEventsFragment) mContent).setTrans();
+	        }
+	    });
+		sm.setOnCloseListener(new OnCloseListener(){
+			@Override
+			public void onClose(){
+				Log.i("sliding menu", "close");
+	        	((HotEventsFragment) mContent).setTransBack();
+			}
+		});
 	}
 }

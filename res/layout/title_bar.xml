@@ -3,8 +3,8 @@
      android:layout_width="fill_parent"
      android:background="@drawable/bg_titlebar"
      android:id="@+id/titlebar"
-     android:orientation="horizontal"
-     android:padding="@dimen/titlebar_padding">
+     android:padding="@dimen/titlebar_padding"
+     >
      <ImageView android:layout_width="wrap_content"
          android:layout_height="wrap_content"
          android:background="@drawable/icon_back"

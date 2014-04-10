@@ -116,7 +116,7 @@
                 android:layout_weight="1.0"
                 android:gravity="right"
                 android:text="@string/register_free"
-                android:textColor="@color/darkgreen" />
+                android:textColor="@color/mgreen" />
 
             <ImageView
                 android:layout_width="fill_parent"

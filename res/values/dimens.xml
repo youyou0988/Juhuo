@@ -9,6 +9,7 @@
     <dimen name="pic_margin">7dp</dimen>
     <dimen name="login_layout_margin">18dp</dimen>
     
-    <dimen name="slidingmenu_offset">120dp</dimen>
+    <dimen name="slidingmenu_offset">100dp</dimen>
+    <dimen name="slidingmenu_shadow">30dp</dimen>
 
 </resources>
