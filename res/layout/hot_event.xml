@@ -6,11 +6,13 @@
     <include android:id="@+id/titlebar"
         layout="@layout/title_bar"
         android:layout_alignParentTop="true"/>
-    <LinearLayout android:layout_width="match_parent"
+    <LinearLayout android:id="@+id/filterbar"
+        android:layout_width="match_parent"
         android:layout_height="45dp"
         android:layout_below="@+id/titlebar"
         android:orientation="horizontal">
-        <Button android:layout_width="160dp"
+        <Button android:id="@+id/filter_all_events"
+            android:layout_width="160dp"
             android:layout_height="match_parent"
             android:gravity="center"
             android:text="@string/all_event"
@@ -22,7 +24,8 @@
         <View android:layout_width="1dp"
             android:layout_height="match_parent"
             android:background="@drawable/divider_event_filter"/>
-        <Button android:layout_width="160dp"
+        <Button android:id="@+id/filter_default_event"
+            android:layout_width="160dp"
             android:layout_height="match_parent"
             android:gravity="center"
             android:text="@string/default_event"
@@ -32,6 +35,28 @@
             android:background="@drawable/bg_event_filter">
         </Button>
     </LinearLayout>
+    <RelativeLayout android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/filterbar">
+         <ListView android:layout_width="match_parent"
+	        android:layout_height="match_parent"
+	        android:visibility="invisible"
+	        android:id="@+id/subfiltertitle"></ListView>
+    </RelativeLayout>
+   
+    <ListView android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/filterbar"
+        android:visibility="invisible"
+        android:id="@+id/subfiltertitle2"></ListView>
+    <com.juhuo.tool.MyListView
+        android:id="@+id/hotevents_listview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/filterbar"
+        android:listSelector="@null"
+        android:divider="@null"
+         />
     <View android:id="@+id/transview"
         android:layout_height="match_parent"
         android:layout_width="match_parent"

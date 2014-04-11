@@ -36,7 +36,7 @@ public class LeftMenuFragment extends Fragment{
 	public void setData(){
 		mData=new ArrayList<String>();
 		focus = new ArrayList<Integer>();
-		mData.add("热门活动");focus.add(0);
+		mData.add("热门活动");focus.add(1);
 		mData.add("我的活动");focus.add(0);
 		mData.add("帐号设置");focus.add(0);
 		mData.add("系统设置");focus.add(0);

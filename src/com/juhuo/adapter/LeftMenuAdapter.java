@@ -59,7 +59,6 @@ public class LeftMenuAdapter extends BaseAdapter{
 		convertView = mInflater.inflate(R.layout.left_navi_item, null);
 		final ImageView img = (ImageView)convertView.findViewById(R.id.navi_img);
 		final TextView text = (TextView)convertView.findViewById(R.id.navi_text);
-		Log.d(TAG, mData.get(position));
 		text.setText(mData.get(position));
 		if(position==0){
 			if(focus.get(position)==0) {

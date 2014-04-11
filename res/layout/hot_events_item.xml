@@ -1,0 +1,59 @@
+<RelativeLayout android:layout_width="match_parent"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_height="wrap_content">
+    <ImageView android:id="@+id/event_pic"
+        android:layout_height="150dp"
+        android:layout_width="200dp"
+        android:background="@drawable/default_image"
+        android:layout_centerInParent="true"
+        
+        />
+    <RelativeLayout android:id="@+id/base_line"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_alignBottom="@+id/event_pic"
+        android:background="@color/transblack"
+        android:gravity="center">
+        <RelativeLayout android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:id="@+id/event_title_layout"
+            android:layout_alignParentTop="true"
+            
+            >
+            <TextView android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+	            android:layout_width="wrap_content"
+	            android:id="@+id/event_title"
+	            android:textColor="@color/white"
+	            android:gravity="center"
+	            android:text="cost"/>
+        </RelativeLayout>
+        <RelativeLayout android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:layout_below="@+id/event_title_layout"
+            >
+            <RelativeLayout android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true">
+                <ImageView android:layout_height="wrap_content"
+	                android:layout_width="wrap_content"
+	                android:background="@drawable/icon_location"
+	                android:id="@+id/event_icon"/>
+	            <TextView 
+	                android:id="@+id/event_location"
+	                android:textColor="@color/white"
+	                android:layout_height="wrap_content"
+	                android:layout_width="wrap_content"
+	                android:text="Beijing"
+	                android:layout_toRightOf="@+id/event_icon"
+	                android:layout_marginLeft="5dp"/>
+            </RelativeLayout>
+        </RelativeLayout>
+    </RelativeLayout>
+    <TextView android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/base_line"
+        android:background="@color/blacktrans"
+        android:text="正在进行"
+        android:padding="2dp"></TextView>
+</RelativeLayout>
