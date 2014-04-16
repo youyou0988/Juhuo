@@ -24,26 +24,33 @@
             android:textStyle="bold" />
 
     </LinearLayout> -->
-    <LinearLayout android:layout_height="match_parent"
+    <RelativeLayout android:layout_height="match_parent"
         android:layout_width="match_parent"
         android:layout_weight="1.0"
-        android:orientation="vertical"
         android:gravity="center">
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/slash_name"
-            android:textColor="@color/lightwhite"
+            android:textColor="@color/white"
             android:textSize="45sp"
             android:textStyle="bold"
-            android:layout_marginBottom="150dp" />
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:id="@+id/text"
+            android:layout_marginTop="40dp"
+             />
         <LinearLayout android:id="@+id/sl_login"
             android:layout_height="wrap_content"
             android:layout_width="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_below="@+id/text"
             android:background="@drawable/bg_login"
             android:orientation="vertical"
             android:gravity="center"
-            android:visibility="invisible">
+            android:visibility="invisible"
+            
+            >
             <ImageView android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="@drawable/icon_login"
@@ -58,10 +65,14 @@
         <LinearLayout android:id="@+id/sl_skip_login"
             android:layout_height="wrap_content"
             android:layout_width="wrap_content"
+            android:layout_centerHorizontal="true"
             android:background="@drawable/bg_skip_login"
             android:gravity="center"
             android:orientation="vertical"
-            android:visibility="invisible">
+            android:layout_below="@+id/sl_login"
+            android:layout_marginTop="10dp"
+            android:visibility="invisible"
+            >
             <ImageView android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="@drawable/icon_skip_login"
@@ -72,11 +83,20 @@
                 android:textColor="@color/white"
             	android:textStyle="bold"/>
         </LinearLayout>
-        <TextView android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textColor="@color/white"
-            android:textStyle="bold"
-            android:text="@string/footer_name"/>
-    </LinearLayout>
+        <LinearLayout android:layout_height="wrap_content"
+	    android:layout_width="match_parent"
+	    android:layout_marginBottom="@dimen/login_layout_margin"
+	    android:gravity="center"
+	    android:layout_alignParentBottom="true"
+	    android:id="@+id/footer">
+	    <TextView android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:gravity="center"
+	            android:textColor="@color/white"
+	            android:textStyle="bold"
+	            android:text="@string/footer_name"/>
+</LinearLayout>
+        
+    </RelativeLayout>
 
 </LinearLayout>

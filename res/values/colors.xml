@@ -3,9 +3,17 @@
     <color name="transparent">#00000000</color><!-- 透明色 -->
     <color name="blacktrans">#33000000</color>
     <color name="transblack">#AA000000</color>
+    <color name="graytrans">#55000000</color>
     <color name="mgray">#8D8A8A</color><!-- 灰色字体  -->
+    <color name="divider">#EDEDED</color><!-- 浅灰色 -->
     <color name="mgreen">#3CBEB0</color><!-- 绿色 -->
     <color name="black">#000000</color><!--黑色 -->
+    <color name="darkred">#A64623</color>
+    <color name="lightgreen">#3CBEB0</color>
+    <color name="lightgray">#EDEDED</color>
+    <color name="blue">#057CFE</color>
+    <color name="white">#FFFFFF</color>
+    <color name="click_green">#C9E3E0</color>
     
     
    
@@ -13,33 +21,6 @@
     <color name="delete_color">#339900</color>
     
     <!-- 日历 -->
-    <color name="calendar_background">#000000</color>
-    <color name="recordremind_background">#FFFFFF</color>
-    <color name="border_color">#FFFFFF</color>
-    <color name="weekname_color">#FFFFFF</color>
-    <color name="day_color">#FFFFFF</color>
-    <color name="inner_grid_color">#FFFFFF</color>
-    <color name="prev_next_month_day_color">#999999</color>
-    <color name="text_color">#FFFF00</color>
-    <color name="recordremindtext_color">#000000</color>
-    <color name="current_day_color">#FF0000</color>
-    <color name="today_background_color">#cccccc</color>
-    <color name="sunday_saturday_color">#FF0000</color>
-    <color name="sunday_saturday_prev_next_month_day_color">#990000</color>
-    <color name="white">#ffffff</color>
-    <color name="click_green">#BFDEDA</color>
-    <color name="lightwhite">#F0F0F0</color>
-    <color name="bgcolor">#ffffff</color>
-    <color name="txtcolor">#000000</color>
-    <color name="red">#ff0000</color>
-    <color name="Calendar_WeekBgColor">#cccccc</color>
-    <color name="Calendar_WeekFontColor">#8C8A8C</color>
-    <color name="Calendar_DayBgColor">#F7F7F7</color>
-    <color name="isHoliday_BgColor">#E0E0E0</color>
-    <color name="unPresentMonth_FontColor">#cccccc</color>
-    <color name="isPresentMonth_FontColor">#000000</color>
-    <color name="isToday_BgColor">#cccccc</color>
-    <color name="specialReminder">#FF0000</color>
-    <color name="commonReminder">#BDBAB5</color>
+    
     <color name="gray">#808080</color>
 </resources>

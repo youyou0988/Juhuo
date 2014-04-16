@@ -6,7 +6,7 @@
     <dimen name="slash_vertical_margin_bottom">10dp</dimen>
     <dimen name="slash_vertical_margin_top">100dp</dimen>
     <dimen name="titlebar_padding">7dp</dimen>
-    <dimen name="pic_margin">7dp</dimen>
+    <dimen name="pic_margin">8dp</dimen>
     <dimen name="login_layout_margin">18dp</dimen>
     
     <dimen name="slidingmenu_offset">100dp</dimen>

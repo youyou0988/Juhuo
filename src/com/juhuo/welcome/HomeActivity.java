@@ -1,11 +1,13 @@
 package com.juhuo.welcome;
 
+import android.content.Context;
 import android.graphics.Point;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.Display;
 import android.view.View;
+import android.widget.ImageView;
 
 import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
 import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu.OnCloseListener;
@@ -13,16 +15,25 @@ import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu.OnOpenListener;
 import com.jeremyfeinstein.slidingmenu.lib.app.SlidingFragmentActivity;
 import com.juhuo.fragment.HotEventsFragment;
 import com.juhuo.fragment.LeftMenuFragment;
+import com.juhuo.tool.Tool;
+import com.nostra13.universalimageloader.cache.disc.naming.Md5FileNameGenerator;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
+import com.nostra13.universalimageloader.core.assist.QueueProcessingType;
 
 public class HomeActivity extends SlidingFragmentActivity {
 	private int WIDTH,HEIGHT;
 	private Fragment mContent;
+	private ImageView actionTitleImg;
 	@Override
 	public void onCreate(Bundle savedInstanceState){
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.home_frame);
 		getSize();
 		initSlidingMenu(savedInstanceState);
+		Tool.initImageLoader(this);
+		
+		
 //		initComponents();
 //        setListener();
 	}
@@ -89,5 +100,8 @@ public class HomeActivity extends SlidingFragmentActivity {
 	        	((HotEventsFragment) mContent).setTransBack();
 			}
 		});
+		
 	}
+	
+	
 }

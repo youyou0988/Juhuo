@@ -6,60 +6,85 @@
     <include android:id="@+id/titlebar"
         layout="@layout/title_bar"
         android:layout_alignParentTop="true"/>
-    <LinearLayout android:id="@+id/filterbar"
+    <RelativeLayout android:id="@+id/filterbar"
         android:layout_width="match_parent"
         android:layout_height="45dp"
         android:layout_below="@+id/titlebar"
-        android:orientation="horizontal">
+        >
         <Button android:id="@+id/filter_all_events"
-            android:layout_width="160dp"
+            android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:gravity="center"
             android:text="@string/all_event"
             android:textColor="@color/mgray"
-            android:textSize="18sp"
+            android:textSize="15sp"
             android:textStyle="bold"
-            android:background="@drawable/bg_event_filter">
+            android:background="@drawable/bg_event_filter"
+            android:layout_toLeftOf="@+id/divider"
+            android:layout_alignParentLeft="true">
         </Button>
         <View android:layout_width="1dp"
             android:layout_height="match_parent"
-            android:background="@drawable/divider_event_filter"/>
+            android:background="@drawable/divider_event_filter"
+            android:id="@+id/divider"
+            android:layout_centerInParent="true"/>
         <Button android:id="@+id/filter_default_event"
-            android:layout_width="160dp"
+            android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:gravity="center"
             android:text="@string/default_event"
             android:textColor="@color/mgray"
-            android:textSize="18sp"
+            android:textSize="15sp"
             android:textStyle="bold"
-            android:background="@drawable/bg_event_filter">
+            android:background="@drawable/bg_event_filter"
+            android:layout_alignParentRight="true"
+            android:layout_toRightOf="@+id/divider"
+            >
         </Button>
-    </LinearLayout>
-    <RelativeLayout android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_below="@+id/filterbar">
-         <ListView android:layout_width="match_parent"
-	        android:layout_height="match_parent"
-	        android:visibility="invisible"
-	        android:id="@+id/subfiltertitle"></ListView>
     </RelativeLayout>
-   
-    <ListView android:layout_width="match_parent"
-        android:layout_height="match_parent"
+   	<TextView android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:layout_below="@+id/filterbar"
-        android:visibility="invisible"
-        android:id="@+id/subfiltertitle2"></ListView>
+        android:textColor="@color/mgreen"
+        android:textSize="15sp"
+        android:textStyle="bold"
+        android:padding="35dp"
+        android:gravity="center"
+        android:id="@+id/no_events_found"/>
+    
     <com.juhuo.tool.MyListView
         android:id="@+id/hotevents_listview"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@+id/filterbar"
-        android:listSelector="@null"
         android:divider="@null"
+        android:listSelector="#0000"
          />
+    
     <View android:id="@+id/transview"
         android:layout_height="match_parent"
         android:layout_width="match_parent"
         android:background="@color/blacktrans"
         android:visibility="invisible"/>
+    <View android:id="@+id/transview2"
+        android:layout_below="@+id/filterbar"
+        android:layout_height="match_parent"
+        android:layout_width="match_parent"
+        android:background="@color/transblack"
+        android:visibility="invisible"/>
+    <RelativeLayout android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/filterbar"
+        android:background="@color/white"
+        android:visibility="invisible"
+        android:id="@+id/filterlistlayout"
+	        >
+         <ListView android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:id="@+id/subfiltertitle"
+	        android:layout_marginLeft="15dp"
+	        android:layout_marginRight="15dp"
+	        android:divider="@color/divider"
+	        android:dividerHeight="0.2dp"></ListView>
+    </RelativeLayout>
 </RelativeLayout>

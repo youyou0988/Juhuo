@@ -13,9 +13,7 @@ import org.apache.http.HttpResponse;
 import org.apache.http.ParseException;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.params.HttpClientParams;
 import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.params.HttpParams;
 import org.apache.http.util.EntityUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -26,6 +24,7 @@ import android.util.Log;
 public class JuhuoInfo {
 	private String TAG="JuhuoInfo";
 	private String SUCCESS_STATUS = "200";
+	private String INVALID_TOKEN = "402";
 	
 	private String getCode(String tmp){
 		String res="";
@@ -74,18 +73,10 @@ public class JuhuoInfo {
         }
 		return url.toString();
 	}
-	/**
-     * 异步执行登陆认证
-     * @param username
-     * @param password
-     * @return return data
-     */
-	public JSONObject authenticate(HashMap<String,Object> para){	
+	public JSONObject loadNetData(HashMap<String,Object> para,String preUrl){
 		DefaultHttpClient httpclient = new DefaultHttpClient();
-		HttpParams params = httpclient.getParams(); 
-		HttpClientParams.setRedirecting(params, false);
 		try {
-			String url = JuhuoConfig.LOGIN+makeUrl(para);
+			String url = preUrl+makeUrl(para);
 			Log.i(TAG, url);
 			HttpGet httpGet = new HttpGet(url);
 			HttpResponse response = null;
@@ -94,8 +85,15 @@ public class JuhuoInfo {
 			if (responseEntity != null) {
 				String entityStr = EntityUtils.toString(responseEntity);
 				String resultCode = getCode(entityStr);
+				Log.i(TAG, resultCode);
+				
 				if(resultCode.equals(SUCCESS_STATUS)){
 					return getData(entityStr);
+				}else if(resultCode.equals(INVALID_TOKEN)){
+					HashMap<String, String> map = new HashMap<String, String>();
+					map.put("wrong_data", INVALID_TOKEN);
+					JSONObject json = new JSONObject(map);
+					return json;
 				}else{
 					return null;
 				}
@@ -107,5 +105,4 @@ public class JuhuoInfo {
 		} 
 		return null;
 	}
-
 }

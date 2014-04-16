@@ -22,5 +22,7 @@
     <string name="hot_event">热门活动</string>
     <string name="all_event">所有活动</string>
     <string name="default_event">默认排序</string>
-
+    <string name="alert_message">您的聚伙帐号已在其他地方登录。如果这不是您本人的操作，请注意帐号安全。</string>
+	<string name="makesure">确定</string>
+	<string name="no_events_found">没有找到任何活动</string>
 </resources>

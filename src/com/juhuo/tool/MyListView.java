@@ -337,6 +337,10 @@ public class MyListView extends ListView implements OnScrollListener {
 		lastUpdatedTextView.setText("最近更新:" + date);
 		changeHeaderViewByState();
 	}
+	public void onRefreshing(){
+		state = REFRESHING;
+		changeHeaderViewByState();
+	}
 
 	private void onRefresh() {
 		if (refreshListener != null) {

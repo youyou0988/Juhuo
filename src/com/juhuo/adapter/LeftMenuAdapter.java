@@ -99,24 +99,6 @@ public class LeftMenuAdapter extends BaseAdapter{
 		}else{
 			img.setVisibility(View.INVISIBLE);
 		}
-//		convertView.setOnClickListener(new OnClickListener (){
-//			@Override
-//			public void onClick(View v) {
-//				// TODO Auto-generated method stub
-//				text.setTextColor(mResources.getColor(R.color.mgreen));
-//				if(position==0){
-//					img.setBackgroundDrawable(mResources.getDrawable(R.drawable.icon_all_events_selected));
-//				}else if(position==1){
-//					img.setBackgroundDrawable(mResources.getDrawable(R.drawable.icon_my_events_selected));
-//				}else if(position==2){
-//					img.setBackgroundDrawable(mResources.getDrawable(R.drawable.icon_user_settings_selected));
-//				}else if(position==3){
-//					img.setBackgroundDrawable(mResources.getDrawable(R.drawable.icon_system_settings_selected));
-//				}else{
-//					img.setVisibility(View.INVISIBLE);
-//				}
-//			}
-//		});
 		return convertView;
 	}
 

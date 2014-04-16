@@ -34,8 +34,7 @@ public class LoginActivity extends Activity {
 	private TextView registerFree;
 	private Resources mResources;
 	private ProgressDialog mPgDialog;
-	private LinearLayout loginInput;
-	private RelativeLayout titleBar;
+	private RelativeLayout titleBar,loginInput;
 	private String TAG = "LoginActivity";
 	private String PRECELL = "+86";
 	private int WIDTH,HEIGHT;
@@ -56,11 +55,10 @@ public class LoginActivity extends Activity {
 	}
 	private void initComponents(){
 		mResources = getResources();
-		loginInput = (LinearLayout)findViewById(R.id.login_input);
+		loginInput = (RelativeLayout)findViewById(R.id.login_input);
 		titleBar = (RelativeLayout)findViewById(R.id.titlebar);
-		LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
-			     LinearLayout.LayoutParams.MATCH_PARENT, HEIGHT/7);
-		layoutParams.setMargins(WIDTH/18, HEIGHT/30, WIDTH/18, HEIGHT/30);
+		RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(
+				RelativeLayout.LayoutParams.MATCH_PARENT, HEIGHT/7);
 		loginInput.setLayoutParams(layoutParams);
 		
 		action_title_img = (ImageView)findViewById(R.id.action_title_img);
@@ -72,7 +70,7 @@ public class LoginActivity extends Activity {
         mPgDialog.setMessage(mResources.getString(R.string.loginning));
         //just for test
         mUserName.setText("+8615210588692");
-        mPassword.setText("123456");
+        mPassword.setText("123");
 	}
 	private void setListener(){
 		mUserName.setOnFocusChangeListener(new View.OnFocusChangeListener() {
@@ -124,7 +122,7 @@ public class LoginActivity extends Activity {
 			HashMap<String,Object> map = new HashMap<String,Object>();
 			map.put("cell", mUserName.getText().toString().trim());
 			map.put("passwd", mPassword.getText().toString());
-        	JSONObject tmpResult = new JuhuoInfo().authenticate(map);
+        	JSONObject tmpResult = new JuhuoInfo().loadNetData(map, JuhuoConfig.LOGIN);
         	return tmpResult;
         }
 

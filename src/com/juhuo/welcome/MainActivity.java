@@ -1,19 +1,22 @@
 package com.juhuo.welcome;
 
-import com.juhuo.tool.Tool;
-
 import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
+import android.content.res.Configuration;
 import android.graphics.Point;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Display;
-import android.view.Menu;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.Animation.AnimationListener;
 import android.view.animation.AnimationUtils;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
+
+import com.juhuo.tool.JuhuoConfig;
+import com.juhuo.tool.Tool;
 
 public class MainActivity extends Activity {
 	private LinearLayout login;
@@ -40,21 +43,16 @@ public class MainActivity extends Activity {
 	private void initComponents(){
 		Log.i(TAG, String.valueOf(Tool.px2dip(MainActivity.this, width)));
 		Log.i(TAG, String.valueOf(Tool.px2dip(MainActivity.this, height)));
+		
 		login = (LinearLayout)findViewById(R.id.sl_login);
-		LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
-			     LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-
-		layoutParams.setMargins(0, 0, 0, height/50);
-		login.setLayoutParams(layoutParams);
+		RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams)login.getLayoutParams();
+		layoutParams.setMargins(0, height*2/8, 0, 0);
 		skipLogin = (LinearLayout)findViewById(R.id.sl_skip_login);
-		skipLogin.setLayoutParams(layoutParams);
-		animationSlideInTop = AnimationUtils.loadAnimation(this,R.anim.slidedown_in);
-		animationSlideInTop.setDuration(1000);
+		animationSlideInTop = AnimationUtils.loadAnimation(this,R.anim.sequence);
 		animationSlideInTop.setAnimationListener(animationSlideInTopListener);
 		
-		animationSlideInTop2 = AnimationUtils.loadAnimation(this,R.anim.slidedown_in);
-		animationSlideInTop2.setDuration(1000);
-//		animationSlideInTop2.setStartOffset(1000);
+		animationSlideInTop2 = AnimationUtils.loadAnimation(this,R.anim.sequence);
+
 		animationSlideInTop2.setAnimationListener(animationSlideInTopListener2);
 		
 		skipLogin.startAnimation(animationSlideInTop);
@@ -76,6 +74,7 @@ public class MainActivity extends Activity {
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
+				JuhuoConfig.token = JuhuoConfig.PUBLIC_TOKEN;
 				Intent mainToLogin = new Intent(MainActivity.this,HomeActivity.class);
 				startActivity(mainToLogin);
 				MainActivity.this.finish();
@@ -134,11 +133,12 @@ public class MainActivity extends Activity {
 		login.clearAnimation();
 		skipLogin.clearAnimation();
 	}
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.main, menu);
-		return true;
-	}
+	
+//	@Override
+//	public boolean onCreateOptionsMenu(Menu menu) {
+//		// Inflate the menu; this adds items to the action bar if it is present.
+//		getMenuInflater().inflate(R.menu.main, menu);
+//		return true;
+//	}
 
 }

@@ -13,17 +13,22 @@
             android:layout_width="wrap_content"
             android:layout_alignParentLeft="true"
             android:background="@drawable/bg_profile_icon">
-            <ImageView android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+            <com.juhuo.tool.RoundedImageView 
+                android:layout_width="75dp"
+                android:layout_height="74dp"
                 android:background="@drawable/bg_ju_icon"
-                android:layout_centerInParent="true"/>
+                android:layout_centerInParent="true"
+                android:id="@+id/image"
+                android:scaleType="centerCrop"/>
             <TextView android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/slash_name"
                 android:textColor="@color/white"
-                android:layout_centerInParent="true"/>
+                android:layout_centerInParent="true"
+                android:id="@+id/text"/>
         </RelativeLayout>
-        <TextView android:layout_height="wrap_content"
+        <TextView android:id="@+id/user_name"
+            android:layout_height="wrap_content"
             android:layout_width="wrap_content"
             android:textColor="@color/mgray"
             android:gravity="center"
