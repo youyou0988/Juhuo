@@ -9,6 +9,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.os.AsyncTask;
@@ -37,6 +38,7 @@ import com.juhuo.tool.JuhuoInfo;
 import com.juhuo.tool.MyListView;
 import com.juhuo.tool.MyListView.OnRefreshListener;
 import com.juhuo.tool.Tool;
+import com.juhuo.welcome.EventDetailActivity;
 import com.juhuo.welcome.R;
 
 public class HotEventsFragment extends Fragment{
@@ -162,11 +164,12 @@ public class HotEventsFragment extends Fragment{
 				for(int i=0;i<focus.length;i++){
 					focus[i] = 0;
 				}focus[position]=1;
-				
+				filterAllEvent.setTextColor(mResources.getColor(R.color.mgray));
 			}else{
 				for(int i=0;i<focus2.length;i++){
 					focus2[i] = 0;
 				}focus2[position] = 1;
+				filterDefaultEvent.setTextColor(mResources.getColor(R.color.mgray));
 			}
 			mapPara = new HashMap<String,Object>();
 			mapPara.put("token", JuhuoConfig.token);
@@ -202,6 +205,7 @@ public class HotEventsFragment extends Fragment{
 			
 		}
 	};
+
 	public void getNetData(HashMap<String,Object> map){
 		noEventsText.setText("");
 		hotEventsList.onRefreshing();
@@ -236,6 +240,7 @@ public class HotEventsFragment extends Fragment{
 								(LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE),
 								getActivity());
 						hotEventsAdapter.setData(mData);
+						hotEventsAdapter.setListView(hotEventsList);
 						hotEventsList.setAdapter(hotEventsAdapter);
 					}else{
 						//no events found

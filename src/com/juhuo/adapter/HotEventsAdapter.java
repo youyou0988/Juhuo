@@ -13,16 +13,21 @@ import org.json.JSONArray;
 import org.json.JSONException;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Point;
 import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
 
+import com.juhuo.welcome.EventDetailActivity;
 import com.juhuo.welcome.R;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
@@ -44,9 +49,11 @@ public class HotEventsAdapter extends BaseAdapter {
 	private String TAG="HotEventsAdapter";
 	private LayoutInflater mInflater;
 	private Activity activity;
+	private ListView listView;
 	private JSONArray jArr;
 	private List<HashMap<String,String>> mData = new ArrayList<HashMap<String,String>>();
 	private String[] URLS;
+	private int picNumber[];//for detail event page 
 	private Calendar calendar= Calendar.getInstance();
 	int month = calendar.get(Calendar.MONTH)+1;
 	//设置当前的日期和时间
@@ -70,13 +77,16 @@ public class HotEventsAdapter extends BaseAdapter {
 	public void setData(JSONArray ja){
 		this.jArr = ja;
 		URLS = new String[ja.length()];
+		picNumber = new int[ja.length()];
 		for(int i=0;i<ja.length();i++){
 			try {
 				if(ja.getJSONObject(i).has("suc_photos")){
 					URLS[i] = ja.getJSONObject(i).getJSONArray("suc_photos").
 							getJSONObject(0).getString("url");
+					this.picNumber[i] = ja.getJSONObject(i).getJSONArray("suc_photos").length();
 				}else{
 					URLS[i] = "";
+					this.picNumber[i] = 0;
 				}
 				
 				HashMap<String,String> tmp = new HashMap<String,String>();
@@ -88,10 +98,16 @@ public class HotEventsAdapter extends BaseAdapter {
 						timeEnd.substring(0,19).replace('T', ' '));
 				tmp.put("time", event_time);
 				tmp.put("apply_number", ja.getJSONObject(i).getString("apply_number"));
+				tmp.put("eventId", String.valueOf(ja.getJSONObject(i).getInt("id")));
 				mData.add(tmp);
 			} catch (JSONException e) { e.printStackTrace();}
 		}
 		
+	}
+	
+	public void setListView(ListView lv){
+		this.listView = lv;
+		this.listView.setOnItemClickListener(evlistOnClickListener);
 	}
     
 	private String getCalendarByInintData(String beginDateTime,String endDatetime) {
@@ -161,7 +177,6 @@ public class HotEventsAdapter extends BaseAdapter {
 		} else {
 			holder = (HotEventsHandler) convertView.getTag();
 		}
-//		imageDownloader.download(URLS[position], (ImageView) holder.eventImg);
 		imageLoader.displayImage(URLS[position], holder.eventImg, options, animateFirstListener);
 		holder.eventTitle.setText(mData.get(position).get("title"));
 		holder.eventLocation.setText(mData.get(position).get("addr"));
@@ -180,10 +195,11 @@ public class HotEventsAdapter extends BaseAdapter {
         }else{
         	holder.eventTime.setBackgroundColor(activity.getResources().getColor(R.color.graytrans));
         }
-		return convertView;
+        
+        return convertView;
 	}
 	
-	private static class AnimateFirstDisplayListener extends SimpleImageLoadingListener {
+	public static class AnimateFirstDisplayListener extends SimpleImageLoadingListener {
 
 		static final List<String> displayedImages = Collections.synchronizedList(new LinkedList<String>());
 
@@ -200,6 +216,20 @@ public class HotEventsAdapter extends BaseAdapter {
 			}
 		}
 	}
+	
+	OnItemClickListener evlistOnClickListener = new OnItemClickListener(){
+
+		@Override
+		public void onItemClick(AdapterView<?> parent, View arg1, int position,
+				long arg3) {
+			// TODO Auto-generated method stub
+			Intent intent = new Intent(activity,EventDetailActivity.class);
+			intent.putExtra("picNumber",picNumber[position-1]);
+			intent.putExtra("eventId", mData.get(position-1).get("eventId"));
+			activity.startActivity(intent);
+		}
+		
+	};
 	
 //	public ImageDownloader getImageDownloader() {
 //        return imageDownloader;

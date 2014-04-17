@@ -1,0 +1,139 @@
+<RelativeLayout android:layout_width="wrap_content" 
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_height="wrap_content"
+    android:background="@color/white">
+    <include android:id="@+id/titlebar"
+        layout="@layout/title_bar"
+        android:layout_alignParentTop="true"/>
+     <com.juhuo.control.ScrollViewExtend
+        android:layout_width="match_parent"
+        android:layout_height="fill_parent"
+        android:layout_below="@+id/titlebar">
+        <RelativeLayout 
+            android:layout_width="match_parent"
+            android:layout_height="fill_parent"
+            android:background="@color/white"
+            android:id="@+id/item_pager_image">
+            <android.support.v4.view.ViewPager
+			       android:id="@+id/image_slide_page"
+			       android:layout_width="fill_parent"
+			       android:layout_height="300dp"
+			       android:focusable="true" />
+            <LinearLayout
+                   android:id="@+id/layout_circle_images"
+                   android:layout_width="match_parent"
+                   android:layout_height="40dp"
+                   android:layout_marginTop="10dp"
+                   android:gravity="center"
+                   android:orientation="horizontal"
+                   android:layout_alignBottom="@+id/image_slide_page"
+                   android:background="@color/graytrans">
+                   
+            </LinearLayout>
+            <TextView android:id="@+id/event_time"
+			        android:layout_width="wrap_content"
+			        android:layout_height="wrap_content"
+			        android:layout_alignLeft="@+id/layout_circle_images"
+			        android:layout_marginTop="200dp"
+			        android:textColor="@color/white"
+			        android:padding="2dp"
+			        android:textSize="13sp"></TextView>
+            <RelativeLayout android:layout_height="match_parent"
+		            android:layout_width="match_parent"
+		            android:layout_below="@+id/layout_circle_images"
+		            android:paddingLeft="10dp"
+		            android:paddingRight="10dp"
+		            >
+                <TextView android:id="@+id/event_title"
+                    android:layout_height="wrap_content"
+                    android:layout_width="wrap_content"
+                    android:textColor="@color/darkred"
+                    android:textSize="22sp"
+                    android:textStyle="bold"
+                    android:gravity="center"
+                    android:ellipsize="end" 
+                    android:singleLine="true"
+                    android:padding="5dp"/>
+                <RelativeLayout android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/event_title"
+                    android:id="@+id/begintimelay"
+                    android:marginBottom="4dp">
+                    <TextView android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/begintime"
+                        android:textColor="@color/mgray"
+                        android:textSize="15sp"
+                        android:textStyle="bold"
+                        android:layout_alignParentLeft="true"
+                        android:id="@+id/begintime"/>
+                    <TextView android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/mgreen"
+                        android:textSize="15sp"
+                        android:textStyle="bold"
+                        android:layout_toRightOf="@+id/begintime"
+                        android:id="@+id/event_begin_time"
+                        android:layout_marginLeft="7dp"/>
+                    <View android:layout_height="0.2dp"
+                        android:layout_width="match_parent"
+                        android:background="@color/divider"
+                        android:layout_alignParentBottom="true"/>
+                </RelativeLayout>
+                <RelativeLayout android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/begintimelay"
+                    android:id="@+id/endtimelay"
+                    android:marginBottom="4dp">
+                    <TextView android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/endtime"
+                        android:textColor="@color/mgray"
+                        android:textSize="15sp"
+                        android:textStyle="bold"
+                        android:layout_alignParentLeft="true"
+                        android:id="@+id/endtime"/>
+                    <TextView android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/mgreen"
+                        android:textSize="15sp"
+                        android:textStyle="bold"
+                        android:layout_toRightOf="@+id/endtime"
+                        android:id="@+id/event_end_time"
+                        android:layout_marginLeft="7dp"/>
+                    <View android:layout_height="0.2dp"
+                        android:layout_width="match_parent"
+                        android:background="@color/divider"
+                        android:layout_alignParentBottom="true"/>
+                </RelativeLayout>
+                <RelativeLayout android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/endtimelay"
+                    android:marginBottom="4dp">
+                    <TextView android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/place"
+                        android:textColor="@color/mgray"
+                        android:textSize="15sp"
+                        android:textStyle="bold"
+                        android:layout_alignParentLeft="true"
+                        android:id="@+id/place"/>
+                    <TextView android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/mgreen"
+                        android:textSize="15sp"
+                        android:textStyle="bold"
+                        android:layout_toRightOf="@+id/place"
+                        android:id="@+id/event_place"
+                        android:layout_marginLeft="7dp"/>
+                    <View android:layout_height="0.2dp"
+                        android:layout_width="match_parent"
+                        android:background="@color/divider"
+                        android:layout_alignParentBottom="true"/>
+                </RelativeLayout>
+            </RelativeLayout>
+        </RelativeLayout>
+        
+        
+    </com.juhuo.control.ScrollViewExtend>
+</RelativeLayout>

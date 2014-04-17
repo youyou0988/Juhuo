@@ -37,28 +37,20 @@ public class LoginActivity extends Activity {
 	private RelativeLayout titleBar,loginInput;
 	private String TAG = "LoginActivity";
 	private String PRECELL = "+86";
-	private int WIDTH,HEIGHT;
 	
 	protected void onCreate(Bundle savedInstanceState){
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.login);
-		getSize();
+		Tool.getScreenSize(this);
 		initComponents();
         setListener();
-	}
-	private void getSize(){
-		Display display = getWindowManager().getDefaultDisplay(); 
-		Point size = new Point(); 
-		display.getSize(size); 
-		WIDTH =size.x; //px
-		HEIGHT = size.y;//px
 	}
 	private void initComponents(){
 		mResources = getResources();
 		loginInput = (RelativeLayout)findViewById(R.id.login_input);
 		titleBar = (RelativeLayout)findViewById(R.id.titlebar);
 		RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(
-				RelativeLayout.LayoutParams.MATCH_PARENT, HEIGHT/7);
+				RelativeLayout.LayoutParams.MATCH_PARENT, JuhuoConfig.HEIGHT/7);
 		loginInput.setLayoutParams(layoutParams);
 		
 		action_title_img = (ImageView)findViewById(R.id.action_title_img);

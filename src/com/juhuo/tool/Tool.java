@@ -6,6 +6,7 @@ import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.Point;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.net.ConnectivityManager;
@@ -138,5 +139,12 @@ public class Tool {
 		dialog.show();
 	}
     
+	public static void getScreenSize(Activity activity){
+		Display display = activity.getWindowManager().getDefaultDisplay(); 
+		Point size = new Point(); 
+		display.getSize(size); 
+		JuhuoConfig.WIDTH =size.x; //px
+		JuhuoConfig.HEIGHT = size.y;//px
+	}
     
 }

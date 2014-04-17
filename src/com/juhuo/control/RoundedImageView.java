@@ -1,4 +1,4 @@
-package com.juhuo.tool;
+package com.juhuo.control;
 
 import android.content.Context;
 import android.graphics.Bitmap;

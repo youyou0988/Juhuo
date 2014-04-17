@@ -25,4 +25,9 @@
     <string name="alert_message">您的聚伙帐号已在其他地方登录。如果这不是您本人的操作，请注意帐号安全。</string>
 	<string name="makesure">确定</string>
 	<string name="no_events_found">没有找到任何活动</string>
+	
+	<string name="detail_event">活动详情</string>
+	<string name="begintime">开始时间</string>
+	<string name="endtime">结束时间</string>
+	<string name="place">活动地点</string>
 </resources>

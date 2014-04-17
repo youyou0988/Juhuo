@@ -1,6 +1,8 @@
 package com.juhuo.tool;
 
 public class JuhuoConfig {
+	public static int HEIGHT;
+	public static int WIDTH;
 	public static String PUBLIC_TOKEN="00000000000000000000";
 	public static String token = "";
 	
@@ -9,5 +11,6 @@ public class JuhuoConfig {
 	public static String LOGIN = PRODUCTIONPREFIX+"user/login/";
 	public static String EVENT_LIST = PRODUCTIONPREFIX+"event/list/";
 	public static String USER_INFO = PRODUCTIONPREFIX+"user/info/";
+	public static String EVENT_INFO	= PRODUCTIONPREFIX + "event/info/";
 
 }

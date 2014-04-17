@@ -13,7 +13,7 @@
             android:layout_width="wrap_content"
             android:layout_alignParentLeft="true"
             android:background="@drawable/bg_profile_icon">
-            <com.juhuo.tool.RoundedImageView 
+            <com.juhuo.control.RoundedImageView 
                 android:layout_width="75dp"
                 android:layout_height="74dp"
                 android:background="@drawable/bg_ju_icon"
