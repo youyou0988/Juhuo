@@ -20,10 +20,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.amap.api.maps2d.AMap;
+import com.amap.api.maps2d.MapView;
 import com.juhuo.control.SlideImageLayout;
 import com.juhuo.tool.JuhuoConfig;
 import com.juhuo.tool.JuhuoInfo;
@@ -49,14 +50,19 @@ public class EventDetailActivity extends Activity {
 	
 	private SlideImageAdapter adapter;
 	private ImageView actionTitleImg,actionTitleImg2;
-	private TextView actionTitle,eventTitle,eventBeginTime,eventEndTime,eventPlace;
+	private TextView actionTitle,eventTitle,eventBeginTime,eventEndTime,eventPlace
+	 ,eventOrganizer,eventIspublic,eventCost,eventLink,eventType,eventTime,eventDetail;
 	private Resources mResources;
+	private MapView mapView;
+	private AMap aMap;
+	private String[] eventTypeStr={"所有活动","交友聚会","读书看报","音乐电影","体育锻炼","其他"};
+	
 	
 	private final String TAG = "EventDetailActivity";
 	
 	protected void onCreate(Bundle savedInstanceState){
 		super.onCreate(savedInstanceState);
-		initViews();
+		initViews(savedInstanceState);
 		mapPara = new HashMap<String,Object>();
 		mapPara.put("id", getIntent().getExtras().getString("eventId"));
 		mapPara.put("token", JuhuoConfig.token);
@@ -95,9 +101,19 @@ public class EventDetailActivity extends Activity {
 					    viewPager.setOnPageChangeListener(new ImagePageChangeListener());
 					}
 					eventTitle.setText(result.getString("title"));
-					eventBeginTime.setText(result.getString("time_begin"));
-					eventEndTime.setText(result.getString("time_end"));
+					String tb = result.getString("time_begin").substring(0,19).replace('T', ' ');
+					String te = result.getString("time_end").substring(0,19).replace('T', ' ');
+					eventBeginTime.setText(tb);
+					eventEndTime.setText(te);
+					eventTime.setText(Tool.getCalendarByInintData(tb, te));
 					eventPlace.setText(result.getString("addr"));
+					eventOrganizer.setText(result.getString("organizer_name"));
+					int et = Integer.parseInt(result.getString("event_type"));
+					eventType.setText(eventTypeStr[et]);
+					eventIspublic.setText(result.getInt("privacy")==0?"公开":"不公开");
+					eventCost.setText(result.getInt("cost")!=0?String.valueOf(result.getInt("cost")):"免费");
+					eventLink.setText(result.getString("url").equals("null")?"":result.getString("url"));
+					eventDetail.setText(result.getString("description"));
 					
 				} catch (JSONException e) {
 					// TODO Auto-generated catch block
@@ -108,7 +124,7 @@ public class EventDetailActivity extends Activity {
 		}
 		
 	}
-	private void initViews(){
+	private void initViews(Bundle savedInstanceState){
 		mResources = getResources();
 		int length = getIntent().getExtras().getInt("picNumber");
 		slideImages = new int[length];
@@ -148,10 +164,29 @@ public class EventDetailActivity extends Activity {
 		actionTitle.setText(mResources.getString(R.string.detail_event));
 		
 		eventTitle = (TextView)findViewById(R.id.event_title);
+		eventTime = (TextView)findViewById(R.id.event_time);
 		eventBeginTime = (TextView)findViewById(R.id.event_begin_time);
 		eventEndTime = (TextView)findViewById(R.id.event_end_time);
 		eventPlace = (TextView)findViewById(R.id.event_place);
+		eventOrganizer = (TextView)findViewById(R.id.event_organizer);
+		eventType = (TextView)findViewById(R.id.event_type);
+		eventIspublic = (TextView)findViewById(R.id.event_ispublic);
+		eventCost = (TextView)findViewById(R.id.event_cost);
+		eventLink = (TextView)findViewById(R.id.event_link);
+		eventDetail = (TextView)findViewById(R.id.event_detail);
 		
+		mapView = (MapView) findViewById(R.id.map);
+		mapView.onCreate(savedInstanceState);// 必须要写
+		init();
+		
+	}
+	/**
+	 * 初始化AMap对象
+	 */
+	private void init() {
+		if (aMap == null) {
+			aMap = mapView.getMap();
+		}
 	}
 	// 滑动图片数据适配器
     private class SlideImageAdapter extends PagerAdapter {  
@@ -239,4 +274,39 @@ public class EventDetailActivity extends Activity {
             }
         }  
     }
+    /**
+	 * 方法必须重写
+	 */
+	@Override
+	protected void onResume() {
+		super.onResume();
+		mapView.onResume();
+	}
+
+	/**
+	 * 方法必须重写
+	 */
+	@Override
+	protected void onPause() {
+		super.onPause();
+		mapView.onPause();
+	}
+	
+	/**
+	 * 方法必须重写
+	 */
+	@Override
+	protected void onSaveInstanceState(Bundle outState) {
+		super.onSaveInstanceState(outState);
+		mapView.onSaveInstanceState(outState);
+	}
+
+	/**
+	 * 方法必须重写
+	 */
+	@Override
+	protected void onDestroy() {
+		super.onDestroy();
+		mapView.onDestroy();
+	}
 }

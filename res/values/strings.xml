@@ -30,4 +30,13 @@
 	<string name="begintime">开始时间</string>
 	<string name="endtime">结束时间</string>
 	<string name="place">活动地点</string>
+	<string name="organizer">组织机构</string>
+	<string name="event_type">活动类型</string>
+	<string name="ispublic">是否公开</string>
+	<string name="cost">活动费用</string>
+	<string name="link">活动链接</string>
+	<string name="detail">活动详情</string>
+	<string name="participant">参加人员</string>
+	<string name="invited">邀请人员</string>
+	<string name="absent">缺席人员</string>
 </resources>

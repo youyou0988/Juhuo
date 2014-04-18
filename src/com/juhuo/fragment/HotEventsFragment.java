@@ -1,5 +1,11 @@
 package com.juhuo.fragment;
 
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.InputStreamReader;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -9,7 +15,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.content.Context;
-import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.os.AsyncTask;
@@ -38,7 +43,6 @@ import com.juhuo.tool.JuhuoInfo;
 import com.juhuo.tool.MyListView;
 import com.juhuo.tool.MyListView.OnRefreshListener;
 import com.juhuo.tool.Tool;
-import com.juhuo.welcome.EventDetailActivity;
 import com.juhuo.welcome.R;
 
 public class HotEventsFragment extends Fragment{
@@ -64,6 +68,7 @@ public class HotEventsFragment extends Fragment{
 	private String[] eventPara = {"","participant_count","distance","cost","cost"};
 	private int[] focus={1,0,0,0,0,0};
 	private int[] focus2={1,0,0,0,0};
+	private List<HashMap<String,String>> cacheList= new ArrayList<HashMap<String,String>>();
     
 	
 	@Override
@@ -122,7 +127,19 @@ public class HotEventsFragment extends Fragment{
 			}
 		});
 		
+
+		//get date from cache first
+		hotEventsList.setVisibility(View.VISIBLE);
+		hotEventsAdapter = new HotEventsAdapter();
+		hotEventsAdapter.setInflater(
+				(LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE),
+				getActivity());
+		hotEventsAdapter.setMData(Tool.loadListFromFile(JuhuoConfig.EVENTLISTFILE,getActivity()));
+		hotEventsAdapter.notifyDataSetChanged();
+		hotEventsList.setAdapter(hotEventsAdapter);
+		//then get it from network
 		getNetData(mapPara);
+		
 		return parent;
 	}
 	View.OnClickListener onClickListener = new View.OnClickListener() {
@@ -233,13 +250,15 @@ public class HotEventsFragment extends Fragment{
 				try {
 					JSONArray ja = result.getJSONArray("events");
 					if(ja.length()!=0) {
-						hotEventsList.setVisibility(View.VISIBLE);
+						Tool.writeListToFile(ja,getActivity(),JuhuoConfig.EVENTLISTFILE);
 						mData = ja;
-						hotEventsAdapter = new HotEventsAdapter();
-						hotEventsAdapter.setInflater(
-								(LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE),
-								getActivity());
-						hotEventsAdapter.setData(mData);
+//						hotEventsList.setVisibility(View.VISIBLE);
+//						hotEventsAdapter = new HotEventsAdapter();
+//						hotEventsAdapter.setInflater(
+//								(LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE),
+//								getActivity());
+						hotEventsAdapter.setJSONData(mData);
+						hotEventsAdapter.notifyDataSetChanged();
 						hotEventsAdapter.setListView(hotEventsList);
 						hotEventsList.setAdapter(hotEventsAdapter);
 					}else{
@@ -256,6 +275,30 @@ public class HotEventsFragment extends Fragment{
 			
 		}
 	}
+//	private void writeListToFile(JSONArray ja){
+//		String FILENAME = JuhuoConfig.EVENTLISTFILE;
+//		List<HashMap<String,String>> list = Tool.Jsonarr2Hash(ja);
+//	    try {
+//	        FileOutputStream fos = getActivity().openFileOutput(FILENAME, Context.MODE_PRIVATE);
+//	        ObjectOutputStream oos = new ObjectOutputStream(fos);
+//	        oos.writeObject(list);
+//	        oos.close();
+//		 } catch (Exception e) {
+//		     e.printStackTrace();
+//		 }
+//
+//	}
+//	private List<HashMap<String, String>> loadListFromFile(String serfilename) {
+//		List<HashMap<String,String>> list = new ArrayList<HashMap<String,String>>();
+//		try {
+//		    FileInputStream fis = getActivity().openFileInput(serfilename);
+//		    ObjectInputStream ois = new ObjectInputStream(fis);
+//		    list = (ArrayList<HashMap<String, String>>) ois.readObject();
+//		 } catch (Exception e) {
+//		    e.printStackTrace();
+//		 }
+//		return list;
+//	}
 	//make background transparent
 	public void setTrans(){
 		Log.i("sliding menu", transView.getBackground().toString());

@@ -1,7 +1,5 @@
 package com.juhuo.adapter;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -16,6 +14,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Point;
+import android.util.Log;
 import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -27,6 +26,7 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.juhuo.tool.Tool;
 import com.juhuo.welcome.EventDetailActivity;
 import com.juhuo.welcome.R;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
@@ -73,8 +73,9 @@ public class HotEventsAdapter extends BaseAdapter {
     
 	
 //	private final ImageDownloader imageDownloader = new ImageDownloader();
-	
-	public void setData(JSONArray ja){
+	//for network New Data use
+	public void setJSONData(JSONArray ja){
+		mData.clear();
 		this.jArr = ja;
 		URLS = new String[ja.length()];
 		picNumber = new int[ja.length()];
@@ -94,7 +95,7 @@ public class HotEventsAdapter extends BaseAdapter {
 				tmp.put("title", ja.getJSONObject(i).getString("title"));
 				String timeEnd = ja.getJSONObject(i).getString("time_end");
 				String timeBegin = ja.getJSONObject(i).getString("time_begin");
-				String event_time = getCalendarByInintData(timeBegin.substring(0,19).replace('T', ' '),
+				String event_time = Tool.getCalendarByInintData(timeBegin.substring(0,19).replace('T', ' '),
 						timeEnd.substring(0,19).replace('T', ' '));
 				tmp.put("time", event_time);
 				tmp.put("apply_number", ja.getJSONObject(i).getString("apply_number"));
@@ -104,31 +105,23 @@ public class HotEventsAdapter extends BaseAdapter {
 		}
 		
 	}
+	//for cache use
+	public void setMData(List<HashMap<String,String>> md){
+		this.mData.clear();
+		this.mData = md;
+		URLS = new String[mData.size()];
+		picNumber = new int[mData.size()];
+		for(int i=0;i<mData.size();i++){
+			URLS[i] = mData.get(i).get("url");
+		}	
+	}
 	
 	public void setListView(ListView lv){
 		this.listView = lv;
 		this.listView.setOnItemClickListener(evlistOnClickListener);
 	}
     
-	private String getCalendarByInintData(String beginDateTime,String endDatetime) {
-		Calendar calendar = Calendar.getInstance();
-		long current = calendar.getTimeInMillis();
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-		Calendar calendarbegin = Calendar.getInstance();
-		Calendar calendarend = Calendar.getInstance();
-		try {
-			calendarbegin.setTime(sdf.parse(beginDateTime));
-			calendarend.setTime(sdf.parse(endDatetime));
-		} catch (ParseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		long time_begin = calendarbegin.getTimeInMillis();
-		long time_end = calendarend.getTimeInMillis();
-		if(current<time_begin) return "即将开始!";
-		else if(current>=time_begin&&current<=time_end) return "正在进行!";
-		else return "已经结束!";
-	}
+	
 	@Override
 	public int getCount() {
 		// TODO Auto-generated method stub

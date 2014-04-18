@@ -1,5 +1,19 @@
 package com.juhuo.tool;
 
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.HashMap;
+import java.util.List;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+
 import android.app.Activity;
 import android.app.Dialog;
 import android.app.Service;
@@ -11,7 +25,6 @@ import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.util.Log;
 import android.view.Display;
 import android.view.Gravity;
 import android.view.View;
@@ -145,6 +158,78 @@ public class Tool {
 		display.getSize(size); 
 		JuhuoConfig.WIDTH =size.x; //px
 		JuhuoConfig.HEIGHT = size.y;//px
+	}
+	
+	public static String getCalendarByInintData(String beginDateTime,String endDatetime) {
+		Calendar calendar = Calendar.getInstance();
+		long current = calendar.getTimeInMillis();
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		Calendar calendarbegin = Calendar.getInstance();
+		Calendar calendarend = Calendar.getInstance();
+		try {
+			calendarbegin.setTime(sdf.parse(beginDateTime));
+			calendarend.setTime(sdf.parse(endDatetime));
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		long time_begin = calendarbegin.getTimeInMillis();
+		long time_end = calendarend.getTimeInMillis();
+		if(current<time_begin) return "即将开始!";
+		else if(current>=time_begin&&current<=time_end) return "正在进行!";
+		else return "已经结束!";
+	}
+	
+	public static List<HashMap<String,String>> Jsonarr2Hash(JSONArray ja){
+		List<HashMap<String,String>> list = new ArrayList<HashMap<String,String>>();
+		for(int i=0;i<ja.length();i++){
+			HashMap<String,String> tmp = new HashMap<String,String>();
+			try {
+				if(ja.getJSONObject(i).has("suc_photos")){
+					String url = ja.getJSONObject(i).getJSONArray("suc_photos").
+							getJSONObject(0).getString("url");
+					tmp.put("url", url);	
+				}else{
+					tmp.put("url", "");
+				}
+				tmp.put("addr", ja.getJSONObject(i).getString("addr"));
+				tmp.put("title", ja.getJSONObject(i).getString("title"));
+				String timeEnd = ja.getJSONObject(i).getString("time_end");
+				String timeBegin = ja.getJSONObject(i).getString("time_begin");
+				String event_time = getCalendarByInintData(timeBegin.substring(0,19).replace('T', ' '),
+						timeEnd.substring(0,19).replace('T', ' '));
+				tmp.put("time", event_time);
+				tmp.put("apply_number", ja.getJSONObject(i).getString("apply_number"));
+				tmp.put("eventId", String.valueOf(ja.getJSONObject(i).getInt("id")));
+				list.add(tmp);
+			} catch (JSONException e) { e.printStackTrace();}
+		}
+		return list;
+	}
+	
+	public static void writeListToFile(JSONArray ja,Activity activity,String filename){
+		
+		List<HashMap<String,String>> list = Tool.Jsonarr2Hash(ja);
+	    try {
+	        FileOutputStream fos = activity.openFileOutput(filename, Context.MODE_PRIVATE);
+	        ObjectOutputStream oos = new ObjectOutputStream(fos);
+	        oos.writeObject(list);
+	        oos.close();
+		 } catch (Exception e) {
+		     e.printStackTrace();
+		 }
+
+	}
+	public static List<HashMap<String, String>> loadListFromFile(String serfilename,Activity activity) {
+		List<HashMap<String,String>> list = new ArrayList<HashMap<String,String>>();
+		try {
+		    FileInputStream fis = activity.openFileInput(serfilename);
+		    ObjectInputStream ois = new ObjectInputStream(fis);
+		    list = (ArrayList<HashMap<String, String>>) ois.readObject();
+		 } catch (Exception e) {
+		    e.printStackTrace();
+		 }
+		return list;
 	}
     
 }

@@ -1,139 +1,438 @@
-<RelativeLayout android:layout_width="wrap_content" 
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:background="@color/white">
-    <include android:id="@+id/titlebar"
-        layout="@layout/title_bar"
-        android:layout_alignParentTop="true"/>
-     <com.juhuo.control.ScrollViewExtend
+    android:background="@color/white" >
+
+    <include
+        android:id="@+id/titlebar"
+        android:layout_alignParentTop="true"
+        layout="@layout/title_bar" />
+
+    <com.juhuo.control.ScrollViewExtend
         android:layout_width="match_parent"
         android:layout_height="fill_parent"
-        android:layout_below="@+id/titlebar">
-        <RelativeLayout 
+        android:layout_below="@+id/titlebar" >
+
+        <RelativeLayout
+            android:id="@+id/item_pager_image"
             android:layout_width="match_parent"
             android:layout_height="fill_parent"
-            android:background="@color/white"
-            android:id="@+id/item_pager_image">
+            android:background="@color/white" >
+
             <android.support.v4.view.ViewPager
-			       android:id="@+id/image_slide_page"
-			       android:layout_width="fill_parent"
-			       android:layout_height="300dp"
-			       android:focusable="true" />
+                android:id="@+id/image_slide_page"
+                android:layout_width="fill_parent"
+                android:layout_height="300dp"
+                android:focusable="true"
+                 />
+
             <LinearLayout
-                   android:id="@+id/layout_circle_images"
-                   android:layout_width="match_parent"
-                   android:layout_height="40dp"
-                   android:layout_marginTop="10dp"
-                   android:gravity="center"
-                   android:orientation="horizontal"
-                   android:layout_alignBottom="@+id/image_slide_page"
-                   android:background="@color/graytrans">
-                   
+                android:id="@+id/layout_circle_images"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_alignBottom="@+id/image_slide_page"
+                android:layout_marginTop="10dp"
+                android:background="@color/graytrans"
+                android:gravity="center"
+                android:orientation="horizontal" >
             </LinearLayout>
-            <TextView android:id="@+id/event_time"
-			        android:layout_width="wrap_content"
-			        android:layout_height="wrap_content"
-			        android:layout_alignLeft="@+id/layout_circle_images"
-			        android:layout_marginTop="200dp"
-			        android:textColor="@color/white"
-			        android:padding="2dp"
-			        android:textSize="13sp"></TextView>
-            <RelativeLayout android:layout_height="match_parent"
-		            android:layout_width="match_parent"
-		            android:layout_below="@+id/layout_circle_images"
-		            android:paddingLeft="10dp"
-		            android:paddingRight="10dp"
-		            >
-                <TextView android:id="@+id/event_title"
+
+            <TextView
+                android:id="@+id/event_time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignLeft="@+id/layout_circle_images"
+                android:layout_marginTop="200dp"
+                android:padding="2dp"
+                android:textColor="@color/white"
+                android:textSize="13sp" >
+            </TextView>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_below="@+id/layout_circle_images"
+                android:paddingLeft="25dp"
+                android:paddingRight="25dp" >
+
+                <RelativeLayout
+                    android:id="@+id/titlelay"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_width="wrap_content"
-                    android:textColor="@color/darkred"
-                    android:textSize="22sp"
-                    android:textStyle="bold"
-                    android:gravity="center"
-                    android:ellipsize="end" 
-                    android:singleLine="true"
-                    android:padding="5dp"/>
-                <RelativeLayout android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@+id/event_title"
-                    android:id="@+id/begintimelay"
-                    android:marginBottom="4dp">
-                    <TextView android:layout_width="wrap_content"
+                    android:gravity="center" >
+
+                    <TextView
+                        android:id="@+id/event_title"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_centerInParent="true"
+                        android:ellipsize="end"
+                        android:padding="5dp"
+                        android:singleLine="true"
+                        android:textColor="@color/red"
+                        android:textSize="22sp"
+                        android:textStyle="bold" />
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:id="@+id/begintimelay"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/titlelay" >
+
+                    <TextView
+                        android:id="@+id/begintime"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentLeft="true"
+                        android:paddingBottom="4dp"
+                        android:paddingTop="4dp"
                         android:text="@string/begintime"
                         android:textColor="@color/mgray"
                         android:textSize="15sp"
-                        android:textStyle="bold"
-                        android:layout_alignParentLeft="true"
-                        android:id="@+id/begintime"/>
-                    <TextView android:layout_width="wrap_content"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/event_begin_time"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_marginLeft="7dp"
+                        android:layout_toRightOf="@+id/begintime"
+                        android:paddingBottom="4dp"
+                        android:paddingTop="4dp"
                         android:textColor="@color/mgreen"
                         android:textSize="15sp"
-                        android:textStyle="bold"
-                        android:layout_toRightOf="@+id/begintime"
-                        android:id="@+id/event_begin_time"
-                        android:layout_marginLeft="7dp"/>
-                    <View android:layout_height="0.2dp"
+                        android:textStyle="bold" />
+
+                    <View
                         android:layout_width="match_parent"
-                        android:background="@color/divider"
-                        android:layout_alignParentBottom="true"/>
+                        android:layout_height="0.2dp"
+                        android:layout_alignParentBottom="true"
+                        android:layout_marginTop="14dp"
+                        android:background="@color/divider" />
                 </RelativeLayout>
-                <RelativeLayout android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@+id/begintimelay"
+
+                <RelativeLayout
                     android:id="@+id/endtimelay"
-                    android:marginBottom="4dp">
-                    <TextView android:layout_width="wrap_content"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/begintimelay" >
+
+                    <TextView
+                        android:id="@+id/endtime"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_alignParentLeft="true"
+                        android:paddingBottom="4dp"
+                        android:paddingTop="4dp"
                         android:text="@string/endtime"
                         android:textColor="@color/mgray"
                         android:textSize="15sp"
-                        android:textStyle="bold"
-                        android:layout_alignParentLeft="true"
-                        android:id="@+id/endtime"/>
-                    <TextView android:layout_width="wrap_content"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/event_end_time"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_marginLeft="7dp"
+                        android:layout_toRightOf="@+id/endtime"
+                        android:paddingBottom="4dp"
+                        android:paddingTop="4dp"
                         android:textColor="@color/mgreen"
                         android:textSize="15sp"
-                        android:textStyle="bold"
-                        android:layout_toRightOf="@+id/endtime"
-                        android:id="@+id/event_end_time"
-                        android:layout_marginLeft="7dp"/>
-                    <View android:layout_height="0.2dp"
+                        android:textStyle="bold" />
+
+                    <View
                         android:layout_width="match_parent"
-                        android:background="@color/divider"
-                        android:layout_alignParentBottom="true"/>
+                        android:layout_height="0.2dp"
+                        android:layout_alignParentBottom="true"
+                        android:background="@color/divider" />
                 </RelativeLayout>
-                <RelativeLayout android:layout_width="wrap_content"
+
+                <RelativeLayout
+                    android:id="@+id/placelay"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_below="@+id/endtimelay"
-                    android:marginBottom="4dp">
-                    <TextView android:layout_width="wrap_content"
+                    android:layout_below="@+id/endtimelay" >
+
+                    <TextView
+                        android:id="@+id/place"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_alignParentLeft="true"
+                        android:paddingBottom="4dp"
+                        android:paddingTop="4dp"
                         android:text="@string/place"
                         android:textColor="@color/mgray"
                         android:textSize="15sp"
-                        android:textStyle="bold"
-                        android:layout_alignParentLeft="true"
-                        android:id="@+id/place"/>
-                    <TextView android:layout_width="wrap_content"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/event_place"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_marginLeft="7dp"
+                        android:layout_toRightOf="@+id/place"
+                        android:paddingBottom="4dp"
+                        android:paddingTop="4dp"
                         android:textColor="@color/mgreen"
                         android:textSize="15sp"
-                        android:textStyle="bold"
-                        android:layout_toRightOf="@+id/place"
-                        android:id="@+id/event_place"
-                        android:layout_marginLeft="7dp"/>
-                    <View android:layout_height="0.2dp"
+                        android:textStyle="bold" />
+
+                    <View
                         android:layout_width="match_parent"
-                        android:background="@color/divider"
-                        android:layout_alignParentBottom="true"/>
+                        android:layout_height="0.2dp"
+                        android:layout_alignParentBottom="true"
+                        android:background="@color/divider" />
+                </RelativeLayout>
+
+                <com.amap.api.maps2d.MapView
+                    xmlns:android="http://schemas.android.com/apk/res/android"
+                    android:id="@+id/map"
+                    android:layout_width="match_parent"
+                    android:layout_height="150dp"
+                    android:layout_below="@+id/placelay"
+                     />
+
+                <RelativeLayout
+                    android:id="@+id/organizerlay"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/map" >
+
+                    <TextView
+                        android:id="@+id/organizer"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentLeft="true"
+                        android:paddingBottom="4dp"
+                        android:paddingTop="4dp"
+                        android:text="@string/organizer"
+                        android:textColor="@color/mgray"
+                        android:textSize="15sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/event_organizer"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="7dp"
+                        android:layout_toRightOf="@+id/organizer"
+                        android:ellipsize="end"
+                        android:paddingBottom="4dp"
+                        android:paddingTop="4dp"
+                        android:singleLine="true"
+                        android:textColor="@color/mgreen"
+                        android:textSize="15sp"
+                        android:textStyle="bold" />
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="0.2dp"
+                        android:layout_alignParentBottom="true"
+                        android:background="@color/divider" />
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:id="@+id/typelay"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/organizerlay" >
+
+                    <TextView
+                        android:id="@+id/type"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentLeft="true"
+                        android:paddingBottom="4dp"
+                        android:paddingTop="4dp"
+                        android:text="@string/event_type"
+                        android:textColor="@color/mgray"
+                        android:textSize="15sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/event_type"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="7dp"
+                        android:layout_toRightOf="@+id/type"
+                        android:paddingBottom="4dp"
+                        android:paddingTop="4dp"
+                        android:textColor="@color/mgreen"
+                        android:textSize="15sp"
+                        android:textStyle="bold" />
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="0.2dp"
+                        android:layout_alignParentBottom="true"
+                        android:background="@color/divider" />
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:id="@+id/ispubliclay"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/typelay" >
+
+                    <TextView
+                        android:id="@+id/ispublic"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentLeft="true"
+                        android:paddingBottom="4dp"
+                        android:paddingTop="4dp"
+                        android:text="@string/ispublic"
+                        android:textColor="@color/mgray"
+                        android:textSize="15sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/event_ispublic"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="7dp"
+                        android:layout_toRightOf="@+id/ispublic"
+                        android:paddingBottom="4dp"
+                        android:paddingTop="4dp"
+                        android:textColor="@color/mgreen"
+                        android:textSize="15sp"
+                        android:textStyle="bold" />
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="0.2dp"
+                        android:layout_alignParentBottom="true"
+                        android:background="@color/divider" />
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:id="@+id/costlay"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/ispubliclay" >
+
+                    <TextView
+                        android:id="@+id/cost"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentLeft="true"
+                        android:paddingBottom="4dp"
+                        android:paddingTop="4dp"
+                        android:text="@string/cost"
+                        android:textColor="@color/mgray"
+                        android:textSize="15sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/event_cost"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="7dp"
+                        android:layout_toRightOf="@+id/cost"
+                        android:paddingBottom="4dp"
+                        android:paddingTop="4dp"
+                        android:textColor="@color/mgreen"
+                        android:textSize="15sp"
+                        android:textStyle="bold" />
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="0.2dp"
+                        android:layout_alignParentBottom="true"
+                        android:background="@color/divider" />
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:id="@+id/linklay"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/costlay" >
+
+                    <TextView
+                        android:id="@+id/link"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentLeft="true"
+                        android:paddingBottom="4dp"
+                        android:paddingTop="4dp"
+                        android:text="@string/link"
+                        android:textColor="@color/mgray"
+                        android:textSize="15sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/event_link"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="7dp"
+                        android:layout_toRightOf="@+id/link"
+                        android:paddingBottom="4dp"
+                        android:paddingTop="4dp"
+                        android:textColor="@color/mgreen"
+                        android:textSize="15sp"
+                        android:textStyle="bold" />
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="0.2dp"
+                        android:layout_alignParentBottom="true"
+                        android:background="@color/divider" />
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:id="@+id/detaillay"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/linklay" >
+
+                    <TextView
+                        android:id="@+id/detail"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentLeft="true"
+                        android:paddingBottom="4dp"
+                        android:paddingTop="4dp"
+                        android:text="@string/detail"
+                        android:textColor="@color/mgray"
+                        android:textSize="15sp"
+                        android:textStyle="bold" />
+                    
+                    <RelativeLayout android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/detail"
+                        >
+                        <TextView
+	                        android:id="@+id/event_detail"
+	                        android:layout_width="200dp"
+	                        android:layout_height="50dp"
+	                        android:layout_marginLeft="7dp"
+	                        android:paddingBottom="4dp"
+	                        android:paddingTop="4dp"
+	                        android:textColor="@color/mgreen"
+	                        android:textSize="15sp"
+	                        android:textStyle="bold"
+	                        android:layout_marginRight="50dp"
+	                        
+	                         />
+                        <View android:layout_height="wrap_content"
+                            android:layout_width="wrap_content"
+                            android:background="@drawable/icon_next_grey"
+                            android:layout_alignParentRight="true"
+                            android:id="@+id/next_gray"
+                            android:layout_toRightOf="@+id/event_detail"
+                            android:layout_centerVertical="true"
+                            />
+                    </RelativeLayout>
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="0.2dp"
+                        android:layout_alignParentBottom="true"
+                        android:background="@color/divider" />
                 </RelativeLayout>
             </RelativeLayout>
         </RelativeLayout>
-        
-        
     </com.juhuo.control.ScrollViewExtend>
+
 </RelativeLayout>
