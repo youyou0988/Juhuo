@@ -96,8 +96,7 @@ public class SlideImageLayout {
 		LinearLayout imageLinerLayout = new LinearLayout(activity);
 		LinearLayout.LayoutParams imageLinerLayoutParames = new LinearLayout.LayoutParams(
 				LinearLayout.LayoutParams.WRAP_CONTENT, 
-				LinearLayout.LayoutParams.WRAP_CONTENT,
-				1);
+				LinearLayout.LayoutParams.WRAP_CONTENT);
 		
 		ImageView iv = new ImageView(activity);
 		imageLoader.displayImage(url,iv, options, animateFirstListener);

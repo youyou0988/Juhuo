@@ -173,9 +173,18 @@ public class EventDetailActivity extends Activity {
 		eventIspublic = (TextView)findViewById(R.id.event_ispublic);
 		eventCost = (TextView)findViewById(R.id.event_cost);
 		eventLink = (TextView)findViewById(R.id.event_link);
+		RelativeLayout.LayoutParams layoutDetailParams = new RelativeLayout.LayoutParams(
+				JuhuoConfig.WIDTH*5/8,
+                JuhuoConfig.HEIGHT*6/54);
+		layoutDetailParams.setMargins(Tool.dip2px(this, 7), 0, Tool.dip2px(this, 50), 0);
 		eventDetail = (TextView)findViewById(R.id.event_detail);
+		eventDetail.setLayoutParams(layoutDetailParams);
 		
 		mapView = (MapView) findViewById(R.id.map);
+		RelativeLayout.LayoutParams layoutMapParams = new RelativeLayout.LayoutParams(
+				RelativeLayout.LayoutParams.MATCH_PARENT,
+                JuhuoConfig.HEIGHT*11/40);
+//		mapView.setLayoutParams(layoutMapParams);
 		mapView.onCreate(savedInstanceState);// ±ØÐëÒªÐ´
 		init();
 		
@@ -213,10 +222,9 @@ public class EventDetailActivity extends Activity {
         }  
   
         @Override  
-        public Object instantiateItem(View arg0, int arg1) {  
+        public Object instantiateItem(View parent, int arg1) {  
             // TODO Auto-generated method stub  
-        	((ViewPager) arg0).addView(imagePageViews.get(arg1));
-            
+        	((ViewPager) parent).addView(imagePageViews.get(arg1));
             return imagePageViews.get(arg1);  
         }
         

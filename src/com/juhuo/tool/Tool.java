@@ -9,10 +9,12 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import android.app.Activity;
 import android.app.Dialog;
@@ -180,10 +182,10 @@ public class Tool {
 		else return "ÒÑ¾­½áÊø!";
 	}
 	
-	public static List<HashMap<String,String>> Jsonarr2Hash(JSONArray ja){
-		List<HashMap<String,String>> list = new ArrayList<HashMap<String,String>>();
+	public static List<HashMap<String,Object>> Jsonarr2Hash(JSONArray ja){
+		List<HashMap<String,Object>> list = new ArrayList<HashMap<String,Object>>();
 		for(int i=0;i<ja.length();i++){
-			HashMap<String,String> tmp = new HashMap<String,String>();
+			HashMap<String,Object> tmp = new HashMap<String,Object>();
 			try {
 				if(ja.getJSONObject(i).has("suc_photos")){
 					String url = ja.getJSONObject(i).getJSONArray("suc_photos").
@@ -207,9 +209,34 @@ public class Tool {
 		return list;
 	}
 	
+	public static List<HashMap<String,Object>> commonJ2L(JSONArray ja){
+		List<HashMap<String,Object>> list = new ArrayList<HashMap<String,Object>>();
+		for (int i = 0; i < ja.length(); i++) {
+		   HashMap<String, Object> pairs = new HashMap<String, Object>();
+		   JSONObject j = ja.optJSONObject(i);
+		   Iterator it = j.keys();
+		   while (it.hasNext()) {
+		      String n = (String)it.next();
+		        try {
+					pairs.put(n, j.getString(n));
+				} catch (JSONException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+		   }
+		   list.add(pairs);
+		}
+		return list;
+	}
+	
 	public static void writeListToFile(JSONArray ja,Activity activity,String filename){
+		List<HashMap<String,Object>> list;
+		if(filename.equals(JuhuoConfig.EVENTLISTFILE)){
+			list = Tool.Jsonarr2Hash(ja);
+		}else{
+			list = Tool.commonJ2L(ja);
+		}
 		
-		List<HashMap<String,String>> list = Tool.Jsonarr2Hash(ja);
 	    try {
 	        FileOutputStream fos = activity.openFileOutput(filename, Context.MODE_PRIVATE);
 	        ObjectOutputStream oos = new ObjectOutputStream(fos);

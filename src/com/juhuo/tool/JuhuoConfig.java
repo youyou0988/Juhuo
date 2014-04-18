@@ -4,6 +4,7 @@ public class JuhuoConfig {
 	public static int HEIGHT;
 	public static int WIDTH;
 	public static String EVENTLISTFILE = "juhuo_event_list";
+	public static String EVENTINFO = "juhuo_event_info_";
 	public static String PUBLIC_TOKEN="00000000000000000000";
 	public static String token = "";
 	
