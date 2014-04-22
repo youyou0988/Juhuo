@@ -403,7 +403,8 @@
                     <RelativeLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_below="@+id/detail" >
+                        android:layout_below="@+id/detail"
+                        android:id="@+id/detailgone" >
                         <TextView
                             android:id="@+id/event_detail"
                             android:layout_width="wrap_content"
@@ -446,35 +447,177 @@
                         android:textColor="@color/mgray"
                         android:textSize="15sp"
                         android:textStyle="bold" />
+                    
 
                     <RelativeLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_below="@+id/participant" >
+                        android:layout_below="@+id/participant"
+                        android:id="@+id/participantwid" >
                         <TableLayout
-							  android:id="@+id/participantlay"
+							  android:id="@+id/participanttable"
 							  android:layout_width="wrap_content"
 							  android:layout_height="wrap_content"
 							  android:padding="3dip"
 							  >
-						  
-						  <TableRow>
-						   <ImageView android:layout_width="80dp"
-						       android:layout_height="80dp"
-						       android:background="@drawable/default_image"
-						       android:layout_marginRight="5dp"></ImageView>
-						   <ImageView android:layout_width="80dp"
-						       android:layout_height="80dp"
-						       android:background="@drawable/default_image"
-						       android:layout_marginRight="5dp"></ImageView>
-						   <ImageView android:layout_width="80dp"
-						       android:layout_height="80dp"
-						       android:background="@drawable/default_image"
-						       android:layout_marginRight="5dp"></ImageView>
-						   <ImageView android:layout_width="80dp"
-						       android:layout_height="80dp"
-						       android:background="@drawable/default_image"
-						       android:layout_marginRight="5dp"></ImageView>
+						  <TableRow android:id="@+id/participantrows"
+						      android:layout_width="wrap_content"
+						      android:layout_height="wrap_content">
+						   
+						  </TableRow>
+						</TableLayout>
+						
+                    	<ImageView
+                           android:id="@+id/next_gray"
+                           android:layout_width="wrap_content"
+                           android:layout_height="wrap_content"
+                           android:layout_alignParentRight="true"
+                           android:layout_centerVertical="true"
+                           android:background="@drawable/icon_next_grey" />    
+                    </RelativeLayout>
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="0.2dp"
+                        android:layout_alignParentBottom="true"
+                        android:background="@color/divider" />
+                </RelativeLayout>
+                <RelativeLayout
+                    android:id="@+id/invitedlay"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/participantlay" >
+
+                    <TextView
+                        android:id="@+id/invited"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentLeft="true"
+                        android:paddingBottom="4dp"
+                        android:paddingTop="4dp"
+                        android:text="@string/invited"
+                        android:textColor="@color/mgray"
+                        android:textSize="15sp"
+                        android:textStyle="bold" />
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/invited"
+                        android:id="@+id/invitedwid" >
+                        <TableLayout
+							  android:id="@+id/invitedtable"
+							  android:layout_width="wrap_content"
+							  android:layout_height="wrap_content"
+							  android:padding="3dip"
+							  >
+						  <TableRow android:id="@+id/invitedrows"
+						      android:layout_width="wrap_content"
+						      android:layout_height="wrap_content">
+						   
+						  </TableRow>
+						</TableLayout>
+						
+                    	<ImageView
+                           android:id="@+id/next_gray"
+                           android:layout_width="wrap_content"
+                           android:layout_height="wrap_content"
+                           android:layout_alignParentRight="true"
+                           android:layout_centerVertical="true"
+                           android:background="@drawable/icon_next_grey" />    
+                    </RelativeLayout>
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="0.2dp"
+                        android:layout_alignParentBottom="true"
+                        android:background="@color/divider" />
+                </RelativeLayout>
+                <RelativeLayout
+                    android:id="@+id/absentlay"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/invitedlay" >
+
+                    <TextView
+                        android:id="@+id/absent"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentLeft="true"
+                        android:paddingBottom="4dp"
+                        android:paddingTop="4dp"
+                        android:text="@string/absent"
+                        android:textColor="@color/mgray"
+                        android:textSize="15sp"
+                        android:textStyle="bold" />
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/absent"
+                        android:id="@+id/absentwid" >
+                        <TableLayout
+							  android:id="@+id/absenttable"
+							  android:layout_width="wrap_content"
+							  android:layout_height="wrap_content"
+							  android:padding="3dip"
+							  >
+						  <TableRow android:id="@+id/absentrows"
+						      android:layout_width="wrap_content"
+						      android:layout_height="wrap_content">
+						   
+						  </TableRow>
+						</TableLayout>
+						
+                    	<ImageView
+                           android:id="@+id/next_gray"
+                           android:layout_width="wrap_content"
+                           android:layout_height="wrap_content"
+                           android:layout_alignParentRight="true"
+                           android:layout_centerVertical="true"
+                           android:background="@drawable/icon_next_grey" />    
+                    </RelativeLayout>
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="0.2dp"
+                        android:layout_alignParentBottom="true"
+                        android:background="@color/divider" />
+                </RelativeLayout>
+                
+				<RelativeLayout
+                    android:id="@+id/applylay"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/absentlay" >
+
+                    <TextView
+                        android:id="@+id/apply"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentLeft="true"
+                        android:paddingBottom="4dp"
+                        android:paddingTop="4dp"
+                        android:text="@string/apply"
+                        android:textColor="@color/mgray"
+                        android:textSize="15sp"
+                        android:textStyle="bold" />
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/apply"
+                        android:id="@+id/applywid" >
+                        <TableLayout
+							  android:id="@+id/applytable"
+							  android:layout_width="wrap_content"
+							  android:layout_height="wrap_content"
+							  android:padding="3dip"
+							  >
+						  <TableRow android:id="@+id/applyrows"
+						      android:layout_width="wrap_content"
+						      android:layout_height="wrap_content">
+						   
 						  </TableRow>
 						</TableLayout>
 						

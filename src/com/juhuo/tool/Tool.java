@@ -158,8 +158,8 @@ public class Tool {
 		Display display = activity.getWindowManager().getDefaultDisplay(); 
 		Point size = new Point(); 
 		display.getSize(size); 
-		JuhuoConfig.WIDTH =size.x; //px
-		JuhuoConfig.HEIGHT = size.y;//px
+		JuhuoConfig.WIDTH =size.x; //dp
+		JuhuoConfig.HEIGHT = size.y; //px
 	}
 	
 	public static String getCalendarByInintData(String beginDateTime,String endDatetime) {
@@ -229,34 +229,30 @@ public class Tool {
 		return list;
 	}
 	
-	public static void writeListToFile(JSONArray ja,Activity activity,String filename){
-		List<HashMap<String,Object>> list;
-		if(filename.equals(JuhuoConfig.EVENTLISTFILE)){
-			list = Tool.Jsonarr2Hash(ja);
-		}else{
-			list = Tool.commonJ2L(ja);
-		}
-		
+	public static void writeJsonToFile(JSONObject jo,Activity activity,String filename){
+		String url = jo.toString();
 	    try {
 	        FileOutputStream fos = activity.openFileOutput(filename, Context.MODE_PRIVATE);
 	        ObjectOutputStream oos = new ObjectOutputStream(fos);
-	        oos.writeObject(list);
+	        oos.writeObject(url);
 	        oos.close();
 		 } catch (Exception e) {
 		     e.printStackTrace();
 		 }
 
 	}
-	public static List<HashMap<String, String>> loadListFromFile(String serfilename,Activity activity) {
-		List<HashMap<String,String>> list = new ArrayList<HashMap<String,String>>();
+	public static JSONObject loadJsonFromFile(String serfilename,Activity activity) {
+		String res="";
+		JSONObject jo = new JSONObject();
 		try {
 		    FileInputStream fis = activity.openFileInput(serfilename);
 		    ObjectInputStream ois = new ObjectInputStream(fis);
-		    list = (ArrayList<HashMap<String, String>>) ois.readObject();
+		    res = (String) ois.readObject();
+		    jo = new JSONObject(res);
 		 } catch (Exception e) {
 		    e.printStackTrace();
 		 }
-		return list;
+		return jo;
 	}
     
 }

@@ -106,15 +106,15 @@ public class HotEventsAdapter extends BaseAdapter {
 		
 	}
 	//for cache use
-	public void setMData(List<HashMap<String,String>> md){
-		this.mData.clear();
-		this.mData = md;
-		URLS = new String[mData.size()];
-		picNumber = new int[mData.size()];
-		for(int i=0;i<mData.size();i++){
-			URLS[i] = mData.get(i).get("url");
-		}	
-	}
+//	public void setMData(List<HashMap<String,String>> md){
+//		this.mData.clear();
+//		this.mData = md;
+//		URLS = new String[mData.size()];
+//		picNumber = new int[mData.size()];
+//		for(int i=0;i<mData.size();i++){
+//			URLS[i] = mData.get(i).get("url");
+//		}	
+//	}
 	
 	public void setListView(ListView lv){
 		this.listView = lv;

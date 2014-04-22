@@ -12,6 +12,9 @@
     <string name="login_username_hint">聚伙用户名/注册手机号码</string>
     <string name="login_password_hint">安全密码</string>
     <string name="register_free">免费注册</string>
+    <string name="click_load">点击加载</string>
+    <string name="more_data">加载更多</string>
+    <string name="complete_data">完成加载</string>
     
     <string name="login_input_name_password">请输入用户名和密码</string>
     <string name="loginning">正在登录...</string>
@@ -39,4 +42,9 @@
 	<string name="participant">参加人员</string>
 	<string name="invited">邀请人员</string>
 	<string name="absent">缺席人员</string>
+	<string name="apply">申请人员</string>
+	
+	<string name="add_to_calendar">加到日历</string>
+	<string name="share_event">分享活动</string>
+	<string name="cancel">取消</string>
 </resources>

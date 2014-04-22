@@ -1,11 +1,5 @@
 package com.juhuo.fragment;
 
-import java.io.BufferedReader;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.InputStreamReader;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -38,10 +32,11 @@ import android.widget.TextView;
 import com.jeremyfeinstein.slidingmenu.lib.app.SlidingFragmentActivity;
 import com.juhuo.adapter.FilterEventAdapter;
 import com.juhuo.adapter.HotEventsAdapter;
+import com.juhuo.control.MyListView;
+import com.juhuo.control.MyListView.OnLoadListener;
+import com.juhuo.control.MyListView.OnRefreshListener;
 import com.juhuo.tool.JuhuoConfig;
 import com.juhuo.tool.JuhuoInfo;
-import com.juhuo.tool.MyListView;
-import com.juhuo.tool.MyListView.OnRefreshListener;
 import com.juhuo.tool.Tool;
 import com.juhuo.welcome.R;
 
@@ -69,7 +64,7 @@ public class HotEventsFragment extends Fragment{
 	private int[] focus={1,0,0,0,0,0};
 	private int[] focus2={1,0,0,0,0};
 	private List<HashMap<String,String>> cacheList= new ArrayList<HashMap<String,String>>();
-    
+    private String handle;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -95,6 +90,23 @@ public class HotEventsFragment extends Fragment{
 				getNetData(mapPara);
 			}
 		});
+		hotEventsList.setonLoadListener(new OnLoadListener() {  
+            
+            @Override  
+            public void onLoad() {  
+                //TODO 加载更多  
+                Log.e(TAG, "onLoad");
+                if(handle.equals("")){
+                	hotEventsList.onLoadComplete(); //加载更多完成  
+                }else{
+                	HashMap<String,Object> mapMore = new HashMap<String,Object>();
+                    mapMore.put("token", JuhuoConfig.token);
+                    mapMore.put("handle", handle);
+//                    loadMoreData(mapMore);
+                }
+                
+            }  
+        });
 		
 		
 		filterlistlayout = (RelativeLayout)parent.findViewById(R.id.filterlistlayout);
@@ -134,13 +146,23 @@ public class HotEventsFragment extends Fragment{
 		hotEventsAdapter.setInflater(
 				(LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE),
 				getActivity());
-		hotEventsAdapter.setMData(Tool.loadListFromFile(JuhuoConfig.EVENTLISTFILE,getActivity()));
+		JSONObject jsonCache = new JSONObject();
+		jsonCache = Tool.loadJsonFromFile(JuhuoConfig.EVENTLISTFILE,getActivity());
+		try {
+			hotEventsAdapter.setJSONData(jsonCache.getJSONArray("events"));
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		hotEventsAdapter.notifyDataSetChanged();
 		hotEventsList.setAdapter(hotEventsAdapter);
 		//then get it from network
 		getNetData(mapPara);
 		
 		return parent;
+	}
+	public void loadMoreData(){
+		hotEventsList.onLoadComplete(); //加载更多完成  
 	}
 	View.OnClickListener onClickListener = new View.OnClickListener() {
 		
@@ -243,14 +265,18 @@ public class HotEventsFragment extends Fragment{
 			if(result == null){
 				Log.i(TAG,"cannot get any");//we have reveived 500 error page
 				hotEventsList.onRefreshComplete();
+				hotEventsList.onLoadComplete(); //加载更多完成  
 			}else if(result.has("wrong_data")){
 				//sth is wrong
 				Tool.dialog(getActivity());
 			}else{
 				try {
+					if(result.has("handle")){
+						handle = result.getString("handle");
+					}
 					JSONArray ja = result.getJSONArray("events");
 					if(ja.length()!=0) {
-						Tool.writeListToFile(ja,getActivity(),JuhuoConfig.EVENTLISTFILE);
+						Tool.writeJsonToFile(result,getActivity(),JuhuoConfig.EVENTLISTFILE);
 						mData = ja;
 						hotEventsList.setVisibility(View.VISIBLE);
 						hotEventsAdapter = new HotEventsAdapter();
@@ -267,6 +293,7 @@ public class HotEventsFragment extends Fragment{
 						noEventsText.setText(mResources.getString(R.string.no_events_found));	
 					}
 					hotEventsList.onRefreshComplete();
+					
 				} catch (JSONException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
