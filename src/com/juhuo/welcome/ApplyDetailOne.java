@@ -16,6 +16,7 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -87,20 +88,25 @@ public class ApplyDetailOne extends Activity {
 		});
 		applyList = (ListView)findViewById(R.id.applylist);
 		Status st = (Status)getIntent().getExtras().get("TYPE");
+		String res="";
 		switch (st){
 		case PARTICIPANT:
-			
+			actionTitle.setText(mResources.getString(R.string.participant));
+			res = getIntent().getExtras().getString("APPLY_DETAIL");
+			urls = getIntent().getExtras().getStringArrayList("APPLY_URLS");
+			break;
+		case INVITED:
+			actionTitle.setText(mResources.getString(R.string.invited));
+			res = getIntent().getExtras().getString("INVITED_DETAIL");
+			Log.i(TAG, res);
+			urls = getIntent().getExtras().getStringArrayList("INVITED_URLS");
+			break;
+		case NO:
+			actionTitle.setText(mResources.getString(R.string.absent));
+			res = getIntent().getExtras().getString("ABSENT_DETAIL");
+			urls = getIntent().getExtras().getStringArrayList("ABSENT_URLS");
+			break;
 		}
-		actionTitle.setText(mResources.getString(R.string.participant));
-		setmData();
-		mInflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-		mAdapter = new ApplyDetailAdapter();
-		applyList.setAdapter(mAdapter);
-		applyList.setOnItemClickListener(mListListener);
-	}
-	private void setmData(String type){
-		String res = getIntent().getExtras().getString("APPLY_DETAIL");
-		urls = getIntent().getExtras().getStringArrayList("APPLY_URLS");
 		try {
 			JSONArray ja = new JSONArray(res);
 			mData = Tool.commonJ2L(ja);
@@ -109,6 +115,10 @@ public class ApplyDetailOne extends Activity {
 			e.printStackTrace();
 		}
 		
+		mInflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+		mAdapter = new ApplyDetailAdapter();
+		applyList.setAdapter(mAdapter);
+		applyList.setOnItemClickListener(mListListener);
 	}
 	OnItemClickListener mListListener = new OnItemClickListener(){
 

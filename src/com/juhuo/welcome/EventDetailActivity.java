@@ -88,6 +88,7 @@ public class EventDetailActivity extends Activity {
 	private ImageLoadingListener animateFirstListener = new AnimateFirstDisplayListener();
 	
 	private final String TAG = "EventDetailActivity";
+	private String description="";
 	
 	protected void onCreate(Bundle savedInstanceState){
 		super.onCreate(savedInstanceState);
@@ -212,6 +213,7 @@ public class EventDetailActivity extends Activity {
 				viewPager.setAdapter(adapter);  
 			    viewPager.setOnPageChangeListener(new ImagePageChangeListener());
 			}
+			description = result.getString("description");
 			eventTitle.setText(result.getString("title"));
 			String tb = result.getString("time_begin").substring(0,19).replace('T', ' ');
 			String te = result.getString("time_end").substring(0,19).replace('T', ' ');
@@ -239,6 +241,7 @@ public class EventDetailActivity extends Activity {
 				layoutDetailParams.setMargins(Tool.dip2px(this, 7), 0, Tool.dip2px(this, 50), 0);
 				eventDetail.setText(result.getString("description"));
 				eventDetail.setLayoutParams(layoutDetailParams);
+				findViewById(R.id.detailgone).setOnClickListener(detailClickListener);
 			}else{
 				findViewById(R.id.detailgone).setVisibility(View.GONE);
 			}
@@ -246,7 +249,7 @@ public class EventDetailActivity extends Activity {
 			JSONArray jaChoices = result.getJSONArray("choices");
 			map = new HashMap<Integer,ArrayList<String>>();
 			applyList = new HashMap<Integer,JSONArray>();
-			for(int i=0;i<6;i++){
+			for(int i=0;i<7;i++){
 				map.put(i, new ArrayList<String>());
 				applyList.put(i, new JSONArray());
 			}
@@ -265,6 +268,7 @@ public class EventDetailActivity extends Activity {
 					map.get(JuhuoConfig.INVI_ORGANIZER).add(url);
 				}else{
 					map.get(status).add(url);
+					applyList.get(status).put(jaChoices.getJSONObject(i));
 				}
 			}
 //			map.get(JuhuoConfig.INVI_ORGANIZER).addAll(map.get(JuhuoConfig.INVI_YES));
@@ -307,6 +311,7 @@ public class EventDetailActivity extends Activity {
 			if(map.get(type).size()==0){
 				findViewById(R.id.absentwid).setVisibility(View.GONE);
 			}else{
+				findViewById(R.id.absentwid).setOnClickListener(InviListener);
 				tx.setText(mResources.getString(R.string.absent)+" ("+map.get(type).size()+")");
 			}
 			
@@ -346,10 +351,17 @@ public class EventDetailActivity extends Activity {
 				break;
 			case R.id.invitedwid:
 				Intent invintent = new Intent(EventDetailActivity.this,ApplyDetailOne.class);
-				invintent.putExtra("APPLY_DETAIL", applyList.get(JuhuoConfig.INVI_NULL).toString());
-				invintent.putExtra("APPLY_URLS", map.get(JuhuoConfig.INVI_NULL));
+				invintent.putExtra("INVITED_DETAIL", applyList.get(JuhuoConfig.INVI_NULL).toString());
+				invintent.putExtra("INVITED_URLS", map.get(JuhuoConfig.INVI_NULL));
 				invintent.putExtra("TYPE", Status.INVITED);
 				startActivity(invintent);
+				break;
+			case R.id.absentwid:
+				Intent absenttent = new Intent(EventDetailActivity.this,ApplyDetailOne.class);
+				absenttent.putExtra("ABSENT_DETAIL", applyList.get(JuhuoConfig.INVI_NO).toString());
+				absenttent.putExtra("ABSENT_URLS", map.get(JuhuoConfig.INVI_NO));
+				absenttent.putExtra("TYPE", Status.NO);
+				startActivity(absenttent);
 				break;
 			}
 		}
@@ -459,6 +471,15 @@ public class EventDetailActivity extends Activity {
             }
         }  
     }
+    OnClickListener detailClickListener = new OnClickListener(){
+		@Override
+		public void onClick(View v) {
+			// TODO Auto-generated method stub
+			Intent intent = new Intent(EventDetailActivity.this,EventDetailOne.class);
+			intent.putExtra("detail",description);
+			startActivity(intent);
+		}
+    };
     /**
 	 * 方法必须重写
 	 */
