@@ -95,8 +95,13 @@ public class LeftMenuFragment extends Fragment{
 		userName = (TextView)parent.findViewById(R.id.user_name);
 		userText = (TextView)parent.findViewById(R.id.text);
 		userImage = (ImageView)parent.findViewById(R.id.image);
-		mapParams.put("token", JuhuoConfig.token);
-		getNetData(mapParams);
+		if(JuhuoConfig.token.equals(JuhuoConfig.PUBLIC_TOKEN)){
+			
+		}else{
+			mapParams.put("token", JuhuoConfig.token);
+			getNetData(mapParams);
+		}
+		
 		initListener();
 		return parent;
 	}

@@ -15,6 +15,7 @@
     <string name="click_load">点击加载</string>
     <string name="more_data">加载更多</string>
     <string name="complete_data">完成加载</string>
+    <string name="hint">登录聚伙账户</string>
     
     <string name="login_input_name_password">请输入用户名和密码</string>
     <string name="loginning">正在登录...</string>
@@ -43,8 +44,15 @@
 	<string name="invited">邀请人员</string>
 	<string name="absent">缺席人员</string>
 	<string name="apply">申请人员</string>
+	<string name="detail">详细资料</string>
 	
 	<string name="add_to_calendar">加到日历</string>
 	<string name="share_event">分享活动</string>
 	<string name="cancel">取消</string>
+	
+	<string name="name">姓名</string>
+	<string name="age">年龄</string>
+	<string name="gender">性别</string>
+	<string name="cell">手机号</string>
+	<string name="description">个人简介</string>
 </resources>

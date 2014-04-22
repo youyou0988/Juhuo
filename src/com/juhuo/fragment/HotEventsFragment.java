@@ -155,9 +155,10 @@ public class HotEventsFragment extends Fragment{
 			e.printStackTrace();
 		}
 		hotEventsAdapter.notifyDataSetChanged();
+		hotEventsAdapter.setListView(hotEventsList);
 		hotEventsList.setAdapter(hotEventsAdapter);
 		//then get it from network
-		getNetData(mapPara);
+//		getNetData(mapPara);//uncomment to get network data for the first time
 		
 		return parent;
 	}

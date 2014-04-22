@@ -34,6 +34,7 @@ import com.amap.api.maps2d.MapView;
 import com.juhuo.adapter.HotEventsAdapter.AnimateFirstDisplayListener;
 import com.juhuo.control.SlideImageLayout;
 import com.juhuo.tool.JuhuoConfig;
+import com.juhuo.tool.JuhuoConfig.Status;
 import com.juhuo.tool.JuhuoInfo;
 import com.juhuo.tool.Tool;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
@@ -297,6 +298,7 @@ public class EventDetailActivity extends Activity {
 			if(map.get(type).size()==0){
 				findViewById(R.id.invitedwid).setVisibility(View.GONE);
 			}else{
+				findViewById(R.id.invitedwid).setOnClickListener(InviListener);
 				tx.setText(mResources.getString(R.string.invited)+" ("+map.get(type).size()+")");
 			}
 		}else if(type==JuhuoConfig.INVI_NO){
@@ -336,10 +338,18 @@ public class EventDetailActivity extends Activity {
 			RelativeLayout v = (RelativeLayout)view;
 			switch (v.getId()){
 			case R.id.participantwid:
-				Intent intent = new Intent(EventDetailActivity.this,ApplyDetailOne.class);
-				intent.putExtra("APPLY_DETAIL", applyList.get(JuhuoConfig.INVI_ORGANIZER).toString());
-				intent.putExtra("APPLY_URLS", map.get(JuhuoConfig.INVI_ORGANIZER));
-				startActivity(intent);
+				Intent parintent = new Intent(EventDetailActivity.this,ApplyDetailOne.class);
+				parintent.putExtra("APPLY_DETAIL", applyList.get(JuhuoConfig.INVI_ORGANIZER).toString());
+				parintent.putExtra("APPLY_URLS", map.get(JuhuoConfig.INVI_ORGANIZER));
+				parintent.putExtra("TYPE", Status.PARTICIPANT);
+				startActivity(parintent);
+				break;
+			case R.id.invitedwid:
+				Intent invintent = new Intent(EventDetailActivity.this,ApplyDetailOne.class);
+				invintent.putExtra("APPLY_DETAIL", applyList.get(JuhuoConfig.INVI_NULL).toString());
+				invintent.putExtra("APPLY_URLS", map.get(JuhuoConfig.INVI_NULL));
+				invintent.putExtra("TYPE", Status.INVITED);
+				startActivity(invintent);
 				break;
 			}
 		}

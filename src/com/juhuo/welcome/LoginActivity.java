@@ -134,7 +134,7 @@ public class LoginActivity extends Activity {
 				Log.i(TAG,"i am not in");
 				Tool.myToast(LoginActivity.this,mResources.getString(R.string.login_failed_username_password));
 			}else{
-				Tool.myToast(LoginActivity.this,mResources.getString(R.string.login_success));
+//				Tool.myToast(LoginActivity.this,mResources.getString(R.string.login_success));
 				Intent intent2Home = new Intent(LoginActivity.this, HomeActivity.class);
 				try {
 					JuhuoConfig.token = result.getString("token");
