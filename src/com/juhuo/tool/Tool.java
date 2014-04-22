@@ -209,8 +209,8 @@ public class Tool {
 		return list;
 	}
 	
-	public static List<HashMap<String,Object>> commonJ2L(JSONArray ja){
-		List<HashMap<String,Object>> list = new ArrayList<HashMap<String,Object>>();
+	public static ArrayList<HashMap<String,Object>> commonJ2L(JSONArray ja){
+		ArrayList<HashMap<String,Object>> list = new ArrayList<HashMap<String,Object>>();
 		for (int i = 0; i < ja.length(); i++) {
 		   HashMap<String, Object> pairs = new HashMap<String, Object>();
 		   JSONObject j = ja.optJSONObject(i);

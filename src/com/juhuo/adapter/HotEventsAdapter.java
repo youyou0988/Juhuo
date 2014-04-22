@@ -59,7 +59,7 @@ public class HotEventsAdapter extends BaseAdapter {
 	//设置当前的日期和时间
 	private String currentTime = calendar.get(Calendar.YEAR)+"-"+month+"-"+calendar.get(Calendar.DAY_OF_MONTH)+"T"+calendar.get(Calendar.HOUR_OF_DAY)+":"+calendar.get(Calendar.MINUTE);
 	DisplayImageOptions options = new DisplayImageOptions.Builder()
-	.imageScaleType(ImageScaleType.IN_SAMPLE_INT)
+	.imageScaleType(ImageScaleType.EXACTLY)
 	.showImageOnLoading(R.drawable.default_image)
 	.showImageForEmptyUri(R.drawable.default_image)
 	.showImageOnFail(R.drawable.default_image)

@@ -13,6 +13,7 @@ public class JuhuoConfig {
 	public static int INVI_APPLY=4;
 	public static int INVI_ORGANIZER=5;
 	public static int INVI_REJECTOR=6;
+	public static String[] STATUS = {"确定参加","确定参加","缺席人员","可能参加","点击审批","组织者","拒绝参加"};
 	
 	public static String PUBLIC_TOKEN="00000000000000000000";
 	public static String token = "";

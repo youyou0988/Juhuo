@@ -8,6 +8,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.content.res.Resources;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -61,7 +62,7 @@ public class EventDetailActivity extends Activity {
 	private SlideImageLayout slideLayout = null;
 	private HashMap<String,Object> mapPara;
 	private HashMap<Integer,ArrayList<String>> map;
-	private HashMap<Integer,ArrayList<HashMap<String,String>>> applyList;
+	private HashMap<Integer,JSONArray> applyList;
 	
 	private SlideImageAdapter adapter;
 	private ImageView actionTitleImg,actionTitleImg2;
@@ -243,9 +244,10 @@ public class EventDetailActivity extends Activity {
 			
 			JSONArray jaChoices = result.getJSONArray("choices");
 			map = new HashMap<Integer,ArrayList<String>>();
+			applyList = new HashMap<Integer,JSONArray>();
 			for(int i=0;i<6;i++){
 				map.put(i, new ArrayList<String>());
-				applyList.put(i, new ArrayList<HashMap<String,String>>());
+				applyList.put(i, new JSONArray());
 			}
 			for(int i=0;i<jaChoices.length();i++){
 				int status = jaChoices.getJSONObject(i).getInt("status");
@@ -256,13 +258,16 @@ public class EventDetailActivity extends Activity {
 				}else{
 					url="";
 				}
-				map.get(status).add(url);
-				HashMap<String,String> tmp = new HashMap<String,String>();
-				tmp.put(jaChoices.getJSONObject(i).getString(""), value)
-				applyList.get(status).add(object)
+				
+				if(status==JuhuoConfig.INVI_YES||status==JuhuoConfig.INVI_MAYBE||status==JuhuoConfig.INVI_ORGANIZER){
+					applyList.get(JuhuoConfig.INVI_ORGANIZER).put(jaChoices.getJSONObject(i));//for next page
+					map.get(JuhuoConfig.INVI_ORGANIZER).add(url);
+				}else{
+					map.get(status).add(url);
+				}
 			}
-			map.get(JuhuoConfig.INVI_ORGANIZER).addAll(map.get(JuhuoConfig.INVI_YES));
-			map.get(JuhuoConfig.INVI_ORGANIZER).addAll(map.get(JuhuoConfig.INVI_MAYBE));
+//			map.get(JuhuoConfig.INVI_ORGANIZER).addAll(map.get(JuhuoConfig.INVI_YES));
+//			map.get(JuhuoConfig.INVI_ORGANIZER).addAll(map.get(JuhuoConfig.INVI_MAYBE));
 			setChoicesTable(JuhuoConfig.INVI_ORGANIZER,map);
 			setChoicesTable(JuhuoConfig.INVI_NULL,map);
 			setChoicesTable(JuhuoConfig.INVI_NO,map);
@@ -326,9 +331,17 @@ public class EventDetailActivity extends Activity {
 	}
 	OnClickListener InviListener = new OnClickListener(){
 		@Override
-		public void onClick(View arg0) {
+		public void onClick(View view) {
 			// TODO Auto-generated method stub
-			
+			RelativeLayout v = (RelativeLayout)view;
+			switch (v.getId()){
+			case R.id.participantwid:
+				Intent intent = new Intent(EventDetailActivity.this,ApplyDetailOne.class);
+				intent.putExtra("APPLY_DETAIL", applyList.get(JuhuoConfig.INVI_ORGANIZER).toString());
+				intent.putExtra("APPLY_URLS", map.get(JuhuoConfig.INVI_ORGANIZER));
+				startActivity(intent);
+				break;
+			}
 		}
 	};
 	public ImageView getNewImage(){
