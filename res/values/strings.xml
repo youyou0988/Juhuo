@@ -12,7 +12,7 @@
     <string name="login_username_hint">聚伙用户名/注册手机号码</string>
     <string name="login_password_hint">安全密码</string>
     <string name="register_free">免费注册</string>
-    <string name="click_load">点击加载</string>
+    <string name="click_load"></string>
     <string name="more_data">加载更多</string>
     <string name="complete_data">完成加载</string>
     <string name="hint">登录聚伙账户</string>

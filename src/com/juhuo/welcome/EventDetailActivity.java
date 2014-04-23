@@ -96,6 +96,7 @@ public class EventDetailActivity extends Activity {
 		this.event_id = getIntent().getExtras().getString("eventId");
 		JSONObject jo = new JSONObject();
 		jo = Tool.loadJsonFromFile(JuhuoConfig.EVENTINFO+event_id, this);
+//		Log.i(TAG, jo.toString());
 		setViewsContent(jo);
 		//get network data
 		mapPara = new HashMap<String,Object>();
