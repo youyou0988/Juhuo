@@ -32,10 +32,7 @@ public class HomeActivity extends SlidingFragmentActivity {
 		getSize();
 		initSlidingMenu(savedInstanceState);
 		Tool.initImageLoader(this);
-		
-		
-//		initComponents();
-//        setListener();
+
 	}
 	private void getSize(){
 		Display display = getWindowManager().getDefaultDisplay(); 

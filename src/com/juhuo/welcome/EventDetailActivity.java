@@ -1,6 +1,7 @@
 package com.juhuo.welcome;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 
 import org.json.JSONArray;
@@ -32,6 +33,9 @@ import android.widget.TextView;
 import com.amap.api.maps2d.AMap;
 import com.amap.api.maps2d.MapView;
 import com.juhuo.adapter.HotEventsAdapter.AnimateFirstDisplayListener;
+import com.juhuo.control.PullDownElasticImp;
+import com.juhuo.control.RefreshableView;
+import com.juhuo.control.RefreshableView.RefreshListener;
 import com.juhuo.control.SlideImageLayout;
 import com.juhuo.tool.JuhuoConfig;
 import com.juhuo.tool.JuhuoConfig.Status;
@@ -44,6 +48,8 @@ import com.nostra13.universalimageloader.core.display.SimpleBitmapDisplayer;
 import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
 
 public class EventDetailActivity extends Activity {
+	//可下拉刷新的layout
+	private RefreshableView mRefreshableView;
 	// 滑动图片的集合，这里设置成了固定加载，当然也可动态加载。
 	private int[] slideImages;
 	// 滑动图片的集合
@@ -94,6 +100,7 @@ public class EventDetailActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		initViews(savedInstanceState);
 		this.event_id = getIntent().getExtras().getString("eventId");
+		Tool.initImageLoader(this);
 		JSONObject jo = new JSONObject();
 		jo = Tool.loadJsonFromFile(JuhuoConfig.EVENTINFO+event_id, this);
 //		Log.i(TAG, jo.toString());
@@ -128,6 +135,7 @@ public class EventDetailActivity extends Activity {
 				Tool.writeJsonToFile(result, EventDetailActivity.this, JuhuoConfig.EVENTINFO+event_id);
 				setViewsContent(result);
 			}
+			mRefreshableView.finishRefresh("最近更新:" + new Date().toLocaleString()); 
 		}
 		
 	}
@@ -195,12 +203,28 @@ public class EventDetailActivity extends Activity {
 		eventCost = (TextView)findViewById(R.id.event_cost);
 		eventLink = (TextView)findViewById(R.id.event_link);
 		eventDetail = (TextView)findViewById(R.id.event_detail);
+		RelativeLayout eventComment = (RelativeLayout)findViewById(R.id.commentlay);
+		eventComment.setOnClickListener(InviListener);
 		
 		mapView = (MapView) findViewById(R.id.map);
 		mapView.onCreate(savedInstanceState);// 必须要写
 		init();
 		
+		
+		mRefreshableView = (RefreshableView) findViewById(R.id.refresh_root);    
+		mRefreshableView.setRefreshListener(mRefreshListener);    
+		mRefreshableView.setPullDownElastic(new PullDownElasticImp(this)); 
 	}
+	RefreshListener mRefreshListener = new RefreshListener(){
+
+		@Override
+		public void onRefresh(RefreshableView view) {
+			// TODO Auto-generated method stub
+			Log.i(TAG, "on refresh");
+			getNetData(mapPara);
+		}
+		
+	};
 	
 	private void setViewsContent(JSONObject result){
 		try {
@@ -363,6 +387,11 @@ public class EventDetailActivity extends Activity {
 				absenttent.putExtra("ABSENT_URLS", map.get(JuhuoConfig.INVI_NO));
 				absenttent.putExtra("TYPE", Status.NO);
 				startActivity(absenttent);
+				break;
+			case R.id.commentlay:
+				Intent comintent = new Intent(EventDetailActivity.this,EventComment.class);
+				comintent.putExtra("id", event_id);
+				startActivity(comintent);
 				break;
 			}
 		}

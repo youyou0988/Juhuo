@@ -15,6 +15,8 @@
     <string name="click_load"></string>
     <string name="more_data">加载更多</string>
     <string name="complete_data">完成加载</string>
+    <string name="refresh_down_text">下拉可刷新</string>
+	<string name="refresh_release_text">松开可刷新</string>
     <string name="hint">登录聚伙账户</string>
     
     <string name="login_input_name_password">请输入用户名和密码</string>
@@ -45,6 +47,8 @@
 	<string name="absent">缺席人员</string>
 	<string name="apply">申请人员</string>
 	<string name="detail">详细资料</string>
+	<string name="comment">活动评论</string>
+	<string name="lookupcomment">查看详细内容</string>
 	
 	<string name="add_to_calendar">加到日历</string>
 	<string name="share_event">分享活动</string>

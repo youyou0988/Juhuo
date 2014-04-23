@@ -5,6 +5,7 @@ public class JuhuoConfig {
 	public static int WIDTH;
 	public static String EVENTLISTFILE = "juhuo_event_list";
 	public static String EVENTINFO = "juhuo_event_info_";
+	public static String EVENTCOMMENT = "juhuo_event_comment_";
 	
 	public static int INVI_NULL=0;
 	public static int INVI_YES=1;
@@ -27,5 +28,6 @@ public class JuhuoConfig {
 	public static String EVENT_LIST = PRODUCTIONPREFIX+"event/list/";
 	public static String USER_INFO = PRODUCTIONPREFIX+"user/info/";
 	public static String EVENT_INFO	= PRODUCTIONPREFIX + "event/info/";
+	public static String EVENT_COMMENT_LIST = PRODUCTIONPREFIX+"event/listcomment/";
 
 }

@@ -12,8 +12,8 @@
         android:id="@+id/head_contentLayout"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:paddingLeft="30dp" >
-
+        android:paddingLeft="30dp">
+        
         <!-- 箭头图像、进度条 -->
 
         <FrameLayout
@@ -49,7 +49,8 @@
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
             android:gravity="center_horizontal"
-            android:orientation="vertical" >
+            android:orientation="vertical"
+            android:id="@+id/refresh_time_layout" >
 
             <!-- 提示 -->
 
