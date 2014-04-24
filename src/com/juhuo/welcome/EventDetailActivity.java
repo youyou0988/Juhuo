@@ -419,12 +419,12 @@ public class EventDetailActivity extends Activity {
 		}
 	};
 	public ImageView getNewImage(){
-		int imageWidth = (Tool.dip2px(this, JuhuoConfig.WIDTH)-120)/4;
-//		Log.i(TAG, String.valueOf(JuhuoConfig.WIDTH));
-//		Log.i(TAG, String.valueOf(imageWidth));
+		int imageWidth = (JuhuoConfig.WIDTH-75)*5/22;
+		Log.i(TAG, String.valueOf(JuhuoConfig.WIDTH));
+		Log.i(TAG, String.valueOf(imageWidth));
 		ImageView view = new ImageView(this);
         view.setImageResource(R.drawable.default_image);
-        TableRow.LayoutParams imPara = new TableRow.LayoutParams(imageWidth/2,imageWidth/2);
+        TableRow.LayoutParams imPara = new TableRow.LayoutParams(imageWidth,imageWidth);
         imPara.setMargins(0, 0, imageWidth/20, 0);
         view.setLayoutParams(imPara);
         view.setScaleType(ScaleType.FIT_XY);

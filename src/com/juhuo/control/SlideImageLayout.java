@@ -13,6 +13,8 @@ import android.view.ViewGroup.LayoutParams;
 import android.widget.ImageView;
 import android.widget.ImageView.ScaleType;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
+
 import com.juhuo.welcome.R;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
@@ -95,12 +97,18 @@ public class SlideImageLayout {
 		// °üº¬TextViewµÄLinearLayout
 		LinearLayout imageLinerLayout = new LinearLayout(activity);
 		LinearLayout.LayoutParams imageLinerLayoutParames = new LinearLayout.LayoutParams(
-				LinearLayout.LayoutParams.WRAP_CONTENT, 
-				LinearLayout.LayoutParams.WRAP_CONTENT);
-		
+				LinearLayout.LayoutParams.FILL_PARENT, 
+				LinearLayout.LayoutParams.FILL_PARENT);
+		RelativeLayout imageRelative = new RelativeLayout(activity);
+//		RelativeLayout.LayoutParams imageRelLayoutParames = new RelativeLayout.LayoutParams(
+//				RelativeLayout.LayoutParams.WRAP_CONTENT, 
+//				RelativeLayout.LayoutParams.WRAP_CONTENT);
 		ImageView iv = new ImageView(activity);
+		RelativeLayout.LayoutParams textviewparams=new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+	    textviewparams.addRule(RelativeLayout.CENTER_IN_PARENT);
+		imageRelative.addView(iv,textviewparams);
 		imageLoader.displayImage(url,iv, options, animateFirstListener);
-		imageLinerLayout.addView(iv,imageLinerLayoutParames);
+		imageLinerLayout.addView(imageRelative,imageLinerLayoutParames);
 		imageList.add(iv);
 		
 		return imageLinerLayout;

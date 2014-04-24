@@ -8,6 +8,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.juhuo.tool.JuhuoConfig;
+import com.juhuo.tool.Tool;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
@@ -58,8 +59,12 @@ public class ApplyDetailTwo extends Activity {
 		description = (TextView)findViewById(R.id.t10);
 		image = (ImageView)findViewById(R.id.image);
 		name.setText(getIntent().getExtras().getString("name"));
-		String ag = getIntent().getExtras().getString("age").equals("null")?"δ֪":getIntent().getExtras().getString("age");
-		age.setText(ag);
+		if(getIntent().getExtras().getString("age").equals("null")){
+			age.setText("δ֪");
+		}else{
+			String a = getIntent().getExtras().getString("age").substring(0,19).replace('T', ' ');
+			age.setText(String.valueOf(Tool.getAgeFromBirthday(a)));
+		}
 		String ge = getIntent().getExtras().getString("gender").equals("0")?"��":"Ů";
 		gender.setText(ge);
 		cell.setText(getIntent().getExtras().getString("cell"));
