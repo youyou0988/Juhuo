@@ -1,8 +1,8 @@
 package com.juhuo.welcome;
 
-import android.content.Context;
 import android.graphics.Point;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.Display;
@@ -15,11 +15,9 @@ import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu.OnOpenListener;
 import com.jeremyfeinstein.slidingmenu.lib.app.SlidingFragmentActivity;
 import com.juhuo.fragment.HotEventsFragment;
 import com.juhuo.fragment.LeftMenuFragment;
+import com.juhuo.fragment.MyEventFragment;
+import com.juhuo.fragment.UserSettingFragment;
 import com.juhuo.tool.Tool;
-import com.nostra13.universalimageloader.cache.disc.naming.Md5FileNameGenerator;
-import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
-import com.nostra13.universalimageloader.core.assist.QueueProcessingType;
 
 public class HomeActivity extends SlidingFragmentActivity {
 	private int WIDTH,HEIGHT;
@@ -85,18 +83,43 @@ public class HomeActivity extends SlidingFragmentActivity {
 	        @Override
 	        public void onOpen() {
 	        	Log.i("sliding menu", "open");
-	        	((HotEventsFragment) mContent).setTrans();
+	        	if(mContent instanceof HotEventsFragment){
+	        		((HotEventsFragment) mContent).setTrans();
+	        	}else if(mContent instanceof MyEventFragment){
+	        		((MyEventFragment) mContent).setTrans();
+	        	}else if(mContent instanceof UserSettingFragment){
+	        		((UserSettingFragment) mContent).setTrans();
+	        	}
+	        	
 	        }
 	    });
 		sm.setOnCloseListener(new OnCloseListener(){
 			@Override
 			public void onClose(){
 				Log.i("sliding menu", "close");
-	        	((HotEventsFragment) mContent).setTransBack();
+				if(mContent instanceof HotEventsFragment){
+	        		((HotEventsFragment) mContent).setTransBack();
+	        	}else if(mContent instanceof MyEventFragment){
+	        		((MyEventFragment) mContent).setTransBack();
+	        	}else if(mContent instanceof UserSettingFragment){
+	        		((UserSettingFragment) mContent).setTransBack();
+	        	}
 			}
 		});
 		
 	}
-	
+	//切换不同的fragment中的内容
+	public void switchContent(final Fragment fragment) {
+		mContent = fragment;
+		getSupportFragmentManager().beginTransaction()
+				.replace(R.id.content_frame, fragment).commit();
+
+		Handler h = new Handler();
+		h.postDelayed(new Runnable() {
+			public void run() {
+				getSlidingMenu().showContent();
+			}
+		}, 50);
+	}
 	
 }

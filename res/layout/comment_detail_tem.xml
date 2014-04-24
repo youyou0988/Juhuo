@@ -15,12 +15,14 @@
             android:layout_alignParentLeft="true"
             android:layout_toLeftOf="@+id/commenter_time"
             android:singleLine="true"
-            android:ellipsize="end"/>
+            android:ellipsize="end"
+            android:textSize="12sp"/>
         <TextView android:id="@+id/commenter_time"
             android:textColor="@color/mgray"
             android:layout_height="wrap_content"
             android:layout_width="wrap_content"
-            android:layout_alignParentRight="true"/>
+            android:layout_alignParentRight="true"
+            android:textSize="12sp"/>
     </RelativeLayout>
     <TextView android:layout_height="wrap_content"
         android:layout_width="wrap_content"

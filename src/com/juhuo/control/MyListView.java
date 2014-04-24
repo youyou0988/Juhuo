@@ -120,18 +120,18 @@ public class MyListView extends ListView implements OnScrollListener {
 		state = DONE;
 		isRefreshable = false;
 		
-		moreView = LayoutInflater.from(context).inflate(R.layout.listfooter_more, null);
-		moreView.setVisibility(View.VISIBLE);
-		moreProgressBar = (ProgressBar) moreView.findViewById(R.id.pull_to_refresh_progress);
-		loadMoreView = (TextView) moreView.findViewById(R.id.load_more);
-		moreView.setOnClickListener(new View.OnClickListener() {
-			
-			@Override
-			public void onClick(View v) {
-				onLoad();
-			}
-		});
-		addFooterView(moreView);
+//		moreView = LayoutInflater.from(context).inflate(R.layout.listfooter_more, null);
+//		moreView.setVisibility(View.VISIBLE);
+//		moreProgressBar = (ProgressBar) moreView.findViewById(R.id.pull_to_refresh_progress);
+//		loadMoreView = (TextView) moreView.findViewById(R.id.load_more);
+//		moreView.setOnClickListener(new View.OnClickListener() {
+//			
+//			@Override
+//			public void onClick(View v) {
+//				onLoad();
+//			}
+//		});
+//		addFooterView(moreView);
 	}
 
 	public void onScroll(AbsListView arg0, int firstVisiableItem, int arg2, int arg3) {

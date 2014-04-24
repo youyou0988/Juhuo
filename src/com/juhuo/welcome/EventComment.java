@@ -23,6 +23,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.juhuo.control.MyListView;
+import com.juhuo.control.MyListView.OnRefreshListener;
 import com.juhuo.tool.JuhuoConfig;
 import com.juhuo.tool.JuhuoInfo;
 import com.juhuo.tool.Tool;
@@ -46,6 +47,7 @@ public class EventComment extends Activity{
 	private String event_id;
 	private EditText message;
 	private ImageView send;
+	private TextView noCommentText;
 	protected void onCreate(Bundle savedInstanceState){
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.comment);
@@ -68,26 +70,45 @@ public class EventComment extends Activity{
 		commentList = (MyListView)findViewById(R.id.commentlist);
 		message = (EditText)findViewById(R.id.comment);
 		send = (ImageView)findViewById(R.id.send_comment);
+		noCommentText = (TextView)findViewById(R.id.no_comments_found);
+		RelativeLayout comLay = (RelativeLayout)findViewById(R.id.commentlay);
+		String page = getIntent().getExtras().getString("PAGE");
+		comLay.setVisibility(page.equals("HOT")?View.INVISIBLE:View.VISIBLE);
 		this.event_id = getIntent().getExtras().getString("id");
 		//read from cache
 		JSONObject jo = new JSONObject();
 		jo = Tool.loadJsonFromFile(JuhuoConfig.EVENTCOMMENT+event_id, this);
-		JSONArray ja;
-		try {
-			ja = jo.getJSONArray("comments");
-			mData = Tool.commonJ2L(ja);
-		} catch (JSONException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		mAdapter = new CommentListAdapter();
-		commentList.setAdapter(mAdapter);
-		
-		//get network data
 		mapPara = new HashMap<String,Object>();
 		mapPara.put("id", this.event_id);
 		mapPara.put("token", JuhuoConfig.token);
-		getNetData(mapPara);
+		if(jo==null){
+			//get network data
+			getNetData(mapPara);
+		}else{
+			JSONArray ja;
+			try {
+				ja = jo.getJSONArray("comments");
+				mData = Tool.commonJ2L(ja);
+				if(mData.size()==0){
+					noCommentText.setText(mResources.getString(R.string.no_comments_found));
+				}
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			mAdapter = new CommentListAdapter();
+			commentList.setAdapter(mAdapter);
+		}
+		
+		
+		commentList.setonRefreshListener(new OnRefreshListener() {
+			
+			public void onRefresh() {
+				// TODO Auto-generated method stub
+				Log.i("pull", "refresh");
+				getNetData(mapPara);
+			}
+		});
 		
 	}
 	public class CommentListAdapter extends BaseAdapter{
@@ -133,6 +154,7 @@ public class EventComment extends Activity{
 		
 	}
 	public void getNetData(HashMap<String,Object> map){
+		noCommentText.setText("");
 		LoadEventComment loadEventComment = new LoadEventComment();
 		loadEventComment.execute(map);
 	}
@@ -157,6 +179,9 @@ public class EventComment extends Activity{
 				try {
 					JSONArray ja = result.getJSONArray("comments");
 					mData = Tool.commonJ2L(ja);
+					if(mData.size()==0){
+						noCommentText.setText(mResources.getString(R.string.no_comments_found));
+					}
 				} catch (JSONException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -164,6 +189,7 @@ public class EventComment extends Activity{
 				mAdapter = new CommentListAdapter();
 				commentList.setAdapter(mAdapter);
 			}
+			commentList.onRefreshComplete();
 		}
 		
 	}

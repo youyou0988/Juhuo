@@ -9,6 +9,7 @@ import java.util.List;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
@@ -30,6 +31,7 @@ import com.juhuo.adapter.LeftMenuAdapter;
 import com.juhuo.tool.JuhuoConfig;
 import com.juhuo.tool.JuhuoInfo;
 import com.juhuo.tool.Tool;
+import com.juhuo.welcome.HomeActivity;
 import com.juhuo.welcome.R;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
@@ -46,7 +48,8 @@ public class LeftMenuFragment extends Fragment{
 	private LeftMenuAdapter leftMenuAdapter;
 	private ImageView userImage;
 	private TextView userText,userName;
-	private List<String> mData;
+	private ArrayList<HashMap<String,Object>> mData;
+	private HashMap<String,Object> tmpmap;
 	private List<Integer> focus;
 	private HashMap<String,Object> mapParams = new HashMap<String,Object>();
 	DisplayImageOptions options = new DisplayImageOptions.Builder()
@@ -61,32 +64,26 @@ public class LeftMenuFragment extends Fragment{
 	.build();
 	protected ImageLoader imageLoader = ImageLoader.getInstance();
 	private ImageLoadingListener animateFirstListener = new AnimateFirstDisplayListener();
-    
+	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		Log.d(TAG, "onCreate");
 		mResources = getResources();
-		setData();
-	};
-	public void setData(){
-		mData=new ArrayList<String>();
-		focus = new ArrayList<Integer>();
-		mData.add("热门活动");focus.add(1);
-		mData.add("我的活动");focus.add(0);
-		mData.add("帐号设置");focus.add(0);
-		mData.add("系统设置");focus.add(0);
-		mData.add("");focus.add(0);
+		if(JuhuoConfig.token==JuhuoConfig.PUBLIC_TOKEN){
+			setGuestData();
+		}else{
+			setData();
+		}
 		
-	}
-
+	};
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		RelativeLayout parent = (RelativeLayout) inflater.inflate(
 				R.layout.left_menu, null);
 		naviList = (ListView)parent.findViewById(R.id.navi_list);
-		leftMenuAdapter = new LeftMenuAdapter(getActivity(),mData,focus);
+		leftMenuAdapter = new LeftMenuAdapter(getActivity(),mData);
 		leftMenuAdapter.setInflater(
 				(LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE),
 				getActivity());
@@ -129,6 +126,7 @@ public class LeftMenuFragment extends Fragment{
 				try {
 					String name = result.getString("name");
 					userName.setText(name);
+					JuhuoConfig.userId = result.getInt("id");
 					if(result.has("suc_photos")){
 						userText.setText("");
 						String url = result.getJSONArray("suc_photos").getJSONObject(0).getString("url");
@@ -151,11 +149,32 @@ public class LeftMenuFragment extends Fragment{
 					long arg3) {
 				// TODO Auto-generated method stub
 				Log.i("clickpos", String.valueOf(position));
-				for(int i=0;i<focus.size();i++){
-					focus.set(i, 0);
+				for(int i=0;i<mData.size();i++){
+					mData.get(i).put("focus", 0);
 				}
-				focus.set(position, 1);
+				mData.get(position).put("focus", 1);
 				leftMenuAdapter.notifyDataSetChanged();
+				HomeActivity activity = (HomeActivity)getActivity();
+				if(mData.size()==2){ // guest user
+					if(position==1){
+						
+					}else if(position==0){
+						Fragment myEvent = new HotEventsFragment();
+						activity.switchContent(myEvent);
+					}
+				}else{
+					if(position==1){
+						Fragment myEvent = new MyEventFragment();
+						activity.switchContent(myEvent);
+					}else if(position==0){
+						Fragment hotEvent = new HotEventsFragment();
+						activity.switchContent(hotEvent);
+					}else if(position==2){
+						Fragment userSetting = new UserSettingFragment();
+						activity.switchContent(userSetting);
+					}
+				}
+				
 			};
 		});
 	}
@@ -175,6 +194,50 @@ public class LeftMenuFragment extends Fragment{
 				}
 			}
 		}
+	}
+	public void setData(){
+		mData=new ArrayList<HashMap<String,Object>>();
+		tmpmap = new HashMap<String,Object>();
+		tmpmap.put("title", "热门活动");
+		tmpmap.put("icon", mResources.getDrawable(R.drawable.icon_all_events));
+		tmpmap.put("icon-selected", mResources.getDrawable(R.drawable.icon_all_events_selected));
+		tmpmap.put("focus", 1);
+		mData.add(tmpmap);
+		tmpmap = new HashMap<String,Object>();
+		tmpmap.put("title", "我的活动");
+		tmpmap.put("icon", mResources.getDrawable(R.drawable.icon_my_events));
+		tmpmap.put("icon-selected", mResources.getDrawable(R.drawable.icon_my_events_selected));
+		tmpmap.put("focus", 0);
+		mData.add(tmpmap);
+		tmpmap = new HashMap<String,Object>();
+		tmpmap.put("title", "帐号设置");
+		tmpmap.put("icon", mResources.getDrawable(R.drawable.icon_user_settings));
+		tmpmap.put("icon-selected", mResources.getDrawable(R.drawable.icon_user_settings_selected));
+		tmpmap.put("focus", 0);
+		mData.add(tmpmap);
+		tmpmap = new HashMap<String,Object>();
+		tmpmap.put("title", "系统设置");
+		tmpmap.put("icon", mResources.getDrawable(R.drawable.icon_system_settings));
+		tmpmap.put("icon-selected", mResources.getDrawable(R.drawable.icon_system_settings_selected));
+		tmpmap.put("focus", 0);
+		mData.add(tmpmap);
+		
+	}
+	public void setGuestData(){
+		mData=new ArrayList<HashMap<String,Object>>();
+		tmpmap = new HashMap<String,Object>();
+		tmpmap.put("title", "热门活动");
+		tmpmap.put("icon", mResources.getDrawable(R.drawable.icon_all_events));
+		tmpmap.put("icon-selected", mResources.getDrawable(R.drawable.icon_all_events_selected));
+		tmpmap.put("focus", 1);
+		mData.add(tmpmap);
+		tmpmap = new HashMap<String,Object>();
+		tmpmap.put("title", "系统设置");
+		tmpmap.put("icon", mResources.getDrawable(R.drawable.icon_system_settings));
+		tmpmap.put("icon-selected", mResources.getDrawable(R.drawable.icon_system_settings_selected));
+		tmpmap.put("focus", 0);
+		mData.add(tmpmap);
+		
 	}
 
 }

@@ -95,6 +95,7 @@ public class EventDetailActivity extends Activity {
 	
 	private final String TAG = "EventDetailActivity";
 	private String description="";
+	private String type;
 	
 	protected void onCreate(Bundle savedInstanceState){
 		super.onCreate(savedInstanceState);
@@ -103,13 +104,16 @@ public class EventDetailActivity extends Activity {
 		Tool.initImageLoader(this);
 		JSONObject jo = new JSONObject();
 		jo = Tool.loadJsonFromFile(JuhuoConfig.EVENTINFO+event_id, this);
-//		Log.i(TAG, jo.toString());
-		setViewsContent(jo);
-		//get network data
 		mapPara = new HashMap<String,Object>();
 		mapPara.put("id", this.event_id);
 		mapPara.put("token", JuhuoConfig.token);
-		getNetData(mapPara);
+		if(jo==null){
+			//get network data
+			getNetData(mapPara);
+		}else{
+			setViewsContent(jo);
+		}
+
 	}
 	public void getNetData(HashMap<String,Object> map){
 		LoadEventInfo loadEventInfo = new LoadEventInfo();
@@ -210,6 +214,13 @@ public class EventDetailActivity extends Activity {
 		mapView.onCreate(savedInstanceState);// ±ØÐëÒªÐ´
 		init();
 		
+		RelativeLayout applyLay = (RelativeLayout)findViewById(R.id.applylay);
+		type=getIntent().getExtras().getString("type");
+		if(type.equals("HOT")){
+			applyLay.setVisibility(View.GONE);
+		}else{
+			applyLay.setVisibility(View.VISIBLE);
+		}
 		
 		mRefreshableView = (RefreshableView) findViewById(R.id.refresh_root);    
 		mRefreshableView.setRefreshListener(mRefreshListener);    
@@ -296,8 +307,6 @@ public class EventDetailActivity extends Activity {
 					applyList.get(status).put(jaChoices.getJSONObject(i));
 				}
 			}
-//			map.get(JuhuoConfig.INVI_ORGANIZER).addAll(map.get(JuhuoConfig.INVI_YES));
-//			map.get(JuhuoConfig.INVI_ORGANIZER).addAll(map.get(JuhuoConfig.INVI_MAYBE));
 			setChoicesTable(JuhuoConfig.INVI_ORGANIZER,map);
 			setChoicesTable(JuhuoConfig.INVI_NULL,map);
 			setChoicesTable(JuhuoConfig.INVI_NO,map);
@@ -346,6 +355,7 @@ public class EventDetailActivity extends Activity {
 			if(map.get(type).size()==0){
 				findViewById(R.id.applywid).setVisibility(View.GONE);
 			}else{
+				findViewById(R.id.applywid).setOnClickListener(InviListener);
 				tx.setText(mResources.getString(R.string.apply)+" ("+map.get(type).size()+")");
 			}
 			
@@ -372,6 +382,7 @@ public class EventDetailActivity extends Activity {
 				parintent.putExtra("APPLY_DETAIL", applyList.get(JuhuoConfig.INVI_ORGANIZER).toString());
 				parintent.putExtra("APPLY_URLS", map.get(JuhuoConfig.INVI_ORGANIZER));
 				parintent.putExtra("TYPE", Status.PARTICIPANT);
+				parintent.putExtra("PAGE", type);
 				startActivity(parintent);
 				break;
 			case R.id.invitedwid:
@@ -379,6 +390,7 @@ public class EventDetailActivity extends Activity {
 				invintent.putExtra("INVITED_DETAIL", applyList.get(JuhuoConfig.INVI_NULL).toString());
 				invintent.putExtra("INVITED_URLS", map.get(JuhuoConfig.INVI_NULL));
 				invintent.putExtra("TYPE", Status.INVITED);
+				invintent.putExtra("PAGE", type);
 				startActivity(invintent);
 				break;
 			case R.id.absentwid:
@@ -386,12 +398,22 @@ public class EventDetailActivity extends Activity {
 				absenttent.putExtra("ABSENT_DETAIL", applyList.get(JuhuoConfig.INVI_NO).toString());
 				absenttent.putExtra("ABSENT_URLS", map.get(JuhuoConfig.INVI_NO));
 				absenttent.putExtra("TYPE", Status.NO);
+				absenttent.putExtra("PAGE", type);
 				startActivity(absenttent);
 				break;
 			case R.id.commentlay:
 				Intent comintent = new Intent(EventDetailActivity.this,EventComment.class);
 				comintent.putExtra("id", event_id);
+				comintent.putExtra("PAGE", type);
 				startActivity(comintent);
+				break;
+			case R.id.applywid:
+				Intent applytent = new Intent(EventDetailActivity.this,ApplyDetailOne.class);
+				applytent.putExtra("APPLY_DETAIL", applyList.get(JuhuoConfig.INVI_APPLY).toString());
+				applytent.putExtra("APPLY_URLS", map.get(JuhuoConfig.INVI_APPLY));
+				applytent.putExtra("TYPE", Status.APPLY);
+				applytent.putExtra("PAGE", type);
+				startActivity(applytent);
 				break;
 			}
 		}

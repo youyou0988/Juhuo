@@ -26,6 +26,7 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.juhuo.tool.JuhuoConfig;
 import com.juhuo.tool.Tool;
 import com.juhuo.welcome.EventDetailActivity;
 import com.juhuo.welcome.R;
@@ -70,11 +71,13 @@ public class HotEventsAdapter extends BaseAdapter {
 	.build();
 	protected ImageLoader imageLoader = ImageLoader.getInstance();
 	private ImageLoadingListener animateFirstListener = new AnimateFirstDisplayListener();
+	private String type;
     
 	
 //	private final ImageDownloader imageDownloader = new ImageDownloader();
 	//for network New Data use
-	public void setJSONData(JSONArray ja){
+	public void setJSONData(JSONArray ja,String type){
+		this.type = type;
 		mData.clear();
 		this.jArr = ja;
 		URLS = new String[ja.length()];
@@ -174,12 +177,19 @@ public class HotEventsAdapter extends BaseAdapter {
 		holder.eventTitle.setText(mData.get(position).get("title"));
 		holder.eventLocation.setText(mData.get(position).get("addr"));
         holder.eventTime.setText(mData.get(position).get("time"));
-        if(mData.get(position).get("apply_number").equals("0")){
+        //hide apply number for guest
+        if(type=="HOT"){
         	holder.eventApply.setVisibility(View.INVISIBLE);
         }else{
         	holder.eventApply.setVisibility(View.VISIBLE);
-        	holder.eventApply.setText(mData.get(position).get("apply_number"));
+        	if(mData.get(position).get("apply_number").equals("0")){
+            	holder.eventApply.setVisibility(View.INVISIBLE);
+            }else{
+            	holder.eventApply.setVisibility(View.VISIBLE);
+            	holder.eventApply.setText(mData.get(position).get("apply_number"));
+            }
         }
+        
         
         if(holder.eventTime.getText().equals("正在进行!")){
         	holder.eventTime.setBackgroundColor(activity.getResources().getColor(R.color.lightgreen));
@@ -219,6 +229,7 @@ public class HotEventsAdapter extends BaseAdapter {
 			Intent intent = new Intent(activity,EventDetailActivity.class);
 			intent.putExtra("picNumber",picNumber[position-1]);
 			intent.putExtra("eventId", mData.get(position-1).get("eventId"));
+			intent.putExtra("type", type);
 			activity.startActivity(intent);
 		}
 		

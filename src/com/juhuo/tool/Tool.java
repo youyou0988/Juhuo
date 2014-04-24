@@ -182,6 +182,20 @@ public class Tool {
 		else return "ÒÑ¾­½áÊø!";
 	}
 	
+	public static int getAgeFromBirthday(String time){
+		Calendar calendar = Calendar.getInstance();
+		int current = calendar.get(Calendar.YEAR);
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		Calendar calendarbegin = Calendar.getInstance();
+		try {
+			calendarbegin.setTime(sdf.parse(time));
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return current-calendarbegin.get(Calendar.YEAR);
+	}
+	
 	public static List<HashMap<String,Object>> Jsonarr2Hash(JSONArray ja){
 		List<HashMap<String,Object>> list = new ArrayList<HashMap<String,Object>>();
 		for(int i=0;i<ja.length();i++){
@@ -251,6 +265,7 @@ public class Tool {
 		    jo = new JSONObject(res);
 		 } catch (Exception e) {
 		    e.printStackTrace();
+		    return null;
 		 }
 		return jo;
 	}

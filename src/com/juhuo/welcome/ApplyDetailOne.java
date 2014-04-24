@@ -70,6 +70,7 @@ public class ApplyDetailOne extends Activity {
 	protected ImageLoader imageLoader = ImageLoader.getInstance();
 	private ImageLoadingListener animateFirstListener = new AnimateFirstDisplayListener();
 	private String TAG="ApplyDetailOne";
+	private String type="HOT";
 	protected void onCreate(Bundle savedInstanceState){
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.apply_detail_one);
@@ -106,7 +107,13 @@ public class ApplyDetailOne extends Activity {
 			res = getIntent().getExtras().getString("ABSENT_DETAIL");
 			urls = getIntent().getExtras().getStringArrayList("ABSENT_URLS");
 			break;
+		case APPLY:
+			actionTitle.setText(mResources.getString(R.string.apply));
+			res = getIntent().getExtras().getString("APPLY_DETAIL");
+			urls = getIntent().getExtras().getStringArrayList("APPLY_URLS");
+			break;
 		}
+		type = getIntent().getExtras().getString("PAGE");
 		try {
 			JSONArray ja = new JSONArray(res);
 			mData = Tool.commonJ2L(ja);
@@ -178,9 +185,14 @@ public class ApplyDetailOne extends Activity {
 				holder.img.getLayoutParams().height = JuhuoConfig.WIDTH*9/32;
 				holder.img.getLayoutParams().width = JuhuoConfig.WIDTH*9/32;
 				holder.img.setScaleType(ScaleType.FIT_XY);
-				holder.dailImg.setVisibility(View.INVISIBLE);
+				
 			} else {
 				holder = (ApplyHandler) convertView.getTag();
+			}
+			if(type.equals("HOT")){
+				holder.dailImg.setVisibility(View.INVISIBLE);
+			}else{
+				holder.dailImg.setVisibility(View.VISIBLE);
 			}
 			holder.name.setText((String)mData.get(position).get("name"));
 //			holder.cell.setText((String)mData.get(position).get("cell"));

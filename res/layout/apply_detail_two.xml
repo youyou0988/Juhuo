@@ -103,4 +103,20 @@
                android:id="@+id/t10"/>
         </RelativeLayout>
     </RelativeLayout>
+    <Button android:layout_height="wrap_content"
+        android:layout_width="fill_parent"
+        android:layout_margin="15dp"
+        android:layout_alignParentBottom="true"
+        android:background="@drawable/click_btn"
+        android:text="@string/logout"
+        android:textColor="@color/white"
+        android:textSize="20sp"
+        android:id="@+id/logout"
+        android:visibility="gone"/>
+    <View android:id="@+id/transview"
+        android:layout_height="match_parent"
+        android:layout_width="match_parent"
+        android:background="@color/blacktrans"
+        android:visibility="invisible"/>
+   
 </RelativeLayout>
