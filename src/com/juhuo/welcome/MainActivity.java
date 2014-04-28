@@ -47,7 +47,7 @@ public class MainActivity extends Activity {
 		
 		login = (LinearLayout)findViewById(R.id.sl_login);
 		RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams)login.getLayoutParams();
-		layoutParams.setMargins(0, height*2/8, 0, 0);
+		layoutParams.setMargins(0, height/3, 0, 0);
 		skipLogin = (LinearLayout)findViewById(R.id.sl_skip_login);
 		animationSlideInTop = AnimationUtils.loadAnimation(this,R.anim.sequence);
 		animationSlideInTop.setAnimationListener(animationSlideInTopListener);

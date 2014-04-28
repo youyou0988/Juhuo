@@ -268,7 +268,6 @@ public class HotEventsFragment extends Fragment{
 			if(result == null){
 				Log.i(TAG,"cannot get any");//we have reveived 500 error page
 				hotEventsList.onRefreshComplete();
-				hotEventsList.onLoadComplete(); //加载更多完成  
 			}else if(result.has("wrong_data")){
 				//sth is wrong
 				Tool.dialog(getActivity());

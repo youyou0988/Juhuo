@@ -418,7 +418,8 @@
                             android:paddingBottom="4dp"
                             android:textColor="@color/mgreen"
                             android:textSize="15sp"
-                            android:textStyle="bold" />
+                            android:textStyle="bold"
+                            android:maxLines="3" />
 						
                     	<ImageView
                            android:id="@+id/next_gray"
@@ -426,7 +427,8 @@
                            android:layout_height="wrap_content"
                            android:layout_alignParentRight="true"
                            android:layout_centerVertical="true"
-                           android:background="@drawable/icon_next_grey" />    
+                           android:background="@drawable/icon_next_grey"
+                           android:layout_marginLeft="10dp" />    
                     </RelativeLayout>
 
                     <View
