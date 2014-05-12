@@ -1,15 +1,16 @@
 package com.juhuo.welcome;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.location.Location;
 import android.os.Bundle;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.Window;
+import android.widget.EditText;
 import android.widget.TextView;
 
 import com.amap.api.location.AMapLocation;
@@ -30,8 +31,9 @@ import com.juhuo.control.DateTimePickerDialog.OnDateTimeSetListener;
 import com.juhuo.tool.Tool;
 
 public class CreateEvent extends Activity implements LocationSource,AMapLocationListener{
-	private TextView actionTitleText,actionTitleText2,eventBeginTime,eventEndTime,
-		eventPlace;
+	private TextView actionTitleText,actionTitleText2,eventBeginTime,eventEndTime,eventType
+		;
+	private EditText eventPlace;
 	private Resources mResources;
 	private MapView mapView;
 	private AMap aMap;
@@ -39,6 +41,8 @@ public class CreateEvent extends Activity implements LocationSource,AMapLocation
 	private OnLocationChangedListener mListener;
 	private LocationManagerProxy mAMapLocationManager;
 	private AMapLocation currentLoc;
+	private String dest;
+	private static final int CreateEvent = 0;
 	protected void onCreate(Bundle savedInstanceState){
 		super.onCreate(savedInstanceState);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);//去掉标题栏
@@ -48,7 +52,8 @@ public class CreateEvent extends Activity implements LocationSource,AMapLocation
 		actionTitleText2 = (TextView)findViewById(R.id.action_title_text2);
 		eventBeginTime = (TextView)findViewById(R.id.event_begin_time);
 		eventEndTime = (TextView)findViewById(R.id.event_end_time);
-		eventPlace = (TextView)findViewById(R.id.event_place);
+		eventPlace = (EditText)findViewById(R.id.event_place);
+		eventType = (TextView)findViewById(R.id.event_type);
 		actionTitleText.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View arg0) {
@@ -60,20 +65,21 @@ public class CreateEvent extends Activity implements LocationSource,AMapLocation
 		eventEndTime.setText(Tool.getNextDateStr());
 		eventBeginTime.setOnClickListener(timeClick);
 		eventEndTime.setOnClickListener(timeClick);
+		eventType.setOnClickListener(typeClick);
 		mapView = (MapView) findViewById(R.id.map);
 		mapView.onCreate(savedInstanceState);// 必须要写
 		init();
-//		eventPlace.setOnClickListener(new View.OnClickListener() {
-//			
-//			@Override
-//			public void onClick(View v) {
-//				// TODO Auto-generated method stub
-//				Intent intent = new Intent(CreateEvent.this,SelectLocation.class);
-//				startActivity(intent);
-//			}
-//		});
 		
 	}
+	OnClickListener typeClick = new View.OnClickListener(){
+
+		@Override
+		public void onClick(View v) {
+			// TODO Auto-generated method stub
+			showDialog2();
+		}
+		
+	};
 	OnClickListener timeClick = new View.OnClickListener() {
 		
 		@Override
@@ -90,6 +96,18 @@ public class CreateEvent extends Activity implements LocationSource,AMapLocation
 			}
 		}
 	};
+	public void showDialog2(){
+		AlertDialog.Builder builder = new AlertDialog.Builder(this)
+        .setTitle("活动类型")
+        .setNegativeButton(mResources.getString(R.string.age), (DialogInterface.OnClickListener)null)
+        .setPositiveButton(mResources.getString(R.string.age), (DialogInterface.OnClickListener)null);
+//        .setPositiveButton("设置", (OnClickListener)null)
+//        .setNegativeButton("取消", (OnClickListener)null);
+
+		AlertDialog alert = builder.create(); // create one
+		
+		alert.show(); //display it
+	}
 	public void showDialog(final String type)
 	{
 		DateTimePickerDialog dialog  = new DateTimePickerDialog(this, System.currentTimeMillis());
@@ -125,11 +143,32 @@ public class CreateEvent extends Activity implements LocationSource,AMapLocation
 					// TODO Auto-generated method stub
 					Intent intent = new Intent(CreateEvent.this,SelectLocation.class);
 					intent.putExtra("currentLoc", location);
-					startActivity(intent);
+					intent.putExtra("description", dest);
+					startActivityForResult(intent,CreateEvent);
 				}
 			});
 		}
 	}
+	@Override  
+    public void onActivityResult(int requestCode, int resultCode, Intent data)  
+    {  
+		if(data!=null){
+			switch (requestCode)  
+	        {  
+		        case 0:  
+		            Bundle NoticeBuddle = data.getExtras();  
+		            String NoticeMessage = NoticeBuddle.getString("description");  
+		            LatLng NoticeLoc = (LatLng)NoticeBuddle.get("newLocation");
+		            eventPlace.setText(NoticeMessage);
+		            //设置中心点和缩放比例  
+			        aMap.moveCamera(CameraUpdateFactory.newCameraPosition(new CameraPosition(NoticeLoc,8,8,8)));  
+			        aMap.moveCamera(CameraUpdateFactory.zoomTo(13));
+		            break;  
+	        }  
+		}
+        
+		
+    }
 	/**
 	 * 设置一些amap的属性
 	 */
@@ -227,6 +266,7 @@ public class CreateEvent extends Activity implements LocationSource,AMapLocation
 	        aMap.moveCamera(CameraUpdateFactory.newCameraPosition(new CameraPosition(marker1,8,8,8)));  
 	        aMap.moveCamera(CameraUpdateFactory.zoomTo(13));
 	        currentLoc = aLocation;
+	        dest = desc;
 		}
 	}
 

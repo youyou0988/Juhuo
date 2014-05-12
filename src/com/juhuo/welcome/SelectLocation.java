@@ -2,12 +2,10 @@ package com.juhuo.welcome;
 
 
 import android.app.Activity;
-import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
+import android.content.Intent;
+import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.Point;
-import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.SystemClock;
@@ -15,62 +13,91 @@ import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 import android.view.View;
-import android.view.Window;
 import android.view.View.OnClickListener;
+import android.view.Window;
 import android.view.animation.BounceInterpolator;
 import android.view.animation.Interpolator;
 import android.widget.ImageView;
-import android.widget.RadioGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.amap.api.location.AMapLocation;
-import com.amap.api.location.AMapLocationListener;
 import com.amap.api.location.LocationManagerProxy;
-import com.amap.api.location.LocationProviderProxy;
-import com.amap.api.location.core.GeoPoint;
 import com.amap.api.maps2d.AMap;
-import com.amap.api.maps2d.CameraUpdateFactory;
-import com.amap.api.maps2d.LocationSource;
-import com.amap.api.maps2d.MapView;
-import com.amap.api.maps2d.Projection;
 import com.amap.api.maps2d.AMap.InfoWindowAdapter;
 import com.amap.api.maps2d.AMap.OnInfoWindowClickListener;
 import com.amap.api.maps2d.AMap.OnMapLoadedListener;
 import com.amap.api.maps2d.AMap.OnMarkerClickListener;
 import com.amap.api.maps2d.AMap.OnMarkerDragListener;
+import com.amap.api.maps2d.CameraUpdateFactory;
+import com.amap.api.maps2d.MapView;
+import com.amap.api.maps2d.Projection;
 import com.amap.api.maps2d.model.BitmapDescriptorFactory;
 import com.amap.api.maps2d.model.CameraPosition;
 import com.amap.api.maps2d.model.LatLng;
 import com.amap.api.maps2d.model.Marker;
 import com.amap.api.maps2d.model.MarkerOptions;
+import com.amap.api.services.core.LatLonPoint;
+import com.amap.api.services.geocoder.GeocodeResult;
+import com.amap.api.services.geocoder.GeocodeSearch;
+import com.amap.api.services.geocoder.GeocodeSearch.OnGeocodeSearchListener;
+import com.amap.api.services.geocoder.RegeocodeQuery;
+import com.amap.api.services.geocoder.RegeocodeResult;
+import com.juhuo.tool.Tool;
 
 
 
-public class SelectLocation extends Activity implements LocationSource,AMapLocationListener,
+public class SelectLocation extends Activity implements 
 	OnMarkerClickListener,OnInfoWindowClickListener, OnMarkerDragListener, OnMapLoadedListener,
-	OnClickListener, InfoWindowAdapter{
+	OnClickListener, InfoWindowAdapter,OnGeocodeSearchListener{
 	private MapView mapView;
+	private GeocodeSearch geocoderSearch;
 	private AMap aMap;
 	private ImageView back,check,search;
-	private OnLocationChangedListener mListener;
 	private LocationManagerProxy mAMapLocationManager;
 	private MarkerOptions markerOption;
-	private Marker marker2;// 有跳动效果的marker对象
-	private RadioGroup radioOption;
+	private Marker marker;// 有跳动效果的marker对象
 	private LatLng currentLoc;
+	private String description;
+	private Resources mResources;
+	private LatLonPoint latLonPoint;
 	protected void onCreate(Bundle savedInstanceState){
 		super.onCreate(savedInstanceState);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);//去掉标题栏
 		setContentView(R.layout.set_location);
+		mResources = getResources();
 		back = (ImageView)findViewById(R.id.back);
 		check = (ImageView)findViewById(R.id.check);
 		search = (ImageView)findViewById(R.id.search);
 		mapView = (MapView) findViewById(R.id.map);
 		mapView.onCreate(savedInstanceState);// 必须要写
 		currentLoc = (LatLng)getIntent().getExtras().get("currentLoc");
+		description = getIntent().getExtras().getString("description");
 		init();
+		back.setOnClickListener(imgClick);
+		search.setOnClickListener(imgClick);
+		check.setOnClickListener(imgClick);
 	}
+	OnClickListener imgClick = new View.OnClickListener() {
+		
+		@Override
+		public void onClick(View arg0) {
+			// TODO Auto-generated method stub
+			ImageView v = (ImageView)arg0;
+			switch(v.getId()){
+			case R.id.back:
+				finish();
+				break;
+			case R.id.search:
+				break;
+			case R.id.check:
+				Intent intent = new Intent(SelectLocation.this,CreateEvent.class);
+				intent.putExtra("newLocation", currentLoc);  
+				intent.putExtra("description", description);
+	            setResult(RESULT_OK, intent);
+				finish();
+				break;
+			}
+		}
+	};
 	/**
 	 * 初始化AMap对象
 	 */
@@ -79,6 +106,8 @@ public class SelectLocation extends Activity implements LocationSource,AMapLocat
 			aMap = mapView.getMap();
 			aMap.moveCamera(CameraUpdateFactory.newCameraPosition(new CameraPosition(currentLoc,8,8,8)));
 	        aMap.moveCamera(CameraUpdateFactory.zoomTo(13));
+	        geocoderSearch = new GeocodeSearch(this);
+			geocoderSearch.setOnGeocodeSearchListener(this);
 			aMap.setOnMapClickListener(new AMap.OnMapClickListener() {
 				
 				@Override
@@ -87,45 +116,65 @@ public class SelectLocation extends Activity implements LocationSource,AMapLocat
 					//设置中心点和缩放比例  
 			        aMap.moveCamera(CameraUpdateFactory.newCameraPosition(new CameraPosition(location,8,8,8)));
 			        aMap.moveCamera(CameraUpdateFactory.zoomTo(13));
-			        
+			        latLonPoint = new LatLonPoint(location.latitude, location.longitude);
+			        getAddress(latLonPoint);
+			        aMap.clear();
+					
 				}
 			});
 			aMap.setOnMarkerClickListener(this);// 设置点击marker事件监听器
-			addMarkersToMap();
+			aMap.setInfoWindowAdapter(this);// 设置自定义InfoWindow样式
+			addMarkersToMap(currentLoc,description);
+		}
+	}
+	/**
+	 * 响应逆地理编码
+	 */
+	public void getAddress(final LatLonPoint latLonPoint) {
+		RegeocodeQuery query = new RegeocodeQuery(latLonPoint, 200,
+				GeocodeSearch.AMAP);// 第一个参数表示一个Latlng，第二参数表示范围多少米，第三个参数表示是火系坐标系还是GPS原生坐标系
+		geocoderSearch.getFromLocationAsyn(query);// 设置同步逆地理编码请求
+	}
+	/**
+	 * 逆地理编码回调
+	 */
+	@Override
+	public void onRegeocodeSearched(RegeocodeResult result, int rCode) {
+		if (rCode == 0) {
+			if (result != null && result.getRegeocodeAddress() != null
+					&& result.getRegeocodeAddress().getFormatAddress() != null) {
+				String addressName = result.getRegeocodeAddress().getFormatAddress()
+						+ "附近";
+				Log.i("search", addressName);
+				description = addressName;
+				currentLoc = new LatLng(latLonPoint.getLatitude(),latLonPoint.getLongitude());
+				addMarkersToMap(currentLoc,addressName);
+			} else {
+				Tool.myToast(SelectLocation.this,mResources.getString(R.string.no_result));
+			}
+		} else if (rCode == 27) {
+			Tool.myToast(SelectLocation.this,mResources.getString(R.string.error_network));
+		} else if (rCode == 32) {
+			Tool.myToast(SelectLocation.this,mResources.getString(R.string.error_key));
+		} else {
+			Tool.myToast(SelectLocation.this,mResources.getString(R.string.error_other));
 		}
 	}
 	
 	/**
 	 * 在地图上添加marker
 	 */
-	private void addMarkersToMap() {
-		
-		aMap.addMarker(new MarkerOptions().anchor(0.5f, 0.5f)
-				.position(currentLoc).title("成都市")
-				.snippet("成都市:30.679879, 104.064855").draggable(true));
+	private void addMarkersToMap(LatLng current,String description) {
 
 		markerOption = new MarkerOptions();
-		markerOption.position(currentLoc);
-		markerOption.title("西安市").snippet("西安市：34.341568, 108.940174");
+		markerOption.position(current);
+		markerOption.title(description);
 		markerOption.draggable(true);
 		markerOption.icon(BitmapDescriptorFactory
-				.fromResource(R.drawable.arrow));
-		marker2 = aMap.addMarker(markerOption);
-		drawMarkers();// 添加10个带有系统默认icon的marker
-	}
-
-	/**
-	 * 绘制系统默认的1种marker背景图片
-	 */
-	public void drawMarkers() {
-		Marker marker = aMap.addMarker(new MarkerOptions()
-				.position(currentLoc)
-				.title("好好学习")
-				.icon(BitmapDescriptorFactory
-						.defaultMarker(BitmapDescriptorFactory.HUE_AZURE))
-				.draggable(true));
+				.defaultMarker(BitmapDescriptorFactory.HUE_AZURE));
+		marker = aMap.addMarker(markerOption);
 		marker.showInfoWindow();// 设置默认显示一个info window
-		Log.i("draw markers", "draw");
+		
 	}
 
 	/**
@@ -134,11 +183,6 @@ public class SelectLocation extends Activity implements LocationSource,AMapLocat
 	@Override
 	public boolean onMarkerClick(final Marker marker) {
 		jumpPoint(marker);
-//		if (marker.equals(marker2)) {
-//			if (aMap != null) {
-//				jumpPoint(marker);
-//			}
-//		}
 		return false;
 	}
 
@@ -177,22 +221,47 @@ public class SelectLocation extends Activity implements LocationSource,AMapLocat
 	
 
 	/**
+	 * 监听自定义infowindow窗口的infocontents事件回调
+	 */
+	@Override
+	public View getInfoContents(Marker marker) {
+		return null;
+	}
+
+	/**
+	 * 监听自定义infowindow窗口的infowindow事件回调
+	 */
+	@Override
+	public View getInfoWindow(Marker marker) {
+		return null;
+	}
+
+	/**
 	 * 自定义infowinfow窗口
 	 */
 	public void render(Marker marker, View view) {
-		Log.i("render", "render");
 		String title = marker.getTitle();
+		TextView titleUi = ((TextView) view.findViewById(R.id.title));
 		if (title != null) {
 			SpannableString titleText = new SpannableString(title);
 			titleText.setSpan(new ForegroundColorSpan(Color.RED), 0,
 					titleText.length(), 0);
-			
-		} 
+			titleUi.setTextSize(15);
+			titleUi.setText(titleText);
+
+		} else {
+			titleUi.setText("");
+		}
 		String snippet = marker.getSnippet();
+		TextView snippetUi = ((TextView) view.findViewById(R.id.snippet));
 		if (snippet != null) {
 			SpannableString snippetText = new SpannableString(snippet);
 			snippetText.setSpan(new ForegroundColorSpan(Color.GREEN), 0,
 					snippetText.length(), 0);
+			snippetUi.setTextSize(20);
+			snippetUi.setText(snippetText);
+		} else {
+			snippetUi.setText("");
 		}
 	}
 
@@ -224,7 +293,6 @@ public class SelectLocation extends Activity implements LocationSource,AMapLocat
 	protected void onPause() {
 		super.onPause();
 		mapView.onPause();
-		deactivate();
 	}
 
 	/**
@@ -245,80 +313,7 @@ public class SelectLocation extends Activity implements LocationSource,AMapLocat
 		mapView.onDestroy();
 	}
 
-	/**
-	 * 此方法已经废弃
-	 */
-	@Override
-	public void onLocationChanged(Location location) {
-	}
-
-	@Override
-	public void onProviderDisabled(String provider) {
-	}
-
-	@Override
-	public void onProviderEnabled(String provider) {
-	}
-
-	@Override
-	public void onStatusChanged(String provider, int status, Bundle extras) {
-	}
-
-	/**
-	 * 定位成功后回调函数
-	 */
-	@Override
-	public void onLocationChanged(AMapLocation aLocation) {
-		if (mListener != null && aLocation != null) {
-			mListener.onLocationChanged(aLocation);// 显示系统小蓝点
-			Double geoLat = aLocation.getLatitude();
-			Double geoLng = aLocation.getLongitude();
-			String cityCode = "";
-			String desc = "";
-			Bundle locBundle = aLocation.getExtras();
-			if (locBundle != null) {
-				cityCode = locBundle.getString("citycode");
-				desc = locBundle.getString("desc");
-			}
-			LatLng marker1 = new LatLng(geoLat, geoLng);                
-	        //设置中心点和缩放比例  
-	        aMap.moveCamera(CameraUpdateFactory.newCameraPosition(new CameraPosition(marker1,8,8,8)));  
-	        aMap.moveCamera(CameraUpdateFactory.zoomTo(13));
-		}
-	}
-
-	/**
-	 * 激活定位
-	 */
-	@Override
-	public void activate(OnLocationChangedListener listener) {
-		mListener = listener;
-		if (mAMapLocationManager == null) {
-			mAMapLocationManager = LocationManagerProxy.getInstance(this);
-			mAMapLocationManager.setGpsEnable(false);
-			/*
-			 * mAMapLocManager.setGpsEnable(false);
-			 * 1.0.2版本新增方法，设置true表示混合定位中包含gps定位，false表示纯网络定位，默认是true Location
-			 * API定位采用GPS和网络混合定位方式
-			 * ，第一个参数是定位provider，第二个参数时间最短是2000毫秒，第三个参数距离间隔单位是米，第四个参数是定位监听者
-			 */
-			mAMapLocationManager.requestLocationUpdates(
-					LocationProviderProxy.AMapNetwork, 2000, 10, this);
-		}
-	}
-
-	/**
-	 * 停止定位
-	 */
-	@Override
-	public void deactivate() {
-		mListener = null;
-		if (mAMapLocationManager != null) {
-			mAMapLocationManager.removeUpdates(this);
-			mAMapLocationManager.destory();
-		}
-		mAMapLocationManager = null;
-	}
+	
 	@Override
 	public void onClick(View v) {
 		// TODO Auto-generated method stub
@@ -345,14 +340,10 @@ public class SelectLocation extends Activity implements LocationSource,AMapLocat
 		
 	}
 	@Override
-	public View getInfoContents(Marker arg0) {
+	public void onGeocodeSearched(GeocodeResult arg0, int arg1) {
 		// TODO Auto-generated method stub
-		return null;
+		
 	}
-	@Override
-	public View getInfoWindow(Marker arg0) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+
 
 }

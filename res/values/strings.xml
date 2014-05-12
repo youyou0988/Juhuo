@@ -85,4 +85,8 @@
     <string name="other">其他</string>
     
     <string name="pleaselink">添加链接</string>
+    <string name="error_network">搜索失败,请检查网络连接！</string>
+    <string name="error_key">key验证无效！</string>
+    <string name="error_other">未知错误，请稍后重试!错误码为</string>
+    <string name="no_result">对不起，没有搜索到相关数据！</string>
 </resources>
