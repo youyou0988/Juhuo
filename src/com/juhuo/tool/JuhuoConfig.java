@@ -25,8 +25,8 @@ public class JuhuoConfig {
 	public static String token = "";
 	public static Integer userId;
 	
-	public static String TESTPREFIX = "http://115.28.211.238/v0/";
-	public static String PRODUCTIONPREFIX="http://115.29.141.31/v0/";
+	public static String PRODUCTIONPREFIX = "http://115.28.211.238/v0/";
+//	public static String PRODUCTIONPREFIX="http://115.29.141.31/v0/";
 	public static String LOGIN = PRODUCTIONPREFIX+"user/login/";
 	public static String EVENT_LIST = PRODUCTIONPREFIX+"event/list/";
 	public static String USER_INFO = PRODUCTIONPREFIX+"user/info/";

@@ -8,20 +8,9 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.jeremyfeinstein.slidingmenu.lib.app.SlidingFragmentActivity;
-import com.juhuo.adapter.FilterEventAdapter;
-import com.juhuo.adapter.HotEventsAdapter;
-import com.juhuo.control.MyListView;
-import com.juhuo.control.MyListView.OnLoadListener;
-import com.juhuo.control.MyListView.OnRefreshListener;
-import com.juhuo.tool.JuhuoConfig;
-import com.juhuo.tool.JuhuoInfo;
-import com.juhuo.tool.Tool;
-import com.juhuo.welcome.R;
-
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.Resources;
-import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -29,12 +18,21 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+
+import com.jeremyfeinstein.slidingmenu.lib.app.SlidingFragmentActivity;
+import com.juhuo.adapter.HotEventsAdapter;
+import com.juhuo.control.MyListView;
+import com.juhuo.control.MyListView.OnLoadListener;
+import com.juhuo.control.MyListView.OnRefreshListener;
+import com.juhuo.tool.JuhuoConfig;
+import com.juhuo.tool.JuhuoInfo;
+import com.juhuo.tool.Tool;
+import com.juhuo.welcome.CreateEvent;
+import com.juhuo.welcome.R;
 
 public class MyEventFragment extends Fragment{
 	private Resources mResources;
@@ -129,6 +127,15 @@ public class MyEventFragment extends Fragment{
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
 				((SlidingFragmentActivity)getActivity()).toggle();
+			}
+		});
+		actionTitleImg2.setOnClickListener(new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View arg0) {
+				// TODO Auto-generated method stub
+				Intent intent = new Intent(getActivity(),CreateEvent.class);
+				startActivity(intent);
 			}
 		});
 		filterAllEvent = (Button)parent.findViewById(R.id.filter_all_events);

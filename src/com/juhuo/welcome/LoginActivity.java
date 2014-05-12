@@ -62,7 +62,7 @@ public class LoginActivity extends Activity {
         mPgDialog.setMessage(mResources.getString(R.string.loginning));
         //just for test
         mUserName.setText("+8615210588692");
-        mPassword.setText("123");
+        mPassword.setText("123456");
 	}
 	private void setListener(){
 		mUserName.setOnFocusChangeListener(new View.OnFocusChangeListener() {

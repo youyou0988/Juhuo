@@ -34,6 +34,7 @@
 	<string name="no_events_found">没有找到任何活动</string>
 	<string name="no_comments_found">暂无评论</string>
 	
+	<string name="event_name">活动名称</string>
 	<string name="detail_event">活动详情</string>
 	<string name="begintime">开始时间</string>
 	<string name="endtime">结束时间</string>
@@ -41,20 +42,24 @@
 	<string name="organizer">组织机构</string>
 	<string name="event_type">活动类型</string>
 	<string name="ispublic">是否公开</string>
+	<string name="isapprove">申请参加是否需要批准</string>
+	<string name="newmessage">新消息通知</string>
 	<string name="cost">活动费用</string>
+	<string name="costhint">0代表免费</string>
 	<string name="link">活动链接</string>
 	<string name="detail">活动详情</string>
 	<string name="participant">参加人员</string>
 	<string name="invited">邀请人员</string>
 	<string name="absent">缺席人员</string>
 	<string name="apply">申请人员</string>
-	<string name="detail">详细资料</string>
+	<string name="description">详细资料</string>
 	<string name="comment">活动评论</string>
 	<string name="lookupcomment">查看详细内容</string>
 	
 	<string name="add_to_calendar">加到日历</string>
 	<string name="share_event">分享活动</string>
 	<string name="cancel">取消</string>
+	<string name="save">保存</string>
 	
 	<string name="name">姓名</string>
 	<string name="age">年龄</string>
@@ -69,4 +74,15 @@
     <string name="no_my_participant">没有找到我参加的活动</string>
     
     <string name="user_setting">账户设置</string>
+    
+    <string name="create_event">创建活动</string>
+    <string name="picnumber">图片数量</string>
+    <string name="picquality">图片质量</string>
+    <string name="defaultpic">默认封面</string>
+    <string name="zeropic">0张</string>
+    <string name="medium">中等</string>
+    <string name="firstpic">第一张</string>
+    <string name="other">其他</string>
+    
+    <string name="pleaselink">添加链接</string>
 </resources>

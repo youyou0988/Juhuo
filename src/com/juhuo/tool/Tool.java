@@ -8,6 +8,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -161,6 +162,17 @@ public class Tool {
 		JuhuoConfig.WIDTH =size.x; //dp
 		JuhuoConfig.HEIGHT = size.y; //px
 	}
+	/**
+	* 将长时间格式字符串转换为时间 yyyy-MM-dd HH:mm:ss
+	*
+	*/
+	public static String getStringDate(Long date) 
+	{
+		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+		String dateString = formatter.format(date);
+		
+		return dateString;
+	}
 	
 	public static String getCalendarByInintData(String beginDateTime,String endDatetime) {
 		Calendar calendar = Calendar.getInstance();
@@ -194,6 +206,22 @@ public class Tool {
 			e.printStackTrace();
 		}
 		return current-calendarbegin.get(Calendar.YEAR);
+	}
+	
+	public static String getCurrentDateStr(){
+		Calendar calendar = Calendar.getInstance();
+		Date tasktime=calendar.getTime();  
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+		return sdf.format(tasktime);
+	}
+	
+	public static String getNextDateStr(){
+		Calendar calendar = Calendar.getInstance();
+		int day = calendar.get(Calendar.DAY_OF_MONTH);
+		calendar.set(Calendar.DAY_OF_MONTH, day+1);
+		Date tasktime=calendar.getTime();  
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+		return sdf.format(tasktime);
 	}
 	
 	public static List<HashMap<String,Object>> Jsonarr2Hash(JSONArray ja){
