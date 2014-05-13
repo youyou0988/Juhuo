@@ -29,7 +29,10 @@ public class JuhuoConfig {
 //	public static String PRODUCTIONPREFIX="http://115.29.141.31/v0/";
 	public static String LOGIN = PRODUCTIONPREFIX+"user/login/";
 	public static String EVENT_LIST = PRODUCTIONPREFIX+"event/list/";
+	public static String EVENT_DELETE = PRODUCTIONPREFIX+"event/delete/";
 	public static String USER_INFO = PRODUCTIONPREFIX+"user/info/";
+	public static String CHANGE_PASSWORD = PRODUCTIONPREFIX+"user/chgpass";
+	public static String ACTIVE_ACCOUNT = PRODUCTIONPREFIX+"user/applyactivate";
 	public static String EVENT_INFO	= PRODUCTIONPREFIX + "event/info/";
 	public static String EVENT_COMMENT_LIST = PRODUCTIONPREFIX+"event/listcomment/";
 

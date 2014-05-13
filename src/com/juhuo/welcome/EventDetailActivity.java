@@ -32,6 +32,7 @@ import android.widget.TextView;
 
 import com.amap.api.maps2d.AMap;
 import com.amap.api.maps2d.MapView;
+import com.jeremyfeinstein.slidingmenu.lib.app.SlidingFragmentActivity;
 import com.juhuo.adapter.HotEventsAdapter.AnimateFirstDisplayListener;
 import com.juhuo.control.PullDownElasticImp;
 import com.juhuo.control.RefreshableView;
@@ -181,20 +182,24 @@ public class EventDetailActivity extends Activity {
 		actionTitleImg2.setBackgroundDrawable(mResources.getDrawable(R.drawable.plus));
 		actionTitleImg2.setVisibility(View.VISIBLE);
 		actionTitle.setText(mResources.getString(R.string.detail_event));
-		actionTitleImg.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View arg0) {
-				// TODO Auto-generated method stub
-				finish();
-			}
-		});
-		actionTitleImg2.setOnClickListener(new View.OnClickListener() {	
+		OnClickListener clickListener = new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
-				 openOptionsMenu();
+				ImageView vi = (ImageView)v;
+				switch(vi.getId()){
+				case R.id.action_title_img:
+					finish();
+					break;
+				case R.id.action_title_img2:
+					openOptionsMenu();
+					break;
+				}
+				
 			}
-		});
+		};
+		actionTitleImg.setOnClickListener(clickListener);
+		actionTitleImg2.setOnClickListener(clickListener);
 		
 		eventTitle = (TextView)findViewById(R.id.event_title);
 		eventTime = (TextView)findViewById(R.id.event_time);

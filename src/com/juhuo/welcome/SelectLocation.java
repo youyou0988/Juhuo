@@ -241,27 +241,27 @@ public class SelectLocation extends Activity implements
 	 */
 	public void render(Marker marker, View view) {
 		String title = marker.getTitle();
-		TextView titleUi = ((TextView) view.findViewById(R.id.title));
+//		TextView titleUi = ((TextView) view.findViewById(R.id.title));
 		if (title != null) {
 			SpannableString titleText = new SpannableString(title);
 			titleText.setSpan(new ForegroundColorSpan(Color.RED), 0,
 					titleText.length(), 0);
-			titleUi.setTextSize(15);
-			titleUi.setText(titleText);
+//			titleUi.setTextSize(15);
+//			titleUi.setText(titleText);
 
 		} else {
-			titleUi.setText("");
+//			titleUi.setText("");
 		}
 		String snippet = marker.getSnippet();
-		TextView snippetUi = ((TextView) view.findViewById(R.id.snippet));
+//		TextView snippetUi = ((TextView) view.findViewById(R.id.snippet));
 		if (snippet != null) {
 			SpannableString snippetText = new SpannableString(snippet);
 			snippetText.setSpan(new ForegroundColorSpan(Color.GREEN), 0,
 					snippetText.length(), 0);
-			snippetUi.setTextSize(20);
-			snippetUi.setText(snippetText);
+//			snippetUi.setTextSize(20);
+//			snippetUi.setText(snippetText);
 		} else {
-			snippetUi.setText("");
+//			snippetUi.setText("");
 		}
 	}
 

@@ -46,7 +46,14 @@ public class JuhuoInfo {
 		try {
 			
 			JSONObject jo = new JSONObject(tmp);
-			res = jo.getJSONObject("data");
+			if(jo.has("data")){
+				res = jo.getJSONObject("data");
+			}else{
+				HashMap<String, String> map = new HashMap<String, String>();
+				map.put("good_data", "success");
+				res = new JSONObject(map);
+			}
+			
 		} catch (ParseException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

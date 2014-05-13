@@ -55,11 +55,18 @@
 	<string name="description">详细资料</string>
 	<string name="comment">活动评论</string>
 	<string name="lookupcomment">查看详细内容</string>
+	<string name="adddetail">添加活动详情</string>
+	<string name="search_event">搜索活动</string>
 	
 	<string name="add_to_calendar">加到日历</string>
 	<string name="share_event">分享活动</string>
 	<string name="cancel">取消</string>
 	<string name="save">保存</string>
+	<string name="setting">设置</string>
+	<string name="cha_pass">修改密码</string>
+	<string name="active_acc">激活账号</string>
+	<string name="cha_pass_success">修改密码成功！</string>
+	<string name="active_acc_success">账号激活成功！</string>
 	
 	<string name="name">姓名</string>
 	<string name="age">年龄</string>
@@ -85,8 +92,12 @@
     <string name="other">其他</string>
     
     <string name="pleaselink">添加链接</string>
+    <string name="please_enter_newpassword">请输入新密码</string>
+    <string name="please_enter_keyword">请输入活动关键字</string>
     <string name="error_network">搜索失败,请检查网络连接！</string>
     <string name="error_key">key验证无效！</string>
     <string name="error_other">未知错误，请稍后重试!错误码为</string>
     <string name="no_result">对不起，没有搜索到相关数据！</string>
+    <string name="password_not_match">两次输入的密码不符！</string>
+    <string name="getting_data">正在获取数据，请稍候</string>
 </resources>

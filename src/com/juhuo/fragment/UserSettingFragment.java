@@ -2,36 +2,37 @@ package com.juhuo.fragment;
 
 import java.util.HashMap;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.jeremyfeinstein.slidingmenu.lib.app.SlidingFragmentActivity;
-import com.juhuo.adapter.HotEventsAdapter;
-import com.juhuo.control.MyListView;
-import com.juhuo.control.MyListView.OnLoadListener;
-import com.juhuo.control.MyListView.OnRefreshListener;
-import com.juhuo.tool.JuhuoConfig;
-import com.juhuo.tool.JuhuoInfo;
-import com.juhuo.tool.Tool;
-import com.juhuo.welcome.R;
-import com.nostra13.universalimageloader.core.DisplayImageOptions;
-import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.assist.ImageScaleType;
-import com.nostra13.universalimageloader.core.display.SimpleBitmapDisplayer;
-
+import android.content.Intent;
 import android.content.res.Resources;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+
+import com.jeremyfeinstein.slidingmenu.lib.app.SlidingFragmentActivity;
+import com.juhuo.tool.JuhuoConfig;
+import com.juhuo.tool.JuhuoInfo;
+import com.juhuo.tool.Tool;
+import com.juhuo.welcome.ChangePassword;
+import com.juhuo.welcome.R;
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.assist.ImageScaleType;
+import com.nostra13.universalimageloader.core.display.SimpleBitmapDisplayer;
 
 public class UserSettingFragment extends Fragment{
 	private Resources mResources;
@@ -64,7 +65,7 @@ public class UserSettingFragment extends Fragment{
 		super.onCreate(savedInstanceState);
 		Log.d(TAG, "onCreate");
 		mResources = getResources();
-		
+		setHasOptionsMenu(true);
 	}
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -80,6 +81,7 @@ public class UserSettingFragment extends Fragment{
 		noEventsText = (TextView)parent.findViewById(R.id.no_events_found);
 		actionTitleImg.setBackgroundDrawable(mResources.getDrawable(R.drawable.icon_navi));
 		actionTitleImg2.setBackgroundDrawable(mResources.getDrawable(R.drawable.plus));
+		actionTitleImg2.setVisibility(View.VISIBLE);
 		actionTitle.setText(mResources.getString(R.string.user_setting));
 		logout.setVisibility(View.VISIBLE);
 		name = (TextView)parent.findViewById(R.id.t2);
@@ -89,13 +91,24 @@ public class UserSettingFragment extends Fragment{
 		description = (TextView)parent.findViewById(R.id.t10);
 		image = (ImageView)parent.findViewById(R.id.image);
 		//open the sliding menu
-		actionTitleImg.setOnClickListener(new View.OnClickListener() {
+		OnClickListener clickLisnter = new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
-				((SlidingFragmentActivity)getActivity()).toggle();
+				ImageView vi = (ImageView)v;
+				switch(vi.getId()){
+				case R.id.action_title_img:
+					((SlidingFragmentActivity)getActivity()).toggle();
+					break;
+				case R.id.action_title_img2:
+					getActivity().openOptionsMenu();
+					break;
+				}
+				
 			}
-		});
+		};
+		actionTitleImg.setOnClickListener(clickLisnter);
+		actionTitleImg2.setOnClickListener(clickLisnter);
 		logout.setOnClickListener(new View.OnClickListener() {
 			
 			@Override
@@ -167,5 +180,51 @@ public class UserSettingFragment extends Fragment{
 		Log.i("sliding menu", transView.getBackground().toString());
 		transView.setVisibility(View.INVISIBLE);
 	}
+	@Override
+	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+	    // TODO Add your menu entries here
+	    super.onCreateOptionsMenu(menu, inflater);
+	    getActivity().getMenuInflater().inflate(R.menu.setting, menu);
+	}
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch (item.getItemId()) {
+		case R.id.cha_pass:
+			Intent intent = new Intent(getActivity(),ChangePassword.class);
+			getActivity().startActivity(intent);
+			break;
+		case R.id.active_acc:
+			ActiveAccount ac = new ActiveAccount();
+			HashMap<String,Object> mapPara = new HashMap<String,Object>();
+			mapPara.put("token", JuhuoConfig.token);
+			ac.execute(mapPara);
+			break;
+		
+		}
+		return super.onOptionsItemSelected(item);
+	}
+	private class ActiveAccount extends AsyncTask<HashMap<String,Object>,String,JSONObject>{
 
+		@Override
+		protected JSONObject doInBackground(HashMap<String,Object>... map) {
+			// TODO Auto-generated method stub
+
+			HashMap<String,Object> mapped = map[0];
+			return new JuhuoInfo().loadNetData(mapped,JuhuoConfig.ACTIVE_ACCOUNT);
+		}
+		@Override
+		protected void onPostExecute(JSONObject result) {
+			if(result == null){
+				Log.i(TAG,"cannot get any");//we have reveived 500 error page
+				
+			}else if(result.has("wrong_data")){
+				//sth is wrong
+				Tool.dialog(getActivity());
+			}else{
+				Tool.myToast(getActivity(), mResources.getString(R.string.active_acc_success));
+			}
+			
+		}
+	}
+	
 }

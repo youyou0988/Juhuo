@@ -121,10 +121,12 @@
 	            android:paddingTop="10dp">
 	            <EditText android:layout_height="wrap_content"
 	                android:layout_width="wrap_content"
-	                android:textSize="15sp"
 	                android:hint="@string/event_name"
 	                android:id="@+id/event_title"
-	                android:background="@null"/>
+	                android:background="@null"
+	                android:textColor="@color/mgreen"
+                    android:textSize="15sp"
+                    android:textStyle="bold"/>
 	            <ImageView
 	                android:layout_width="match_parent"
 	                android:layout_height="0.2dp"
@@ -473,6 +475,23 @@
 	                        android:textColor="@color/mgray"
 	                        android:textSize="15sp"
 	                        android:textStyle="bold" />
+	                    <ScrollView android:layout_height="wrap_content"
+	                        android:layout_width="wrap_content"
+	                        android:layout_below="@+id/detail"
+	                        android:id="@+id/event_detail"
+	                        >
+	                        <TextView 
+		                        android:layout_width="wrap_content"
+		                        android:layout_height="wrap_content"
+		                        android:textColor="@color/mgreen"
+		                        android:textSize="15sp"
+		                        android:textStyle="bold" 
+		                        android:id="@+id/event_detail_txt"
+		                        android:maxLines="3"
+		                        android:text="@string/adddetail"
+		                        />
+	                    </ScrollView>
+	                    
 	                    
 	                </RelativeLayout>
 	        </RelativeLayout>
@@ -481,7 +500,6 @@
 				            android:layout_width="fill_parent"
 				            android:layout_height="wrap_content"
 				            android:layout_below="@+id/lay2"
-				            android:layout_marginTop="20dp"
 				            android:background="@drawable/click_btn"
 				            android:gravity="center"
 				            android:text="@string/create_event"

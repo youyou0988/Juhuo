@@ -1,0 +1,70 @@
+<RelativeLayout android:layout_height="fill_parent" 
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:background="@color/white">
+    <!-- Dummy item to prevent AutoCompleteTextView from receiving focus -->
+	<LinearLayout
+    android:focusable="true" android:focusableInTouchMode="true"
+    android:layout_width="0px" android:layout_height="0px"/>
+
+    <include
+        android:layout_height="40dp"
+        layout="@layout/title_bar"
+        android:id="@+id/titlebar" >
+
+    </include>
+    <RelativeLayout android:layout_height="35dp"
+        android:layout_width="fill_parent"
+        android:padding="5dp"
+        android:background="@color/mgray"
+        android:layout_below="@+id/titlebar"
+        android:id="@+id/lay1">
+        <RelativeLayout android:layout_height="wrap_content"
+            android:layout_width="fill_parent"
+            android:background="@drawable/bg_text"
+            android:id="@+id/enterlay"
+            android:layout_toLeftOf="@+id/cancel"
+            android:layout_alignParentLeft="true">
+            <ImageView android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:background="@drawable/ic_menu_search"
+                android:id="@+id/searchimg"/>
+            <EditText android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:layout_toRightOf="@+id/searchimg"
+                android:background="@null"
+                android:hint="@string/please_enter_keyword"
+                android:id="@+id/keyword"
+                android:singleLine="true"/>
+        </RelativeLayout>
+        <TextView android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:text="@string/cancel"
+            android:textColor="@color/white"
+            android:background="@null"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="5dp"
+            android:textSize="15sp"
+            android:id="@+id/cancel"
+            android:visibility="gone"
+            />
+    </RelativeLayout>
+    <com.juhuo.control.MyListView
+        android:id="@+id/search_listview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/lay1"
+        android:divider="@null"
+        android:listSelector="#0000"
+         />
+    <TextView android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/lay1"
+        android:textColor="@color/mgreen"
+        android:textSize="15sp"
+        android:textStyle="bold"
+        android:padding="35dp"
+        android:gravity="center"
+        android:id="@+id/no_events_found"/>
+</RelativeLayout>

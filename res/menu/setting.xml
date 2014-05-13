@@ -1,0 +1,19 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <item
+        android:id="@+id/cha_pass"
+        android:orderInCategory="100"
+        android:showAsAction="never"
+        android:title="@string/cha_pass"/>
+    <item
+        android:id="@+id/active_acc"
+        android:orderInCategory="100"
+        android:showAsAction="never"
+        android:title="@string/active_acc"/>
+    <item
+        android:id="@+id/cancel"
+        android:orderInCategory="100"
+        android:showAsAction="never"
+        android:title="@string/cancel"/>
+
+</menu>

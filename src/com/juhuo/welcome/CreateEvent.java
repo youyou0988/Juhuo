@@ -7,10 +7,12 @@ import android.content.res.Resources;
 import android.graphics.Color;
 import android.location.Location;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.Window;
 import android.widget.EditText;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.amap.api.location.AMapLocation;
@@ -32,7 +34,7 @@ import com.juhuo.tool.Tool;
 
 public class CreateEvent extends Activity implements LocationSource,AMapLocationListener{
 	private TextView actionTitleText,actionTitleText2,eventBeginTime,eventEndTime,eventType
-		;
+		,eventDetail;
 	private EditText eventPlace;
 	private Resources mResources;
 	private MapView mapView;
@@ -42,7 +44,10 @@ public class CreateEvent extends Activity implements LocationSource,AMapLocation
 	private LocationManagerProxy mAMapLocationManager;
 	private AMapLocation currentLoc;
 	private String dest;
-	private static final int CreateEvent = 0;
+	private static final int SelectLocation = 0;
+	private static final int EditDetailEvent = 1;
+	final String[] items = {"交友聚会", "读书看报", "音乐电影","体育锻炼","其他"};
+	
 	protected void onCreate(Bundle savedInstanceState){
 		super.onCreate(savedInstanceState);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);//去掉标题栏
@@ -54,6 +59,7 @@ public class CreateEvent extends Activity implements LocationSource,AMapLocation
 		eventEndTime = (TextView)findViewById(R.id.event_end_time);
 		eventPlace = (EditText)findViewById(R.id.event_place);
 		eventType = (TextView)findViewById(R.id.event_type);
+		eventDetail = (TextView)findViewById(R.id.event_detail_txt);
 		actionTitleText.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View arg0) {
@@ -66,6 +72,7 @@ public class CreateEvent extends Activity implements LocationSource,AMapLocation
 		eventBeginTime.setOnClickListener(timeClick);
 		eventEndTime.setOnClickListener(timeClick);
 		eventType.setOnClickListener(typeClick);
+		eventDetail.setOnClickListener(typeClick);
 		mapView = (MapView) findViewById(R.id.map);
 		mapView.onCreate(savedInstanceState);// 必须要写
 		init();
@@ -76,7 +83,19 @@ public class CreateEvent extends Activity implements LocationSource,AMapLocation
 		@Override
 		public void onClick(View v) {
 			// TODO Auto-generated method stub
-			showDialog2();
+			TextView vt = (TextView)v;
+			switch(vt.getId()){
+			case R.id.event_type:
+				showDialog2();
+				break;
+			case R.id.event_detail_txt:
+				Log.i("click", "txt");
+				Intent intent = new Intent(CreateEvent.this,EditEventDetail.class);
+				intent.putExtra("detail", vt.getText());
+				startActivityForResult(intent,EditDetailEvent);
+				break;
+			}
+			
 		}
 		
 	};
@@ -99,11 +118,13 @@ public class CreateEvent extends Activity implements LocationSource,AMapLocation
 	public void showDialog2(){
 		AlertDialog.Builder builder = new AlertDialog.Builder(this)
         .setTitle("活动类型")
-        .setNegativeButton(mResources.getString(R.string.age), (DialogInterface.OnClickListener)null)
-        .setPositiveButton(mResources.getString(R.string.age), (DialogInterface.OnClickListener)null);
-//        .setPositiveButton("设置", (OnClickListener)null)
-//        .setNegativeButton("取消", (OnClickListener)null);
-
+        .setNegativeButton(mResources.getString(R.string.cancel), (DialogInterface.OnClickListener)null)
+        .setPositiveButton(mResources.getString(R.string.setting), (DialogInterface.OnClickListener)null)
+		.setItems(items, new DialogInterface.OnClickListener() {
+	        public void onClick(DialogInterface dialog, int item) {
+	            eventType.setText(items[item]);
+	        }
+	    });
 		AlertDialog alert = builder.create(); // create one
 		
 		alert.show(); //display it
@@ -144,7 +165,7 @@ public class CreateEvent extends Activity implements LocationSource,AMapLocation
 					Intent intent = new Intent(CreateEvent.this,SelectLocation.class);
 					intent.putExtra("currentLoc", location);
 					intent.putExtra("description", dest);
-					startActivityForResult(intent,CreateEvent);
+					startActivityForResult(intent,SelectLocation);
 				}
 			});
 		}
@@ -164,6 +185,11 @@ public class CreateEvent extends Activity implements LocationSource,AMapLocation
 			        aMap.moveCamera(CameraUpdateFactory.newCameraPosition(new CameraPosition(NoticeLoc,8,8,8)));  
 			        aMap.moveCamera(CameraUpdateFactory.zoomTo(13));
 		            break;  
+		        case 1:
+		        	Bundle buddle = data.getExtras();  
+		            String message = buddle.getString("detail");
+		            eventDetail.setText(message);
+		            break;
 	        }  
 		}
         

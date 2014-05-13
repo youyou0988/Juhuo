@@ -9,6 +9,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.os.AsyncTask;
@@ -39,6 +40,7 @@ import com.juhuo.tool.JuhuoConfig;
 import com.juhuo.tool.JuhuoInfo;
 import com.juhuo.tool.Tool;
 import com.juhuo.welcome.R;
+import com.juhuo.welcome.SearchEvent;
 
 public class HotEventsFragment extends Fragment{
 	private Resources mResources;
@@ -138,8 +140,15 @@ public class HotEventsFragment extends Fragment{
 				((SlidingFragmentActivity)getActivity()).toggle();
 			}
 		});
-		
-
+		actionTitleImg2.setOnClickListener(new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				Intent intent = new Intent(getActivity(),SearchEvent.class);
+				getActivity().startActivity(intent);
+			}
+		});
 		//get date from cache first
 		hotEventsList.setVisibility(View.VISIBLE);
 		hotEventsAdapter = new HotEventsAdapter();

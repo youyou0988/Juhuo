@@ -9,11 +9,14 @@ import java.util.List;
 
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Point;
+import android.os.AsyncTask;
 import android.util.Log;
 import android.view.Display;
 import android.view.LayoutInflater;
@@ -21,15 +24,18 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
 import com.juhuo.tool.JuhuoConfig;
+import com.juhuo.tool.JuhuoInfo;
 import com.juhuo.tool.Tool;
 import com.juhuo.welcome.EventDetailActivity;
 import com.juhuo.welcome.R;
+import com.juhuo.welcome.SearchEvent;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
@@ -122,6 +128,10 @@ public class HotEventsAdapter extends BaseAdapter {
 	public void setListView(ListView lv){
 		this.listView = lv;
 		this.listView.setOnItemClickListener(evlistOnClickListener);
+		if(type=="MY"){
+			this.listView.setOnItemLongClickListener(evlistLoneClickListener);
+		}
+		
 	}
     
 	
@@ -234,9 +244,48 @@ public class HotEventsAdapter extends BaseAdapter {
 		}
 		
 	};
-	
-//	public ImageDownloader getImageDownloader() {
-//        return imageDownloader;
-//    }
+	OnItemLongClickListener evlistLoneClickListener = new OnItemLongClickListener() {
+
+        public boolean onItemLongClick(AdapterView<?> arg0, View arg1,
+                int pos, long id) {
+            // TODO Auto-generated method stub
+
+            Log.v("long clicked","pos: " + pos);
+            HashMap<String,Object> map = new HashMap<String,Object>();
+            map.put("token", JuhuoConfig.token);
+            map.put("id", mData.get(pos-1).get("eventId"));
+            DeleteEvent deleteEvent = new DeleteEvent(pos-1);
+            deleteEvent.execute(map);
+            return true;
+        }
+    };
+    private class DeleteEvent extends AsyncTask<HashMap<String,Object>,String,JSONObject>{
+    	private int pos;
+    	protected DeleteEvent(int pos){
+    		this.pos = pos;
+    	}
+		@Override
+		protected JSONObject doInBackground(HashMap<String,Object>... map) {
+			// TODO Auto-generated method stub
+
+			HashMap<String,Object> mapped = map[0];
+			return new JuhuoInfo().loadNetData(mapped,JuhuoConfig.EVENT_DELETE);
+		}
+		@Override
+		protected void onPostExecute(JSONObject result) {
+			if(result == null){
+				Log.i(TAG,"cannot get any");//we have reveived 500 error page
+			}else if(result.has("wrong_data")){
+				//sth is wrong
+				Tool.dialog(activity);
+			}else{
+				URLS[pos]="";
+				mData.remove(this.pos);
+				Log.i("datalist", String.valueOf(mData.size()));
+				notifyDataSetChanged();
+				notifyDataSetInvalidated();
+			}
+		}
+	}
 
 }
