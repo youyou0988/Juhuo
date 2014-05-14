@@ -12,6 +12,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
+import java.util.TimeZone;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -28,6 +30,7 @@ import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.util.Log;
 import android.view.Display;
 import android.view.Gravity;
 import android.view.View;
@@ -44,6 +47,7 @@ import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.nostra13.universalimageloader.core.assist.QueueProcessingType;
 
 public class Tool {
+	final static String ISO8601DATEFORMAT = "yyyy-MM-dd'T'HH:mm:ss+00:00";
 	
 	/**
      * 检测网络是否可用
@@ -193,6 +197,18 @@ public class Tool {
 		else if(current>=time_begin&&current<=time_end) return "正在进行!";
 		else return "已经结束!";
 	}
+	public static Calendar getCalendarFromISO(String datestring) {
+		Calendar calendar = Calendar.getInstance(TimeZone.getDefault(), Locale.getDefault()) ;
+	    SimpleDateFormat dateformat = new SimpleDateFormat(ISO8601DATEFORMAT, Locale.getDefault());
+	    try {
+	      Date date = dateformat.parse(datestring);
+	      date.setHours(date.getHours()-1); 
+	      calendar.setTime(date);
+	    } catch (ParseException e) {
+	      e.printStackTrace();
+	    }
+	    return calendar;
+	 }
 	
 	public static int getAgeFromBirthday(String time){
 		Calendar calendar = Calendar.getInstance();

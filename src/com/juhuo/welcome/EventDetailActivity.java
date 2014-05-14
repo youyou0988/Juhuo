@@ -1,25 +1,34 @@
 package com.juhuo.welcome;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.TimeZone;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.app.Activity;
+import android.content.ActivityNotFoundException;
+import android.content.ContentResolver;
+import android.content.ContentValues;
 import android.content.Intent;
 import android.content.res.Resources;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.provider.CalendarContract;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
@@ -32,7 +41,6 @@ import android.widget.TextView;
 
 import com.amap.api.maps2d.AMap;
 import com.amap.api.maps2d.MapView;
-import com.jeremyfeinstein.slidingmenu.lib.app.SlidingFragmentActivity;
 import com.juhuo.adapter.HotEventsAdapter.AnimateFirstDisplayListener;
 import com.juhuo.control.PullDownElasticImp;
 import com.juhuo.control.RefreshableView;
@@ -96,7 +104,8 @@ public class EventDetailActivity extends Activity {
 	
 	private final String TAG = "EventDetailActivity";
 	private String description="";
-	private String type;
+	private String type,title;
+	private Calendar startcal,endcal;
 	
 	protected void onCreate(Bundle savedInstanceState){
 		super.onCreate(savedInstanceState);
@@ -254,10 +263,13 @@ public class EventDetailActivity extends Activity {
 				viewPager.setAdapter(adapter);  
 			    viewPager.setOnPageChangeListener(new ImagePageChangeListener());
 			}
+			title = result.getString("title");
 			description = result.getString("description");
-			eventTitle.setText(result.getString("title"));
+			eventTitle.setText(title);
 			String tb = result.getString("time_begin").substring(0,19).replace('T', ' ');
 			String te = result.getString("time_end").substring(0,19).replace('T', ' ');
+			startcal = Tool.getCalendarFromISO(result.getString("time_begin"));
+			endcal = Tool.getCalendarFromISO(result.getString("time_end"));
 			eventBeginTime.setText(tb);
 			eventEndTime.setText(te);
 			eventTime.setText(Tool.getCalendarByInintData(tb, te));
@@ -376,6 +388,26 @@ public class EventDetailActivity extends Activity {
             tr.addView(view);
         }
 	}
+	public void addToCalender(){
+		ContentResolver cr = getContentResolver();
+        ContentValues values = new ContentValues();
+        values.put(CalendarContract.Events.DTSTART, startcal.getTimeInMillis());
+        values.put(CalendarContract.Events.DTEND, endcal.getTimeInMillis());
+        values.put(CalendarContract.Events.TITLE, title);
+        values.put(CalendarContract.Events.DESCRIPTION, description);
+
+        TimeZone timeZone = TimeZone.getDefault();
+        values.put(CalendarContract.Events.EVENT_TIMEZONE, timeZone.getID());
+
+        // default calendar
+        values.put(CalendarContract.Events.CALENDAR_ID, 1);
+
+        values.put(CalendarContract.Events.HAS_ALARM, 1);
+
+        // insert event to calendar
+        Uri uri = cr.insert(CalendarContract.Events.CONTENT_URI, values);
+	}
+	
 	OnClickListener InviListener = new OnClickListener(){
 		@Override
 		public void onClick(View view) {
@@ -577,5 +609,21 @@ public class EventDetailActivity extends Activity {
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.main, menu);
 		return true;
+	}
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch (item.getItemId()) {
+		case R.id.add_to_calendar:
+			try {
+				addToCalender();
+				Tool.myToast(this, mResources.getString(R.string.add_to_calendar_success));
+	        } catch (ActivityNotFoundException e) {
+	            // TODO: handle exception
+	            Log.e("ActivityNotFoundException", e.toString());
+	        }
+			break;
+		
+		}
+		return super.onOptionsItemSelected(item);
 	}
 }
