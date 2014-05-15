@@ -191,9 +191,7 @@ public class CreateEvent extends Activity implements LocationSource,AMapLocation
 		            eventDetail.setText(message);
 		            break;
 	        }  
-		}
-        
-		
+		}	
     }
 	/**
 	 * 设置一些amap的属性

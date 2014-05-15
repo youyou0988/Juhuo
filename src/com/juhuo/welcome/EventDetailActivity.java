@@ -288,12 +288,7 @@ public class EventDetailActivity extends Activity {
 			eventCost.setText(result.getInt("cost")!=0?String.valueOf(result.getInt("cost")):"√‚∑—");
 			eventLink.setText(result.getString("url").equals("null")?"":result.getString("url"));
 			if(!result.getString("description").equals("")){
-//				RelativeLayout.LayoutParams layoutDetailParams = new RelativeLayout.LayoutParams(
-//						JuhuoConfig.WIDTH*5/8,
-//		                JuhuoConfig.HEIGHT*6/54);
-//				layoutDetailParams.setMargins(Tool.dip2px(this, 7), 0, Tool.dip2px(this, 50), 0);
 				eventDetail.setText(result.getString("description"));
-//				eventDetail.setLayoutParams(layoutDetailParams);
 				findViewById(R.id.detailgone).setOnClickListener(detailClickListener);
 			}else{
 				findViewById(R.id.detailgone).setVisibility(View.GONE);

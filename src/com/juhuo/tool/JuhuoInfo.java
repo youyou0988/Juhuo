@@ -1,5 +1,6 @@
 package com.juhuo.tool;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -13,6 +14,11 @@ import org.apache.http.HttpResponse;
 import org.apache.http.ParseException;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.ContentType;
+import org.apache.http.entity.mime.MultipartEntityBuilder;
+import org.apache.http.entity.mime.content.FileBody;
+import org.apache.http.entity.mime.content.StringBody;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
 import org.json.JSONException;
@@ -88,6 +94,46 @@ public class JuhuoInfo {
 			HttpGet httpGet = new HttpGet(url);
 			HttpResponse response = null;
 			response = httpclient.execute(httpGet);
+			HttpEntity responseEntity = response.getEntity();
+			if (responseEntity != null) {
+				String entityStr = EntityUtils.toString(responseEntity);
+				String resultCode = getCode(entityStr);
+				Log.i(TAG, resultCode);
+				
+				if(resultCode.equals(SUCCESS_STATUS)){
+					return getData(entityStr);
+				}else if(resultCode.equals(INVALID_TOKEN)){
+					HashMap<String, String> map = new HashMap<String, String>();
+					map.put("wrong_data", INVALID_TOKEN);
+					JSONObject json = new JSONObject(map);
+					return json;
+				}else{
+					return null;
+				}
+			}
+		} catch (ClientProtocolException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} 
+		return null;
+	}
+	public JSONObject callPost(HashMap<String,Object> para,String preUrl){
+		DefaultHttpClient httpclient = new DefaultHttpClient();
+		try {
+			String url = preUrl;
+			Log.i(TAG, url);
+			HttpPost httppost = new HttpPost(url);
+			FileBody bin = new FileBody(new File((String)para.get("photo")));
+            StringBody comment = new StringBody((String)para.get("token"), ContentType.TEXT_PLAIN);
+
+            HttpEntity reqEntity = MultipartEntityBuilder.create()
+                    .addPart("photo", bin)
+                    .addPart("token", comment)
+                    .build();
+            httppost.setEntity(reqEntity);
+			HttpResponse response = null;
+			response = httpclient.execute(httppost);
 			HttpEntity responseEntity = response.getEntity();
 			if (responseEntity != null) {
 				String entityStr = EntityUtils.toString(responseEntity);

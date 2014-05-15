@@ -46,7 +46,7 @@ public class LeftMenuFragment extends Fragment{
 	private Resources mResources;
 	private ListView naviList;
 	private LeftMenuAdapter leftMenuAdapter;
-	private ImageView userImage;
+	public static ImageView userImage;
 	private TextView userText,userName;
 	private ArrayList<HashMap<String,Object>> mData;
 	private HashMap<String,Object> tmpmap;

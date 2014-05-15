@@ -22,6 +22,10 @@
     <uses-permission android:name="android.permission.CHANGE_CONFIGURATION" />
     <uses-permission android:name="android.permission.READ_CALENDAR"/>   
    	<uses-permission android:name="android.permission.WRITE_CALENDAR"/>
+   	<uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.CAMERA"/>
+	<uses-feature android:name="android.hardware.camera"/>
+	<uses-feature android:name="android.hardware.camera.autofocus"/>
 
     <application
         android:allowBackup="true"

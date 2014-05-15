@@ -67,6 +67,8 @@
 	<string name="active_acc">激活账号</string>
 	<string name="cha_pass_success">修改密码成功！</string>
 	<string name="active_acc_success">账号激活成功！</string>
+	<string name="cha_info_success">修改信息成功！</string>
+	<string name="upload_photo_success">上传头像成功！</string>
 	
 	<string name="name">姓名</string>
 	<string name="age">年龄</string>
@@ -90,6 +92,8 @@
     <string name="medium">中等</string>
     <string name="firstpic">第一张</string>
     <string name="other">其他</string>
+    <string name="take_pic">拍照</string>
+    <string name="select_pic">从手机相册选择</string>
     
     <string name="pleaselink">添加链接</string>
     <string name="please_enter_newpassword">请输入新密码</string>
@@ -100,5 +104,6 @@
     <string name="no_result">对不起，没有搜索到相关数据！</string>
     <string name="password_not_match">两次输入的密码不符！</string>
     <string name="getting_data">正在获取数据，请稍候</string>
+    <string name="uploading_photo">正在上传图片请稍后</string>
     <string name="add_to_calendar_success">添加日历成功！</string>
 </resources>

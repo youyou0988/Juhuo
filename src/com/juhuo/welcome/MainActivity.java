@@ -68,6 +68,7 @@ public class MainActivity extends Activity {
 				// TODO Auto-generated method stub
 				Intent mainToLogin = new Intent(MainActivity.this,LoginActivity.class);
 				startActivity(mainToLogin);
+				finish();
 			}
 		});
 		skipLogin.setOnClickListener(new View.OnClickListener() {
@@ -78,7 +79,7 @@ public class MainActivity extends Activity {
 				JuhuoConfig.token = JuhuoConfig.PUBLIC_TOKEN;
 				Intent mainToLogin = new Intent(MainActivity.this,HomeActivity.class);
 				startActivity(mainToLogin);
-				MainActivity.this.finish();
+				finish();
 			}
 		});
 	}

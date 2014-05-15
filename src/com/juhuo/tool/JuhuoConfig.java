@@ -7,7 +7,7 @@ public class JuhuoConfig {
 	public static String EVENTINFO = "juhuo_event_info_";
 	public static String EVENTCOMMENT = "juhuo_event_comment_";
 	public static String EVENTLISTSPECIFIC = "juhuo_event_specific_list_";
-	public static String USERINFO = "juhuo_user_info_";
+	public static String USERINFO = "juhuo_user_info";
 	
 	public static int INVI_NULL=0;
 	public static int INVI_YES=1;
@@ -28,12 +28,18 @@ public class JuhuoConfig {
 	public static String PRODUCTIONPREFIX = "http://115.28.211.238/v0/";
 //	public static String PRODUCTIONPREFIX="http://115.29.141.31/v0/";
 	public static String LOGIN = PRODUCTIONPREFIX+"user/login/";
+	public static String LOGOUT = PRODUCTIONPREFIX+"user/logout/";
+	public static String USER_INFO = PRODUCTIONPREFIX+"user/info/";
+	public static String USER_ICON = PRODUCTIONPREFIX+"user/icon/";
+	public static String CHANGE_PASSWORD = PRODUCTIONPREFIX+"user/chgpass/";
+	public static String USER_MODIFY = PRODUCTIONPREFIX+"user/modify/";
+	public static String ACTIVE_ACCOUNT = PRODUCTIONPREFIX+"user/applyactivate/";
+	
 	public static String EVENT_LIST = PRODUCTIONPREFIX+"event/list/";
 	public static String EVENT_DELETE = PRODUCTIONPREFIX+"event/delete/";
-	public static String USER_INFO = PRODUCTIONPREFIX+"user/info/";
-	public static String CHANGE_PASSWORD = PRODUCTIONPREFIX+"user/chgpass";
-	public static String ACTIVE_ACCOUNT = PRODUCTIONPREFIX+"user/applyactivate";
 	public static String EVENT_INFO	= PRODUCTIONPREFIX + "event/info/";
 	public static String EVENT_COMMENT_LIST = PRODUCTIONPREFIX+"event/listcomment/";
+	
+	public static String COMMON_UPLOADPHOTO = PRODUCTIONPREFIX+"common/uploadphoto/";
 
 }

@@ -1,15 +1,28 @@
 package com.juhuo.fragment;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Environment;
+import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -28,6 +41,7 @@ import com.juhuo.tool.JuhuoConfig;
 import com.juhuo.tool.JuhuoInfo;
 import com.juhuo.tool.Tool;
 import com.juhuo.welcome.ChangePassword;
+import com.juhuo.welcome.MainActivity;
 import com.juhuo.welcome.R;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
@@ -49,6 +63,8 @@ public class UserSettingFragment extends Fragment{
 	private RelativeLayout parent;
 	private View transView;
 	private Button logout;
+	private String menuType = "title";
+	private ProgressDialog mPgDialog;
 	DisplayImageOptions options = new DisplayImageOptions.Builder()
 	.imageScaleType(ImageScaleType.IN_SAMPLE_INT)
 	.showImageOnLoading(R.drawable.default_image)
@@ -59,13 +75,30 @@ public class UserSettingFragment extends Fragment{
 	.considerExifParams(true)
 	.displayer(new SimpleBitmapDisplayer())
 	.build();
+	DisplayImageOptions options2 = new DisplayImageOptions.Builder()
+	.imageScaleType(ImageScaleType.EXACTLY_STRETCHED)
+	.showImageOnLoading(R.drawable.default_image)
+	.showImageForEmptyUri(R.drawable.default_image)
+	.showImageOnFail(R.drawable.default_image)
+	.cacheInMemory(true)
+	.cacheOnDisc(true)
+	.considerExifParams(true)
+	.displayer(new SimpleBitmapDisplayer())
+	.build();
 	protected ImageLoader imageLoader = ImageLoader.getInstance();
+	private static final int PHOTO_REQUEST_TAKEPHOTO = 1;// 拍照
+    private static final int PHOTO_REQUEST_GALLERY = 2;// 从相册中选择
+    private static final int PHOTO_REQUEST_CUT = 3;// 结果
+    // 创建一个以当前时间为名称的文件
+    File tempFile = new File(Environment.getExternalStorageDirectory(),getPhotoFileName());
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		Log.d(TAG, "onCreate");
 		mResources = getResources();
 		setHasOptionsMenu(true);
+		
 	}
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -90,51 +123,99 @@ public class UserSettingFragment extends Fragment{
 		cell = (TextView)parent.findViewById(R.id.t8);
 		description = (TextView)parent.findViewById(R.id.t10);
 		image = (ImageView)parent.findViewById(R.id.image);
-		//open the sliding menu
-		OnClickListener clickLisnter = new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				// TODO Auto-generated method stub
-				ImageView vi = (ImageView)v;
-				switch(vi.getId()){
-				case R.id.action_title_img:
-					((SlidingFragmentActivity)getActivity()).toggle();
-					break;
-				case R.id.action_title_img2:
-					getActivity().openOptionsMenu();
-					break;
-				}
-				
-			}
-		};
+		name.setOnClickListener(txtClick);
+		age.setOnClickListener(txtClick);
+		gender.setOnClickListener(txtClick);
+		description.setOnClickListener(txtClick);
 		actionTitleImg.setOnClickListener(clickLisnter);
 		actionTitleImg2.setOnClickListener(clickLisnter);
+		image.setOnClickListener(clickLisnter);
 		logout.setOnClickListener(new View.OnClickListener() {
 			
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
-				JuhuoConfig.token = "";
-				getActivity().finish();
+				LogOut logOut = new LogOut();
+				HashMap<String,Object> map= new HashMap<String,Object>();
+				map.put("token", JuhuoConfig.token);
+				logOut.execute(map);
 			}
 		});
-		HashMap<String,Object> mapPara = new HashMap<String,Object>();
-		mapPara.put("token", JuhuoConfig.token);
-		getNetData(mapPara);
+		JSONObject jsonCache = new JSONObject();
+		jsonCache = Tool.loadJsonFromFile(JuhuoConfig.USERINFO,getActivity());
+		if(jsonCache==null){
+			HashMap<String,Object> mapPara = new HashMap<String,Object>();
+			mapPara.put("token", JuhuoConfig.token);
+			LoadUserInfo loadUserInfo = new LoadUserInfo();
+			loadUserInfo.execute(mapPara);
+		}else{
+			//initial components contents
+			setComponentsContent(jsonCache);
+		}
+		
 		return parent;
 	}
-	public void getNetData(HashMap<String,Object> map){
-		LoadEventList loadEventList = new LoadEventList();
-		loadEventList.execute(map);
-	}
-	private class LoadEventList extends AsyncTask<HashMap<String,Object>,String,JSONObject>{
+	OnClickListener txtClick = new View.OnClickListener() {
+		
+		@Override
+		public void onClick(View arg0) {
+			// TODO Auto-generated method stub
+			TextView v = (TextView)arg0;
+			Fragment content = new SetName();
+			switch(v.getId()){
+			case R.id.t2:
+				((SetName)content).setContent(v.getText().toString(),"name");
+				break;
+			case R.id.t4:
+				((SetName)content).setContent(v.getText().toString(),"age");
+				break;
+			case R.id.t6:
+				((SetName)content).setContent(v.getText().toString(), "gender");
+				break;
+			case R.id.t10:
+				((SetName)content).setContent(v.getText().toString(), "description");
+				break;
+			}
+			FragmentTransaction transaction = getFragmentManager().beginTransaction();
 
+			// Replace whatever is in the fragment_container view with this fragment,
+			// and add the transaction to the back stack
+			transaction.replace(R.id.content_frame, content);
+			transaction.addToBackStack(null);
+
+			// Commit the transaction
+			transaction.commit();
+		}
+	};
+	//open the sliding menu
+	OnClickListener clickLisnter = new View.OnClickListener() {
+		@Override
+		public void onClick(View v) {
+			// TODO Auto-generated method stub
+			ImageView vi = (ImageView)v;
+			switch(vi.getId()){
+			case R.id.action_title_img:
+				((SlidingFragmentActivity)getActivity()).toggle();
+				break;
+			case R.id.action_title_img2:
+				menuType = "title";
+				getActivity().openOptionsMenu();
+				break;
+			case R.id.image:
+				menuType = "image";
+				getActivity().openOptionsMenu();
+				break;
+			}
+			
+		}
+	};
+	private class LogOut extends AsyncTask<HashMap<String,Object>,String,JSONObject>{
 		@Override
 		protected JSONObject doInBackground(HashMap<String,Object>... map) {
 			// TODO Auto-generated method stub
 
 			HashMap<String,Object> mapped = map[0];
-			return new JuhuoInfo().loadNetData(mapped,JuhuoConfig.USER_INFO);
+			return new JuhuoInfo().loadNetData(mapped,JuhuoConfig.LOGOUT);
 		}
 		@Override
 		protected void onPostExecute(JSONObject result) {
@@ -145,64 +226,14 @@ public class UserSettingFragment extends Fragment{
 				//sth is wrong
 				Tool.dialog(getActivity());
 			}else{
-				try {
-					name.setText(result.getString("name"));
-					String ag = result.getString("birthday").equals("null")?"未知":result.getString("birthday");
-					if(ag.equals("未知")){
-						age.setText(ag);
-					}else{
-						long a = Tool.getAgeFromBirthday(ag.substring(0,19).replace("T", " "));
-						age.setText(String.valueOf(a));
-					}
-					gender.setText(result.getInt("gender")==1?"女":"男");
-					cell.setText(result.getString("cell"));
-					description.setText(result.getString("description"));
-					image.getLayoutParams().height = JuhuoConfig.WIDTH*150/320;
-					image.getLayoutParams().width = JuhuoConfig.WIDTH*150/320;
-					String url="";
-					if(result.has("suc_photos")){
-						url = result.getJSONArray("suc_photos").getJSONObject(0).getString("url");
-					}
-					imageLoader.displayImage(url,image, options);
-				} catch (JSONException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+				Intent intent = new Intent(getActivity(),MainActivity.class);
+				startActivity(intent);
+				getActivity().finish();
 			}
 			
 		}
 	}
-	public void setTrans(){
-		Log.i("sliding menu", transView.getBackground().toString());
-		transView.setVisibility(View.VISIBLE);
-	}
-	public void setTransBack(){
-		Log.i("sliding menu", transView.getBackground().toString());
-		transView.setVisibility(View.INVISIBLE);
-	}
-	@Override
-	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-	    // TODO Add your menu entries here
-	    super.onCreateOptionsMenu(menu, inflater);
-	    getActivity().getMenuInflater().inflate(R.menu.setting, menu);
-	}
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		switch (item.getItemId()) {
-		case R.id.cha_pass:
-			Intent intent = new Intent(getActivity(),ChangePassword.class);
-			getActivity().startActivity(intent);
-			break;
-		case R.id.active_acc:
-			ActiveAccount ac = new ActiveAccount();
-			HashMap<String,Object> mapPara = new HashMap<String,Object>();
-			mapPara.put("token", JuhuoConfig.token);
-			ac.execute(mapPara);
-			break;
-		
-		}
-		return super.onOptionsItemSelected(item);
-	}
+	
 	private class ActiveAccount extends AsyncTask<HashMap<String,Object>,String,JSONObject>{
 
 		@Override
@@ -226,5 +257,263 @@ public class UserSettingFragment extends Fragment{
 			
 		}
 	}
+    private class UploadPhoto extends AsyncTask<HashMap<String,Object>,String,JSONObject>{
+    	@Override
+		protected JSONObject doInBackground(HashMap<String,Object>... map) {
+			// TODO Auto-generated method stub
+
+			HashMap<String,Object> mapped = map[0];
+			return new JuhuoInfo().callPost(mapped,JuhuoConfig.COMMON_UPLOADPHOTO);
+		}
+		@Override
+		protected void onPostExecute(JSONObject result) {
+			if(result == null){
+				Log.i(TAG,"cannot get any");//we have reveived 500 error page
+				
+			}else if(result.has("wrong_data")){
+				//sth is wrong
+				Tool.dialog(getActivity());
+			}else{
+				Tool.myToast(getActivity(), mResources.getString(R.string.upload_photo_success));
+				try {
+					HashMap<String,Object> map = new HashMap<String,Object>();
+					map.put("token", JuhuoConfig.token);
+					map.put("photo_ids", "["+String.valueOf(result.getInt("id"))+"]");
+					ChangeUserIcon changeIcon = new ChangeUserIcon();
+					changeIcon.execute(map);
+					
+				} catch (JSONException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				mPgDialog.dismiss();
+			}	
+		}
+    }
+    private class ChangeUserIcon extends AsyncTask<HashMap<String,Object>,String,JSONObject>{
+    	@Override
+		protected JSONObject doInBackground(HashMap<String,Object>... map) {
+			// TODO Auto-generated method stub
+
+			HashMap<String,Object> mapped = map[0];
+			return new JuhuoInfo().loadNetData(mapped,JuhuoConfig.USER_ICON);
+		}
+		@Override
+		protected void onPostExecute(JSONObject result) {
+			if(result == null){
+				Log.i(TAG,"cannot get any");//we have reveived 500 error page
+				
+			}else if(result.has("wrong_data")){
+				//sth is wrong
+				Tool.dialog(getActivity());
+			}else{
+				try {
+					String url = result.getJSONArray("suc_photos").getJSONObject(0).getString("url");
+					imageLoader.displayImage(url,image, options);
+					HashMap<String,Object> mapPara = new HashMap<String,Object>();
+					mapPara.put("token", JuhuoConfig.token);
+					LoadUserInfo loadUserInfo = new LoadUserInfo();
+					loadUserInfo.execute(mapPara);
+				} catch (JSONException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				
+			}	
+		}
+    }
+    private class LoadUserInfo extends AsyncTask<HashMap<String,Object>,String,JSONObject>{
+
+		@Override
+		protected JSONObject doInBackground(HashMap<String,Object>... map) {
+			// TODO Auto-generated method stub
+
+			HashMap<String,Object> mapped = map[0];
+			return new JuhuoInfo().loadNetData(mapped,JuhuoConfig.USER_INFO);
+		}
+		@Override
+		protected void onPostExecute(JSONObject result) {
+			if(result == null){
+				Log.i(TAG,"cannot get any");//we have reveived 500 error page
+				
+			}else if(result.has("wrong_data")){
+				//sth is wrong
+				Tool.dialog(getActivity());
+			}else{
+				Tool.writeJsonToFile(result,getActivity(),JuhuoConfig.USERINFO);
+				setComponentsContent(result);
+				
+			}
+			
+		}
+	}
+	public void setComponentsContent(JSONObject result){
+		try {
+			name.setText(result.getString("name"));
+			String ag = result.getString("birthday").equals("null")?"未知":result.getString("birthday");
+			if(ag.equals("未知")){
+				age.setText(ag);
+			}else{
+				long a = Tool.getAgeFromBirthday(ag.substring(0,19).replace("T", " "));
+				age.setText(String.valueOf(a));
+			}
+			gender.setText(result.getInt("gender")==1?"女":"男");
+			cell.setText(result.getString("cell"));
+			if(result.getString("description").equals("")){
+				description.setText("暂无介绍");
+			}else{
+				description.setText(result.getString("description"));
+			}
+			image.getLayoutParams().height = JuhuoConfig.WIDTH*150/320;
+			image.getLayoutParams().width = JuhuoConfig.WIDTH*150/320;
+			String url="";
+			if(result.has("suc_photos")){
+				url = result.getJSONArray("suc_photos").getJSONObject(0).getString("url");
+			}
+			imageLoader.displayImage(url,image, options);
+			//set left menu icon
+			imageLoader.displayImage(url, LeftMenuFragment.userImage, options2);
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	public void setTrans(){
+		Log.i("sliding menu", transView.getBackground().toString());
+		transView.setVisibility(View.VISIBLE);
+	}
+	public void setTransBack(){
+		Log.i("sliding menu", transView.getBackground().toString());
+		transView.setVisibility(View.INVISIBLE);
+	}
+	@Override
+	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+	    // TODO Add your menu entries here
+	    super.onCreateOptionsMenu(menu, inflater);
+	    getActivity().getMenuInflater().inflate(R.menu.setting, menu);
+	}
+	@Override
+	public void onPrepareOptionsMenu(Menu menu){
+		MenuInflater inflater = getActivity().getMenuInflater();
+		menu.clear();
+		if(menuType.equals("title")){
+			inflater.inflate(R.menu.setting, menu);
+		}else{//click image
+			inflater.inflate(R.menu.pic, menu);
+		}
+		
+	}
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch (item.getItemId()) {
+		case R.id.cha_pass:
+			Intent intent = new Intent(getActivity(),ChangePassword.class);
+			getActivity().startActivity(intent);
+			break;
+		case R.id.active_acc:
+			ActiveAccount ac = new ActiveAccount();
+			HashMap<String,Object> mapPara = new HashMap<String,Object>();
+			mapPara.put("token", JuhuoConfig.token);
+			ac.execute(mapPara);
+			break;
+		case R.id.take_pic:
+			// 调用系统的拍照功能
+            Intent intentpic = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+            // 指定调用相机拍照后照片的储存路径
+            intentpic.putExtra(MediaStore.EXTRA_OUTPUT,Uri.fromFile(tempFile));
+            startActivityForResult(intentpic, PHOTO_REQUEST_TAKEPHOTO);
+			break;
+		case R.id.select_pic:
+			//调用系统的相册
+			Intent intentsel = new Intent(Intent.ACTION_PICK, null);
+			intentsel.setDataAndType(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,"image/*");
+            startActivityForResult(intentsel, PHOTO_REQUEST_GALLERY);
+			break;
+		
+		}
+		return super.onOptionsItemSelected(item);
+	}
+	
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        // TODO Auto-generated method stub
+
+        switch (requestCode) {
+        case PHOTO_REQUEST_TAKEPHOTO:
+            startPhotoZoom(Uri.fromFile(tempFile), 150);
+            break;
+
+        case PHOTO_REQUEST_GALLERY:
+            if (data != null)
+                startPhotoZoom(data.getData(), 150);
+            break;
+
+        case PHOTO_REQUEST_CUT:
+            if (data != null) 
+                setPicToView(data);
+            break;
+        }
+        super.onActivityResult(requestCode, resultCode, data);
+
+    }
+    //调用系统自带的图片剪裁
+    private void startPhotoZoom(Uri uri, int size) {
+        Intent intent = new Intent("com.android.camera.action.CROP");
+        intent.setDataAndType(uri, "image/*");
+        // crop为true是设置在开启的intent中设置显示的view可以剪裁
+        intent.putExtra("crop", "true");
+
+        // aspectX aspectY 是宽高的比例
+        intent.putExtra("aspectX", 1);
+        intent.putExtra("aspectY", 1);
+
+        // outputX,outputY 是剪裁图片的宽高
+        intent.putExtra("outputX", size);
+        intent.putExtra("outputY", size);
+        intent.putExtra("return-data", true);
+
+        startActivityForResult(intent, PHOTO_REQUEST_CUT);
+    }
+
+    //将进行剪裁后的图片上传到服务器
+    private void setPicToView(Intent picdata) {
+        Bundle bundle = picdata.getExtras();
+        if (bundle != null) {
+            Bitmap photo = bundle.getParcelable("data");
+            Drawable drawable = new BitmapDrawable(photo);
+            UploadPhoto upload = new UploadPhoto();
+            HashMap<String,Object> map = new HashMap<String,Object>();
+            map.put("token", JuhuoConfig.token);
+            map.put("photo", Bitmap2File(photo));
+            upload.execute(map);
+            mPgDialog = new ProgressDialog(getActivity());
+            mPgDialog.setMessage(mResources.getString(R.string.uploading_photo));
+            mPgDialog.show();
+            //上传用户的头像
+            
+        }
+    }
+    //将bitmap转变为file
+    private String Bitmap2File(Bitmap bm){
+    	FileOutputStream out;
+		try {
+			 //把需要上传的图片存在一个临时文件里面
+			 out = new FileOutputStream(Environment.getExternalStorageDirectory()+"/tmp.jpg");
+			 bm.compress(Bitmap.CompressFormat.PNG, 90, out);
+			 return Environment.getExternalStorageDirectory()+"/tmp.jpg";
+		} catch (FileNotFoundException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}catch (Exception e) {
+    	    e.printStackTrace();
+    	} 
+    	return "";
+    }
+    // 使用系统当前日期加以调整作为照片的名称
+    private String getPhotoFileName() {
+        Date date = new Date(System.currentTimeMillis());
+        SimpleDateFormat dateFormat = new SimpleDateFormat("'IMG'_yyyyMMdd_HHmmss");
+        return dateFormat.format(date) + ".jpg";
+    }
 	
 }
