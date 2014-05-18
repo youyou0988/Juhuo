@@ -56,7 +56,7 @@ public class UserSettingFragment extends Fragment{
 	private TextView cell;
 	private TextView description;
 	private ImageView image;
-	private String TAG = "MyEventFragment";
+	private String TAG = "UserSettingFragment";
 	private ImageView actionTitleImg;
 	private ImageView actionTitleImg2;
 	private TextView actionTitle,noEventsText;

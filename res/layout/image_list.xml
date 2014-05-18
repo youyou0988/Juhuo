@@ -1,0 +1,72 @@
+<RelativeLayout android:layout_height="match_parent" 
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent">
+    <RelativeLayout android:layout_height="45dp"
+	     android:layout_width="fill_parent"
+	     android:background="@drawable/bg_titlebar"
+	     android:id="@+id/titlebar"
+	     android:padding="@dimen/titlebar_padding"
+	     >
+	     <ImageView android:layout_height="wrap_content"
+	         android:layout_width="wrap_content"
+	         android:background="@drawable/icon_back"
+	         android:layout_centerVertical="true"/>
+	     <TextView android:id="@+id/action_title"
+	         android:layout_width="wrap_content"
+	         android:layout_height="wrap_content"
+	         android:text="@string/image_list"
+	         android:textColor="@color/white"
+	         android:gravity="center"
+	         android:textStyle="bold"
+	         android:layout_centerInParent="true"
+	         android:textSize="22sp"/>
+	</RelativeLayout>
+	<GridView android:id="@+id/PhoneImageGrid"
+        android:layout_width="fill_parent" android:layout_height="350dp"
+        android:layout_below="@+id/titlebar"
+        android:numColumns="auto_fit" android:verticalSpacing="10dp"
+        android:horizontalSpacing="4dp" android:columnWidth="75dp"
+        android:stretchMode="columnWidth" android:gravity="center" />
+	<View android:layout_height="1dp"
+	    android:layout_width="match_parent"
+	    android:background="@color/mgreen"
+	    android:layout_below="@+id/PhoneImageGrid"
+	    android:id="@+id/divider"/>
+	<GridView android:id="@+id/PhoneImageSelected"
+	    android:layout_width="fill_parent"
+	    android:layout_height="80dp"
+	    android:layout_below="@+id/divider"
+	    android:columnWidth="75dp"
+	    android:numColumns="auto_fit"></GridView>
+	<View android:layout_height="1dp"
+	    android:layout_width="match_parent"
+	    android:background="@color/mgray"
+	    android:layout_below="@+id/PhoneImageSelected"
+	    android:id="@+id/divider2"/>
+	<RelativeLayout android:layout_height="fill_parent"
+	    android:layout_width="fill_parent"
+	    android:background="@color/belowwhite"
+	    android:layout_below="@+id/divider2">
+	    <TextView android:text="@string/cancel"
+	        android:textColor="@color/mgreen"
+	        android:layout_alignParentLeft="true"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_centerVertical="true"
+	        android:layout_marginLeft="5dp"
+	        android:id="@+id/cancel"/>
+	    <TextView android:layout_height="wrap_content"
+	        android:layout_width="wrap_content"
+	        android:textColor="@color/mgray"
+	        android:layout_centerInParent="true"
+	        android:id="@+id/pager"/>
+	    <TextView android:text="@string/makesure"
+	        android:textColor="@color/mgreen"
+	        android:layout_alignParentRight="true"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_centerVertical="true"
+	        android:layout_marginRight="5dp"
+	        android:id="@+id/makesure"/>
+	</RelativeLayout>
+</RelativeLayout>

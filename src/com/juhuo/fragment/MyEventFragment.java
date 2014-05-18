@@ -155,6 +155,7 @@ public class MyEventFragment extends Fragment{
 		//get date from cache
 		jsonCache = Tool.loadJsonFromFile(JuhuoConfig.EVENTLISTSPECIFIC+JuhuoConfig.userId,getActivity());
 		if(jsonCache==null){
+			noEventsText.setText(mResources.getString(R.string.no_events_found));
 			getNetData(mapPara);
 		}else{
 			try {
@@ -195,7 +196,7 @@ public class MyEventFragment extends Fragment{
 		}
 	};
 	public void getNetData(HashMap<String,Object> map){
-		noEventsText.setText("");
+//		noEventsText.setText("");
 		hotEventsList.onRefreshing();
 		LoadEventList loadEventList = new LoadEventList();
 		loadEventList.execute(map);
@@ -213,8 +214,7 @@ public class MyEventFragment extends Fragment{
 		protected void onPostExecute(JSONObject result) {
 			if(result == null){
 				Log.i(TAG,"cannot get any");//we have reveived 500 error page
-				hotEventsList.onRefreshComplete();
-				hotEventsList.onLoadComplete(); //加载更多完成  
+				  
 			}else if(result.has("wrong_data")){
 				//sth is wrong
 				Tool.dialog(getActivity());
@@ -225,6 +225,7 @@ public class MyEventFragment extends Fragment{
 					}
 					JSONArray ja = result.getJSONArray("events");
 					if(ja.length()!=0) {
+						noEventsText.setText("");
 						//set cache
 						Tool.writeJsonToFile(result,getActivity(),JuhuoConfig.EVENTLISTSPECIFIC+JuhuoConfig.userId);
 						// display data from network

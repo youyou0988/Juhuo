@@ -276,7 +276,7 @@ public class HotEventsFragment extends Fragment{
 		protected void onPostExecute(JSONObject result) {
 			if(result == null){
 				Log.i(TAG,"cannot get any");//we have reveived 500 error page
-				hotEventsList.onRefreshComplete();
+				
 			}else if(result.has("wrong_data")){
 				//sth is wrong
 				Tool.dialog(getActivity());

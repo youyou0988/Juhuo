@@ -1,0 +1,85 @@
+<RelativeLayout android:layout_height="match_parent" 
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:id="@+id/container"
+    android:background="@color/white">
+    <RelativeLayout android:layout_height="45dp"
+	     android:layout_width="fill_parent"
+	     android:background="@drawable/bg_titlebar"
+	     android:id="@+id/titlebar"
+	     android:padding="@dimen/titlebar_padding"
+	     >
+	     <TextView android:layout_width="wrap_content"
+	         android:layout_height="wrap_content"
+	         android:layout_alignParentLeft="true"
+	         android:text="@string/cancel"
+	         android:textColor="@color/white"
+	         android:id="@+id/action_title_text"
+	         android:layout_centerVertical="true"/>
+	     <TextView android:id="@+id/action_title"
+	         android:layout_width="wrap_content"
+	         android:layout_height="wrap_content"
+	         android:text="@string/edit_image"
+	         android:textColor="@color/white"
+	         android:gravity="center"
+	         android:textStyle="bold"
+	         android:layout_centerInParent="true"
+	         android:textSize="22sp"/>
+	     <TextView android:layout_width="wrap_content"
+	         android:layout_height="wrap_content"
+	         android:id="@+id/action_title_text2"
+	         android:text="@string/save"
+	         android:textColor="@color/white"
+	         android:layout_alignParentRight="true"
+	         android:layout_centerVertical="true"
+	         />
+	</RelativeLayout>
+	<RelativeLayout android:id="@+id/filterbar"
+        android:layout_width="match_parent"
+        android:layout_height="45dp"
+        android:layout_below="@+id/titlebar"
+        >
+        <Button android:id="@+id/filter_all_events"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:text="@string/upload_img"
+            android:textColor="@color/mgreen"
+            android:textSize="15sp"
+            android:textStyle="bold"
+            android:background="@drawable/bg_event_filter"
+            android:layout_toLeftOf="@+id/divider"
+            android:layout_alignParentLeft="true">
+        </Button>
+        <View android:layout_width="1dp"
+            android:layout_height="match_parent"
+            android:background="@drawable/divider_event_filter"
+            android:id="@+id/divider"
+            android:layout_centerInParent="true"/>
+        <Button android:id="@+id/filter_default_event"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:text="@string/uploaded_img"
+            android:textColor="@color/mgray"
+            android:textSize="15sp"
+            android:textStyle="bold"
+            android:background="@drawable/bg_event_filter"
+            android:layout_alignParentRight="true"
+            android:layout_toRightOf="@+id/divider"
+            >
+        </Button>
+    </RelativeLayout>
+    <Button
+            android:id="@+id/choose_img"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:layout_margin="10dp"
+            android:background="@drawable/click_btn"
+            android:gravity="center"
+            android:text="@string/select_img"
+            android:textColor="@color/white"
+            android:textSize="20sp"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true" />
+</RelativeLayout>

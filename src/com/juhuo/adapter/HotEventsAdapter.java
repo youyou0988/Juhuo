@@ -12,20 +12,24 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.app.Activity;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Point;
+import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.util.Log;
 import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.BaseAdapter;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -251,14 +255,42 @@ public class HotEventsAdapter extends BaseAdapter {
             // TODO Auto-generated method stub
 
             Log.v("long clicked","pos: " + pos);
-            HashMap<String,Object> map = new HashMap<String,Object>();
-            map.put("token", JuhuoConfig.token);
-            map.put("id", mData.get(pos-1).get("eventId"));
-            DeleteEvent deleteEvent = new DeleteEvent(pos-1);
-            deleteEvent.execute(map);
+            dialog(pos);
             return true;
         }
     };
+    protected void dialog(final int pos) {
+		final Dialog dialog = new Dialog(activity);
+		dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+		Drawable d = Tool.getShape();
+		dialog.getWindow().setBackgroundDrawable(d);
+		dialog.setContentView(R.layout.delete_dialog);
+		Button yes = (Button) dialog.findViewById(R.id.yes);
+		Button no = (Button) dialog.findViewById(R.id.no);
+		yes.setOnClickListener(new View.OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				dialog.dismiss();
+				HashMap<String,Object> map = new HashMap<String,Object>();
+	            map.put("token", JuhuoConfig.token);
+	            map.put("id", mData.get(pos-1).get("eventId"));
+	            DeleteEvent deleteEvent = new DeleteEvent(pos-1);
+	            deleteEvent.execute(map);
+				
+			}
+		});
+		no.setOnClickListener(new View.OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				dialog.dismiss();
+			}
+		});
+		dialog.show();
+	}
     private class DeleteEvent extends AsyncTask<HashMap<String,Object>,String,JSONObject>{
     	private int pos;
     	protected DeleteEvent(int pos){

@@ -12,7 +12,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.Window;
 import android.widget.EditText;
-import android.widget.ScrollView;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.amap.api.location.AMapLocation;
@@ -35,6 +35,7 @@ import com.juhuo.tool.Tool;
 public class CreateEvent extends Activity implements LocationSource,AMapLocationListener{
 	private TextView actionTitleText,actionTitleText2,eventBeginTime,eventEndTime,eventType
 		,eventDetail;
+	private ImageView image;
 	private EditText eventPlace;
 	private Resources mResources;
 	private MapView mapView;
@@ -60,6 +61,7 @@ public class CreateEvent extends Activity implements LocationSource,AMapLocation
 		eventPlace = (EditText)findViewById(R.id.event_place);
 		eventType = (TextView)findViewById(R.id.event_type);
 		eventDetail = (TextView)findViewById(R.id.event_detail_txt);
+		image = (ImageView)findViewById(R.id.image);
 		actionTitleText.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View arg0) {
@@ -73,11 +75,21 @@ public class CreateEvent extends Activity implements LocationSource,AMapLocation
 		eventEndTime.setOnClickListener(timeClick);
 		eventType.setOnClickListener(typeClick);
 		eventDetail.setOnClickListener(typeClick);
+		image.setOnClickListener(imageClick);
 		mapView = (MapView) findViewById(R.id.map);
 		mapView.onCreate(savedInstanceState);// ±ØÐëÒªÐ´
 		init();
 		
 	}
+	OnClickListener imageClick = new View.OnClickListener() {
+		
+		@Override
+		public void onClick(View v) {
+			// TODO Auto-generated method stub
+			Intent intent = new Intent(CreateEvent.this,EditImages.class);
+			startActivity(intent);
+		}
+	};
 	OnClickListener typeClick = new View.OnClickListener(){
 
 		@Override

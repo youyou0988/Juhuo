@@ -133,6 +133,8 @@ public class LoginActivity extends Activity {
 			if(result == null){
 				Log.i(TAG,"i am not in");
 				Tool.myToast(LoginActivity.this,mResources.getString(R.string.login_failed_username_password));
+			}else if(result.has("no_data")){
+				Tool.myToast(LoginActivity.this,mResources.getString(R.string.current_net_invalide));
 			}else{
 //				Tool.myToast(LoginActivity.this,mResources.getString(R.string.login_success));
 				Intent intent2Home = new Intent(LoginActivity.this, HomeActivity.class);

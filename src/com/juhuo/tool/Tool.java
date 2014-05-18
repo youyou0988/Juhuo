@@ -91,7 +91,7 @@ public class Tool {
         return (int) (pxValue / scale + 0.5f);  
     }  
     
-  //设置弹出框的样式为圆角并透明的矩形
+   //设置弹出框的样式为圆角并透明的矩形
   	public static Drawable getShape(){
 	    GradientDrawable gradientDrawable = new GradientDrawable(GradientDrawable.Orientation.TL_BR, new int[] { Color.WHITE,
 	    		Color.WHITE, Color.WHITE});
@@ -99,6 +99,7 @@ public class Tool {
 	    gradientDrawable.setCornerRadii(getRandomFloatArray());
 	    return gradientDrawable;
 	}
+   
 
 	public static float [] getRandomFloatArray(){
 	    float[] floats = new float[8];

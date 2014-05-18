@@ -122,6 +122,8 @@ public class LeftMenuFragment extends Fragment{
 			}else if(result.has("wrong_data")){
 				//sth is wrong invalid token
 				Tool.dialog(getActivity());
+			}else if(result.has("no_data")){
+				Tool.myToast(getActivity(),mResources.getString(R.string.current_net_invalide));
 			}else{
 				try {
 					String name = result.getString("name");
