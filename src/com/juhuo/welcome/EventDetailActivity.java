@@ -378,7 +378,7 @@ public class EventDetailActivity extends Activity {
         
 		int length = map.get(type).size()>4?4:map.get(type).size();
         for (int j = 0; j < length; j++) {
-        	ImageView view = getNewImage();
+        	ImageView view = Tool.getNewImage(this);
             imageLoader.displayImage(map.get(type).get(j), view,options,animateFirstListener);
             tr.addView(view);
         }
@@ -450,18 +450,7 @@ public class EventDetailActivity extends Activity {
 			}
 		}
 	};
-	public ImageView getNewImage(){
-		int imageWidth = (JuhuoConfig.WIDTH-75)*4/21;
-		Log.i(TAG, String.valueOf(JuhuoConfig.WIDTH));
-		Log.i(TAG, String.valueOf(imageWidth));
-		ImageView view = new ImageView(this);
-        view.setImageResource(R.drawable.default_image);
-        TableRow.LayoutParams imPara = new TableRow.LayoutParams(imageWidth,imageWidth);
-        imPara.setMargins(0, 0, imageWidth/20, 0);
-        view.setLayoutParams(imPara);
-        view.setScaleType(ScaleType.FIT_XY);
-        return view;
-	}
+	
 	/**
 	 * 初始化AMap对象
 	 */

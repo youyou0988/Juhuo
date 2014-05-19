@@ -32,16 +32,28 @@
 	    android:background="@color/mgreen"
 	    android:layout_below="@+id/PhoneImageGrid"
 	    android:id="@+id/divider"/>
-	<GridView android:id="@+id/PhoneImageSelected"
-	    android:layout_width="fill_parent"
-	    android:layout_height="80dp"
-	    android:layout_below="@+id/divider"
-	    android:columnWidth="75dp"
-	    android:numColumns="auto_fit"></GridView>
+	<HorizontalScrollView android:layout_height="80dp"
+        android:id="@+id/scrollview"
+        android:layout_width="fill_parent"
+        android:layout_below="@+id/divider">
+          <TableLayout
+			  android:id="@+id/table"
+			  android:layout_width="wrap_content"
+			  android:layout_height="wrap_content"
+			  android:padding="3dp"
+			  >
+		  <TableRow android:id="@+id/rows"
+		      android:layout_width="wrap_content"
+		      android:layout_height="wrap_content">
+		   
+		  </TableRow>
+	</TableLayout>
+    </HorizontalScrollView>
+	
 	<View android:layout_height="1dp"
 	    android:layout_width="match_parent"
 	    android:background="@color/mgray"
-	    android:layout_below="@+id/PhoneImageSelected"
+	    android:layout_below="@+id/scrollview"
 	    android:id="@+id/divider2"/>
 	<RelativeLayout android:layout_height="fill_parent"
 	    android:layout_width="fill_parent"

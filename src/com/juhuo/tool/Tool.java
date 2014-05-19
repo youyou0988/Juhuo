@@ -37,8 +37,12 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.TableRow;
 import android.widget.Toast;
+import android.widget.ImageView.ScaleType;
 
+import com.juhuo.welcome.EventDetailActivity;
 import com.juhuo.welcome.MainActivity;
 import com.juhuo.welcome.R;
 import com.nostra13.universalimageloader.cache.disc.naming.Md5FileNameGenerator;
@@ -313,6 +317,24 @@ public class Tool {
 		    return null;
 		 }
 		return jo;
+	}
+	public static ImageView getNewImage(Context context){
+		Activity acc = (Activity)context;
+		int imageWidth;
+		if(acc.getClass()==EventDetailActivity.class){
+			imageWidth = (JuhuoConfig.WIDTH-75)*4/21;
+			Log.i("height", String.valueOf(imageWidth));
+		}else{
+			imageWidth = JuhuoConfig.WIDTH*7/30;
+			Log.i("height2", String.valueOf(imageWidth));
+		}
+		ImageView view = new ImageView(context);
+        view.setImageResource(R.drawable.default_image);
+        TableRow.LayoutParams imPara = new TableRow.LayoutParams(imageWidth,imageWidth);
+        imPara.setMargins(0, 0, imageWidth/16, 0);
+        view.setLayoutParams(imPara);
+        view.setScaleType(ScaleType.FIT_XY);
+        return view;
 	}
     
 }

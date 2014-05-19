@@ -70,6 +70,12 @@
             >
         </Button>
     </RelativeLayout>
+    <GridView android:id="@+id/PhoneImageGrid"
+        android:layout_width="fill_parent" android:layout_height="wrap_content"
+        android:layout_below="@+id/filterbar" android:layout_above="@+id/choose_img"
+        android:numColumns="auto_fit" android:verticalSpacing="10dp"
+        android:horizontalSpacing="4dp" android:columnWidth="75dp"
+        android:stretchMode="columnWidth" android:gravity="center" />
     <Button
             android:id="@+id/choose_img"
             android:layout_width="wrap_content"

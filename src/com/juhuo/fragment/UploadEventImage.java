@@ -1,5 +1,8 @@
 package com.juhuo.fragment;
 
+import java.util.ArrayList;
+
+import android.R.integer;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
@@ -9,6 +12,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,9 +22,13 @@ import android.widget.BaseAdapter;
 import android.widget.CheckBox;
 import android.widget.GridView;
 import android.widget.ImageView;
+import android.widget.Toast;
+import android.widget.LinearLayout.LayoutParams;
 import android.widget.RelativeLayout;
+import android.widget.TableRow;
 import android.widget.TextView;
 
+import com.juhuo.tool.Tool;
 import com.juhuo.welcome.R;
 
 public class UploadEventImage extends Fragment{
@@ -30,9 +38,12 @@ public class UploadEventImage extends Fragment{
 	private int count;
     private Bitmap[] thumbnails;
     private boolean[] thumbnailsselection;
+    private ArrayList<Integer> rowindex;
     private String[] arrPath;
     private ImageAdapter imageAdapter;
     private TextView cancel,makesure,pager;
+    private TableRow tr;
+    private Fragment prevone;
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -48,6 +59,7 @@ public class UploadEventImage extends Fragment{
         this.thumbnails = new Bitmap[this.count];
         this.arrPath = new String[this.count];
         this.thumbnailsselection = new boolean[this.count];
+        this.rowindex = new ArrayList<Integer>();
         for (int i = 0; i < this.count; i++) {
             imagecursor.moveToPosition(i);
             int id = imagecursor.getInt(image_column_index);
@@ -59,6 +71,9 @@ public class UploadEventImage extends Fragment{
         }
         
 	}
+	public void setFragment(Fragment fr){
+		this.prevone = (Fragment)fr;
+	}
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
@@ -68,12 +83,14 @@ public class UploadEventImage extends Fragment{
 		cancel = (TextView)parent.findViewById(R.id.cancel);
 		makesure = (TextView)parent.findViewById(R.id.makesure);
 		GridView imagegrid = (GridView) parent.findViewById(R.id.PhoneImageGrid);
+		tr = (TableRow)parent.findViewById(R.id.rows);
+		tr.setLayoutParams(new TableRow.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT));
         imageAdapter = new ImageAdapter();
         imagegrid.setAdapter(imageAdapter);
         cancel.setOnClickListener(txtClick);
         makesure.setOnClickListener(txtClick);
-        pager.setOnClickListener(txtClick);
-		return parent;
+        pager.setText("0/"+count);
+        return parent;
 		
 	}
 	OnClickListener txtClick = new View.OnClickListener() {
@@ -84,12 +101,33 @@ public class UploadEventImage extends Fragment{
 			TextView vt = (TextView)v;
 			switch(vt.getId()){
 			case R.id.cancel:
+				getFragmentManager().beginTransaction().remove(UploadEventImage.this).commit();
+				getActivity().getSupportFragmentManager().popBackStack();
+				break;
+			case R.id.makesure:
+				final int len = thumbnailsselection.length;
+                int cnt = 0;
+                ArrayList<String> selectedarr = new ArrayList<String>();
+                ArrayList<Bitmap> selectedmap = new ArrayList<Bitmap>();
+                for (int i =0; i<len; i++)
+                {
+                    if (thumbnailsselection[i]){
+                        cnt++;
+                        selectedarr.add(arrPath[i]);
+                        selectedmap.add(thumbnails[i]);
+                    }
+                }
+                Tool.myToast(getActivity(), "You've selected Total " + cnt + " image(s).");
+                //put image to editimage fragment to upload
+                ((EditEventImage)prevone).setImageGrid(selectedarr,selectedmap);
+                getFragmentManager().executePendingTransactions();
+                getActivity().getSupportFragmentManager().popBackStack();
 				break;
 			}
 		}
 	};
 	
-	public class ImageAdapter extends BaseAdapter {
+	private class ImageAdapter extends BaseAdapter {
         private LayoutInflater mInflater;
  
         public ImageAdapter() {
@@ -130,13 +168,21 @@ public class UploadEventImage extends Fragment{
                     // TODO Auto-generated method stub
                     CheckBox cb = (CheckBox) v;
                     int id = cb.getId();
+                    Integer idd = Integer.valueOf(id);
                     if (thumbnailsselection[id]){
                         cb.setChecked(false);
                         thumbnailsselection[id] = false;
+                        tr.removeViews(rowindex.indexOf(idd), 1);
+                        rowindex.remove(idd);
                     } else {
                         cb.setChecked(true);
                         thumbnailsselection[id] = true;
+                        ImageView view = Tool.getNewImage(getActivity());
+                        view.setImageBitmap(thumbnails[id]);
+                        rowindex.add(idd);
+                        tr.addView(view);
                     }
+                    pager.setText(rowindex.size()+"/"+count);
                 }
             });
             holder.imageview.setOnClickListener(new OnClickListener() {
