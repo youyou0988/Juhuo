@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android" 
+    android:layout_width="fill_parent" 
+    android:layout_height="fill_parent">
+    <include
+        android:id="@+id/titlebar"
+        android:layout_alignParentTop="true"
+        layout="@layout/title_bar" />
+	<com.foound.widget.AmazingListView android:layout_width="fill_parent" 
+	    android:layout_height="400dp" android:id="@+id/lsComposer"
+	    android:layout_below="@+id/titlebar"/>
+	<Button
+            android:id="@+id/send_invitation"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/lsComposer"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
+            android:layout_alignParentBottom="true"
+            android:background="@drawable/click_btn"
+            android:gravity="center"
+            android:layout_centerHorizontal="true"
+            android:text="@string/send_invitation"
+            android:textColor="@color/white"
+            android:textSize="20sp" />
+</RelativeLayout>

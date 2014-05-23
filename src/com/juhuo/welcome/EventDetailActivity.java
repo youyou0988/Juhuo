@@ -45,6 +45,7 @@ import com.amap.api.maps2d.UiSettings;
 import com.amap.api.maps2d.model.CameraPosition;
 import com.amap.api.maps2d.model.LatLng;
 import com.juhuo.adapter.HotEventsAdapter.AnimateFirstDisplayListener;
+import com.juhuo.contact.SelectContactActivity;
 import com.juhuo.control.PullDownElasticImp;
 import com.juhuo.control.RefreshableView;
 import com.juhuo.control.RefreshableView.RefreshListener;
@@ -635,6 +636,10 @@ public class EventDetailActivity extends Activity {
 	            // TODO: handle exception
 	            Log.e("ActivityNotFoundException", e.toString());
 	        }
+			break;
+		case R.id.invite_friends:
+			Intent intent = new Intent(EventDetailActivity.this,SelectContactActivity.class);
+			startActivity(intent);
 			break;
 		
 		}
