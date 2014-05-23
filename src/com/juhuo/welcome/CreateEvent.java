@@ -1,16 +1,28 @@
 package com.juhuo.welcome;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Locale;
+
+import org.json.JSONObject;
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.location.Location;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.Window;
+import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -30,13 +42,17 @@ import com.amap.api.maps2d.model.LatLng;
 import com.amap.api.maps2d.model.MyLocationStyle;
 import com.juhuo.control.DateTimePickerDialog;
 import com.juhuo.control.DateTimePickerDialog.OnDateTimeSetListener;
+import com.juhuo.tool.JuhuoConfig;
+import com.juhuo.tool.JuhuoInfo;
 import com.juhuo.tool.Tool;
 
 public class CreateEvent extends Activity implements LocationSource,AMapLocationListener{
+	private final String TAG="CreateEvent";
 	private TextView actionTitleText,actionTitleText2,eventBeginTime,eventEndTime,eventType
 		,eventDetail;
 	private ImageView image;
-	private EditText eventPlace;
+	private EditText eventPlace,eventTitle,eventCost;
+	private Button createBtn;
 	private Resources mResources;
 	private MapView mapView;
 	private AMap aMap;
@@ -44,9 +60,14 @@ public class CreateEvent extends Activity implements LocationSource,AMapLocation
 	private OnLocationChangedListener mListener;
 	private LocationManagerProxy mAMapLocationManager;
 	private AMapLocation currentLoc;
-	private String dest;
+	private String photo_ids,time_begin,time_end,event_type="0",description,addr,title;
+	private double lat,lng;
+	private int privacy=0,need_approve_apply=0,allow_apns=0;
+	private CheckBox privacyche,need_approve_che,allow_apns_che;
+	private SimpleDateFormat df = new SimpleDateFormat(Tool.ISO8601DATEFORMAT, Locale.getDefault());
 	private static final int SelectLocation = 0;
 	private static final int EditDetailEvent = 1;
+	private static final int EditImage = 2;
 	final String[] items = {"交友聚会", "读书看报", "音乐电影","体育锻炼","其他"};
 	
 	protected void onCreate(Bundle savedInstanceState){
@@ -61,7 +82,13 @@ public class CreateEvent extends Activity implements LocationSource,AMapLocation
 		eventPlace = (EditText)findViewById(R.id.event_place);
 		eventType = (TextView)findViewById(R.id.event_type);
 		eventDetail = (TextView)findViewById(R.id.event_detail_txt);
+		eventTitle = (EditText)findViewById(R.id.event_title);
+		eventCost = (EditText)findViewById(R.id.event_cost);
 		image = (ImageView)findViewById(R.id.image);
+		createBtn = (Button)findViewById(R.id.create_btn);
+		privacyche = (CheckBox)findViewById(R.id.ispublicche);
+		need_approve_che = (CheckBox)findViewById(R.id.isapproveche);
+		allow_apns_che = (CheckBox)findViewById(R.id.newmessageche);
 		actionTitleText.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View arg0) {
@@ -79,7 +106,42 @@ public class CreateEvent extends Activity implements LocationSource,AMapLocation
 		mapView = (MapView) findViewById(R.id.map);
 		mapView.onCreate(savedInstanceState);// 必须要写
 		init();
-		
+		time_begin = df.format(new Date());
+		Calendar calendar = Calendar.getInstance();
+		int day = calendar.get(Calendar.DAY_OF_MONTH);
+		calendar.set(Calendar.DAY_OF_MONTH, day+1);
+		Date tasktime=calendar.getTime();
+		time_end = df.format(tasktime.getTime());
+		createBtn.setOnClickListener(new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				privacy = privacyche.isChecked()?1:0;
+				need_approve_apply = need_approve_che.isChecked()?1:0;
+				allow_apns = allow_apns_che.isChecked()?1:0;
+				title = eventTitle.getText().toString();
+				HashMap<String,Object> map = new HashMap<String,Object>();
+				map.put("token", JuhuoConfig.token);
+				map.put("title", title);
+				map.put("time_begin", time_begin);
+				map.put("time_end", time_end);
+				map.put("description", description);
+				map.put("cost", eventCost.getText().toString().equals("")?"0":
+						eventCost.getText().toString());
+				map.put("event_type", event_type);
+				map.put("need_approve_apply", String.valueOf(need_approve_apply));
+				map.put("photo_ids", photo_ids);
+				map.put("privacy", String.valueOf(privacy));
+				map.put("allow_apns", String.valueOf(allow_apns));
+				map.put("lat", String.valueOf(lat));
+				map.put("lng", String.valueOf(lng));
+				map.put("addr", String.valueOf(addr));
+				CreateEventWord task = new CreateEventWord();
+				Log.i(TAG, map.toString());
+				task.execute(map);
+			}
+		});
 	}
 	OnClickListener imageClick = new View.OnClickListener() {
 		
@@ -87,7 +149,7 @@ public class CreateEvent extends Activity implements LocationSource,AMapLocation
 		public void onClick(View v) {
 			// TODO Auto-generated method stub
 			Intent intent = new Intent(CreateEvent.this,EditImages.class);
-			startActivity(intent);
+			startActivityForResult(intent,EditImage);
 		}
 	};
 	OnClickListener typeClick = new View.OnClickListener(){
@@ -101,7 +163,6 @@ public class CreateEvent extends Activity implements LocationSource,AMapLocation
 				showDialog2();
 				break;
 			case R.id.event_detail_txt:
-				Log.i("click", "txt");
 				Intent intent = new Intent(CreateEvent.this,EditEventDetail.class);
 				intent.putExtra("detail", vt.getText());
 				startActivityForResult(intent,EditDetailEvent);
@@ -135,6 +196,7 @@ public class CreateEvent extends Activity implements LocationSource,AMapLocation
 		.setItems(items, new DialogInterface.OnClickListener() {
 	        public void onClick(DialogInterface dialog, int item) {
 	            eventType.setText(items[item]);
+	            event_type = String.valueOf(item);
 	        }
 	    });
 		AlertDialog alert = builder.create(); // create one
@@ -150,12 +212,36 @@ public class CreateEvent extends Activity implements LocationSource,AMapLocation
 			{
 				if(type.equals("begin")){
 					eventBeginTime.setText(Tool.getStringDate(date));
+					time_begin = df.format(date);
 				}else{
 					eventEndTime.setText(Tool.getStringDate(date));
+					time_end = df.format(date);
 				}
 			}
 		});
 		dialog.show();
+	}
+	private class CreateEventWord extends AsyncTask<HashMap<String,Object>,String,JSONObject>{
+
+		@Override
+		protected JSONObject doInBackground(HashMap<String, Object>... map) {
+			// TODO Auto-generated method stub
+			HashMap<String,Object> mapped = map[0];
+			return new JuhuoInfo().callPostPlain(mapped,JuhuoConfig.EVENT_CREATE);
+		}
+		@Override
+		protected void onPostExecute(JSONObject result) {
+			if(result == null){
+				Log.i(TAG,"cannot get any");//we have reveived 500 error page
+				
+			}else if(result.has("wrong_data")){
+				//sth is wrong
+				Tool.dialog(CreateEvent.this);
+			}else{
+				Tool.myToast(CreateEvent.this, mResources.getString(R.string.create_event_success));
+				finish();
+			}	
+		}
 	}
 	
 	/**
@@ -176,7 +262,7 @@ public class CreateEvent extends Activity implements LocationSource,AMapLocation
 					// TODO Auto-generated method stub
 					Intent intent = new Intent(CreateEvent.this,SelectLocation.class);
 					intent.putExtra("currentLoc", location);
-					intent.putExtra("description", dest);
+					intent.putExtra("description", addr);
 					startActivityForResult(intent,SelectLocation);
 				}
 			});
@@ -188,20 +274,27 @@ public class CreateEvent extends Activity implements LocationSource,AMapLocation
 		if(data!=null){
 			switch (requestCode)  
 	        {  
-		        case 0:  
+		        case SelectLocation:  
 		            Bundle NoticeBuddle = data.getExtras();  
-		            String NoticeMessage = NoticeBuddle.getString("description");  
+		            addr = NoticeBuddle.getString("description");  
 		            LatLng NoticeLoc = (LatLng)NoticeBuddle.get("newLocation");
-		            eventPlace.setText(NoticeMessage);
+		            eventPlace.setText(addr);
+		            lat = NoticeLoc.latitude;lng = NoticeLoc.longitude;
 		            //设置中心点和缩放比例  
 			        aMap.moveCamera(CameraUpdateFactory.newCameraPosition(new CameraPosition(NoticeLoc,8,8,8)));  
 			        aMap.moveCamera(CameraUpdateFactory.zoomTo(13));
 		            break;  
-		        case 1:
+		        case EditDetailEvent:
 		        	Bundle buddle = data.getExtras();  
 		            String message = buddle.getString("detail");
 		            eventDetail.setText(message);
+		            description = message;
 		            break;
+		        case EditImage:
+		        	Bundle photobuddle = data.getExtras();  
+		            photo_ids = "["+photobuddle.getString("photo_ids")+"]";
+		            image.setImageBitmap((Bitmap)data.getParcelableExtra("bitmap"));
+		        	break;
 	        }  
 		}	
     }
@@ -287,22 +380,20 @@ public class CreateEvent extends Activity implements LocationSource,AMapLocation
 	public void onLocationChanged(AMapLocation aLocation) {
 		if (mListener != null && aLocation != null) {
 			mListener.onLocationChanged(aLocation);// 显示系统小蓝点
-			Double geoLat = aLocation.getLatitude();
-			Double geoLng = aLocation.getLongitude();
+			lat = aLocation.getLatitude();
+			lng = aLocation.getLongitude();
 			String cityCode = "";
-			String desc = "";
 			Bundle locBundle = aLocation.getExtras();
 			if (locBundle != null) {
 				cityCode = locBundle.getString("citycode");
-				desc = locBundle.getString("desc");
+				addr = locBundle.getString("desc");
 			}
-			eventPlace.setText(desc);
-			LatLng marker1 = new LatLng(geoLat, geoLng);                
+			eventPlace.setText(addr);
+			LatLng marker1 = new LatLng(lat, lng);                
 	        //设置中心点和缩放比例  
 	        aMap.moveCamera(CameraUpdateFactory.newCameraPosition(new CameraPosition(marker1,8,8,8)));  
 	        aMap.moveCamera(CameraUpdateFactory.zoomTo(13));
 	        currentLoc = aLocation;
-	        dest = desc;
 		}
 	}
 

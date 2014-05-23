@@ -386,20 +386,21 @@ public class UserSettingFragment extends Fragment{
 		Log.i("sliding menu", transView.getBackground().toString());
 		transView.setVisibility(View.INVISIBLE);
 	}
-	@Override
-	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-	    // TODO Add your menu entries here
-	    super.onCreateOptionsMenu(menu, inflater);
-	    getActivity().getMenuInflater().inflate(R.menu.setting, menu);
-	}
+//	@Override
+//	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+//	    // TODO Add your menu entries here
+//	    super.onCreateOptionsMenu(menu, inflater);
+//	    getActivity().getMenuInflater().inflate(R.menu.setting, menu);
+//	}
 	@Override
 	public void onPrepareOptionsMenu(Menu menu){
 		MenuInflater inflater = getActivity().getMenuInflater();
 		menu.clear();
-		if(menuType.equals("title")){
-			inflater.inflate(R.menu.setting, menu);
-		}else{//click image
+		if(menuType.equals("image")){
 			inflater.inflate(R.menu.pic, menu);
+			
+		}else{//click title
+			inflater.inflate(R.menu.setting, menu);
 		}
 		
 	}
@@ -484,7 +485,7 @@ public class UserSettingFragment extends Fragment{
             UploadPhoto upload = new UploadPhoto();
             HashMap<String,Object> map = new HashMap<String,Object>();
             map.put("token", JuhuoConfig.token);
-            map.put("photo", Bitmap2File(photo));
+            map.put("photo", Tool.Bitmap2File(photo));
             upload.execute(map);
             mPgDialog = new ProgressDialog(getActivity());
             mPgDialog.setMessage(mResources.getString(R.string.uploading_photo));
@@ -493,22 +494,7 @@ public class UserSettingFragment extends Fragment{
             
         }
     }
-    //将bitmap转变为file
-    private String Bitmap2File(Bitmap bm){
-    	FileOutputStream out;
-		try {
-			 //把需要上传的图片存在一个临时文件里面
-			 out = new FileOutputStream(Environment.getExternalStorageDirectory()+"/tmp.jpg");
-			 bm.compress(Bitmap.CompressFormat.PNG, 90, out);
-			 return Environment.getExternalStorageDirectory()+"/tmp.jpg";
-		} catch (FileNotFoundException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}catch (Exception e) {
-    	    e.printStackTrace();
-    	} 
-    	return "";
-    }
+    
     // 使用系统当前日期加以调整作为照片的名称
     private String getPhotoFileName() {
         Date date = new Date(System.currentTimeMillis());

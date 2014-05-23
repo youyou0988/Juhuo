@@ -1,6 +1,7 @@
 package com.juhuo.tool;
 
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -24,12 +25,14 @@ import android.app.Dialog;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.Environment;
 import android.util.Log;
 import android.view.Display;
 import android.view.Gravity;
@@ -51,7 +54,7 @@ import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.nostra13.universalimageloader.core.assist.QueueProcessingType;
 
 public class Tool {
-	final static String ISO8601DATEFORMAT = "yyyy-MM-dd'T'HH:mm:ss+00:00";
+	public final static String ISO8601DATEFORMAT = "yyyy-MM-dd'T'HH:mm:ss+00:00";
 	
 	/**
      * 检测网络是否可用
@@ -336,5 +339,21 @@ public class Tool {
         view.setScaleType(ScaleType.FIT_XY);
         return view;
 	}
+	//将bitmap转变为file
+    public static String Bitmap2File(Bitmap bm){
+    	FileOutputStream out;
+		try {
+			 //把需要上传的图片存在一个临时文件里面
+			 out = new FileOutputStream(Environment.getExternalStorageDirectory()+"/tmp.jpg");
+			 bm.compress(Bitmap.CompressFormat.PNG, 90, out);
+			 return Environment.getExternalStorageDirectory()+"/tmp.jpg";
+		} catch (FileNotFoundException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}catch (Exception e) {
+    	    e.printStackTrace();
+    	} 
+    	return "";
+    }
     
 }

@@ -1,6 +1,5 @@
 package com.juhuo.welcome;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -28,19 +27,23 @@ import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.ImageView.ScaleType;
 import android.widget.LinearLayout.LayoutParams;
 import android.widget.RelativeLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 
 import com.amap.api.maps2d.AMap;
+import com.amap.api.maps2d.CameraUpdateFactory;
 import com.amap.api.maps2d.MapView;
+import com.amap.api.maps2d.UiSettings;
+import com.amap.api.maps2d.model.CameraPosition;
+import com.amap.api.maps2d.model.LatLng;
 import com.juhuo.adapter.HotEventsAdapter.AnimateFirstDisplayListener;
 import com.juhuo.control.PullDownElasticImp;
 import com.juhuo.control.RefreshableView;
@@ -88,6 +91,7 @@ public class EventDetailActivity extends Activity {
 	private Resources mResources;
 	private MapView mapView;
 	private AMap aMap;
+	private UiSettings mUiSettings;
 	private String[] eventTypeStr={"所有活动","交友聚会","读书看报","音乐电影","体育锻炼","其他"};
 	DisplayImageOptions options = new DisplayImageOptions.Builder()
 	.imageScaleType(ImageScaleType.EXACTLY)
@@ -232,7 +236,7 @@ public class EventDetailActivity extends Activity {
 		type=getIntent().getExtras().getString("type");
 		if(type.equals("HOT")){
 			applyLay.setVisibility(View.GONE);
-		}else{
+		}else{//my events' detail
 			applyLay.setVisibility(View.VISIBLE);
 		}
 		
@@ -281,6 +285,12 @@ public class EventDetailActivity extends Activity {
 	        	eventTime.setBackgroundColor(mResources.getColor(R.color.graytrans));
 	        }	
 			eventPlace.setText(result.getString("addr"));
+			double lat = result.getDouble("lat");
+			double lng = result.getDouble("lng");
+			LatLng marker1 = new LatLng(lat, lng);                
+	        //设置中心点和缩放比例  
+	        aMap.moveCamera(CameraUpdateFactory.newCameraPosition(new CameraPosition(marker1,8,8,8)));  
+	        aMap.moveCamera(CameraUpdateFactory.zoomTo(13));
 			eventOrganizer.setText(result.getString("organizer_name"));
 			int et = Integer.parseInt(result.getString("event_type"));
 			eventType.setText(eventTypeStr[et]);
@@ -457,6 +467,10 @@ public class EventDetailActivity extends Activity {
 	private void init() {
 		if (aMap == null) {
 			aMap = mapView.getMap();
+			mUiSettings = aMap.getUiSettings();
+			mUiSettings.setZoomControlsEnabled(false);  
+			mUiSettings.setZoomGesturesEnabled(false); 
+			mUiSettings.setScrollGesturesEnabled(false);  
 		}
 	}
 	// 滑动图片数据适配器
@@ -592,6 +606,22 @@ public class EventDetailActivity extends Activity {
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.main, menu);
+		if(type.equals("MY")){
+			menu.clear();
+			getMenuInflater().inflate(R.menu.most, menu);
+		}
+		return super.onCreateOptionsMenu(menu);
+	}
+	@Override
+	public boolean onPrepareOptionsMenu(Menu menu){
+		MenuInflater inflater = getMenuInflater();
+		menu.clear();
+		if(type.equals("MY")){
+			Log.i(TAG, type);
+			inflater.inflate(R.menu.most, menu);
+		}else{//click image
+			inflater.inflate(R.menu.main, menu);
+		}
 		return true;
 	}
 	@Override

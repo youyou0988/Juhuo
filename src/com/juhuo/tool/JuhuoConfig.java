@@ -35,6 +35,7 @@ public class JuhuoConfig {
 	public static String USER_MODIFY = PRODUCTIONPREFIX+"user/modify/";
 	public static String ACTIVE_ACCOUNT = PRODUCTIONPREFIX+"user/applyactivate/";
 	
+	public static String EVENT_CREATE = PRODUCTIONPREFIX+"event/create/";
 	public static String EVENT_LIST = PRODUCTIONPREFIX+"event/list/";
 	public static String EVENT_DELETE = PRODUCTIONPREFIX+"event/delete/";
 	public static String EVENT_INFO	= PRODUCTIONPREFIX + "event/info/";

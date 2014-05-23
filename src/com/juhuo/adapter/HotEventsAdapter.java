@@ -108,9 +108,13 @@ public class HotEventsAdapter extends BaseAdapter {
 				tmp.put("title", ja.getJSONObject(i).getString("title"));
 				String timeEnd = ja.getJSONObject(i).getString("time_end");
 				String timeBegin = ja.getJSONObject(i).getString("time_begin");
-				String event_time = Tool.getCalendarByInintData(timeBegin.substring(0,19).replace('T', ' '),
-						timeEnd.substring(0,19).replace('T', ' '));
-				tmp.put("time", event_time);
+				if(!timeBegin.equals("null")&&!timeEnd.equals("null")){
+					String event_time = Tool.getCalendarByInintData(timeBegin.substring(0,19).replace('T', ' '),
+							timeEnd.substring(0,19).replace('T', ' '));
+					tmp.put("time", event_time);
+				}else{
+					tmp.put("time", "ÒÑ¾­½áÊø");
+				}
 				tmp.put("apply_number", ja.getJSONObject(i).getString("apply_number"));
 				tmp.put("eventId", String.valueOf(ja.getJSONObject(i).getInt("id")));
 				mData.add(tmp);

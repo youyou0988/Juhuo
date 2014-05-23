@@ -60,6 +60,9 @@
 	
 	<string name="add_to_calendar">加到日历</string>
 	<string name="share_event">分享活动</string>
+	<string name="update_event">更新活动</string>
+	<string name="invite_friends">邀请好友</string>
+	<string name="send_remind">发送提醒短信</string>
 	<string name="cancel">取消</string>
 	<string name="save">保存</string>
 	<string name="setting">设置</string>
@@ -69,6 +72,7 @@
 	<string name="active_acc_success">账号激活成功！</string>
 	<string name="cha_info_success">修改信息成功！</string>
 	<string name="upload_photo_success">上传头像成功！</string>
+	<string name="create_event_success">创建活动成功！</string>
 	
 	<string name="name">姓名</string>
 	<string name="age">年龄</string>
