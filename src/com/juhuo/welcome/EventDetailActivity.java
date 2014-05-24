@@ -160,7 +160,7 @@ public class EventDetailActivity extends Activity {
 	}
 	private void initViews(Bundle savedInstanceState){
 		mResources = getResources();
-		int length = getIntent().getExtras().getInt("picNumber");
+		int length = getIntent().getExtras().getInt("picNumber")==0?1:getIntent().getExtras().getInt("picNumber");
 		slideImages = new int[length];
 		for(int i=0;i<length;i++){
 			slideImages[i] = R.drawable.default_image;
@@ -181,6 +181,7 @@ public class EventDetailActivity extends Activity {
 		slideLayout = new SlideImageLayout(EventDetailActivity.this);
 		slideLayout.setCircleImageLayout(length);
 		View dummyView = new View(this);
+		dummyView = slideLayout.getSlideImageLayout2("");
 		for(int i = 0;i < length;i++){
 			imagePageViews.add(dummyView);
 			imageCircleViews[i] = slideLayout.getCircleImageLayout(i);
@@ -264,10 +265,10 @@ public class EventDetailActivity extends Activity {
 					String url = ja.getJSONObject(i).getString("url");
 					imagePageViews.set(i, slideLayout.getSlideImageLayout2(url));
 				}
-				adapter = new SlideImageAdapter();
-				viewPager.setAdapter(adapter);  
-			    viewPager.setOnPageChangeListener(new ImagePageChangeListener());
 			}
+			adapter = new SlideImageAdapter();
+			viewPager.setAdapter(adapter);  
+		    viewPager.setOnPageChangeListener(new ImagePageChangeListener());
 			title = result.getString("title");
 			description = result.getString("description");
 			eventTitle.setText(title);
@@ -293,7 +294,8 @@ public class EventDetailActivity extends Activity {
 	        aMap.moveCamera(CameraUpdateFactory.newCameraPosition(new CameraPosition(marker1,8,8,8)));  
 	        aMap.moveCamera(CameraUpdateFactory.zoomTo(13));
 			eventOrganizer.setText(result.getString("organizer_name"));
-			int et = Integer.parseInt(result.getString("event_type"));
+			int et = Integer.parseInt(result.getString("event_type").equals("")?"1":
+				result.getString("event_type"));
 			eventType.setText(eventTypeStr[et]);
 			eventIspublic.setText(result.getInt("privacy")==0?"公开":"不公开");
 			eventCost.setText(result.getInt("cost")!=0?String.valueOf(result.getInt("cost")):"免费");

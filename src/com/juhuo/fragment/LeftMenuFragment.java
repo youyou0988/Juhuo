@@ -9,7 +9,6 @@ import java.util.List;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
@@ -134,6 +133,7 @@ public class LeftMenuFragment extends Fragment{
 						String url = result.getJSONArray("suc_photos").getJSONObject(0).getString("url");
 						imageLoader.displayImage(url, userImage, options, animateFirstListener);
 					}
+					Tool.writeJsonToFile(result,getActivity(),JuhuoConfig.USERINFO+JuhuoConfig.userId);
 				} catch (JSONException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -172,6 +172,9 @@ public class LeftMenuFragment extends Fragment{
 						Fragment hotEvent = new HotEventsFragment();
 						activity.switchContent(hotEvent);
 					}else if(position==2){
+						Fragment followEvent = new FollowFragment();
+						activity.switchContent(followEvent);
+					}else if(position==3){
 						Fragment userSetting = new UserSettingFragment();
 						activity.switchContent(userSetting);
 					}
@@ -207,6 +210,12 @@ public class LeftMenuFragment extends Fragment{
 		mData.add(tmpmap);
 		tmpmap = new HashMap<String,Object>();
 		tmpmap.put("title", "我的活动");
+		tmpmap.put("icon", mResources.getDrawable(R.drawable.icon_my_events));
+		tmpmap.put("icon-selected", mResources.getDrawable(R.drawable.icon_my_events_selected));
+		tmpmap.put("focus", 0);
+		mData.add(tmpmap);
+		tmpmap = new HashMap<String,Object>();
+		tmpmap.put("title", "我的关注");
 		tmpmap.put("icon", mResources.getDrawable(R.drawable.icon_my_events));
 		tmpmap.put("icon-selected", mResources.getDrawable(R.drawable.icon_my_events_selected));
 		tmpmap.put("focus", 0);

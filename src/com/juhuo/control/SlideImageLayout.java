@@ -107,7 +107,12 @@ public class SlideImageLayout {
 		RelativeLayout.LayoutParams textviewparams=new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
 	    textviewparams.addRule(RelativeLayout.CENTER_IN_PARENT);
 		imageRelative.addView(iv,textviewparams);
-		imageLoader.displayImage(url,iv, options, animateFirstListener);
+		if(url.equals("")){
+			iv.setBackgroundDrawable(activity.getResources().getDrawable(R.drawable.default_image));
+		}else{
+			imageLoader.displayImage(url,iv, options, animateFirstListener);
+		}
+		
 		imageLinerLayout.addView(imageRelative,imageLinerLayoutParames);
 		imageList.add(iv);
 		

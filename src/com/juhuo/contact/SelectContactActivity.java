@@ -5,18 +5,17 @@ import java.util.List;
 import android.app.Activity;
 import android.content.res.Resources;
 import android.os.Bundle;
+import android.util.Log;
 import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.widget.CheckBox;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
-
 import com.foound.widget.AmazingAdapter;
 import com.foound.widget.AmazingListView;
-import com.juhuo.tool.JuhuoConfig;
 import com.juhuo.welcome.R;
 
 public class SelectContactActivity extends Activity {
@@ -26,17 +25,20 @@ public class SelectContactActivity extends Activity {
 	private TextView actionTitle;
 	private Resources mResources;
 	
+	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);//»•µÙ±ÍÃ‚¿∏
 		setContentView(R.layout.activity_section_demo);
 		mResources = getResources();
+		
 		actionTitleImg = (ImageView)findViewById(R.id.action_title_img);
 		actionTitleImg2 = (ImageView)findViewById(R.id.action_title_img2);
 		actionTitle = (TextView)findViewById(R.id.action_title);
 		actionTitleImg.setBackgroundDrawable(mResources.getDrawable(R.drawable.icon_back));
 		actionTitleImg2.setBackgroundDrawable(mResources.getDrawable(R.drawable.plus));
+		actionTitleImg2.setVisibility(View.VISIBLE);
 		actionTitleImg.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View arg0) {
@@ -52,7 +54,7 @@ public class SelectContactActivity extends Activity {
 	}
 	
 	class SectionContactAdapter extends AmazingAdapter {
-		List<Pair<String, List<Contact>>> all = Data.getAllData();
+		List<Pair<String, List<Contact>>> all = Data.getAllData(SelectContactActivity.this);
 
 		@Override
 		public int getCount() {
@@ -89,6 +91,7 @@ public class SelectContactActivity extends Activity {
 			if (displaySectionHeader) {
 				view.findViewById(R.id.header).setVisibility(View.VISIBLE);
 				TextView lSectionTitle = (TextView) view.findViewById(R.id.header);
+				lSectionTitle.setBackgroundColor(mResources.getColor(R.color.titlegray));
 				lSectionTitle.setText(getSections()[getSectionForPosition(position)]);
 			} else {
 				view.findViewById(R.id.header).setVisibility(View.GONE);
@@ -102,7 +105,7 @@ public class SelectContactActivity extends Activity {
 			
 			TextView lName = (TextView) res.findViewById(R.id.lName);
 			TextView lYear = (TextView) res.findViewById(R.id.lYear);
-			
+			CheckBox lis = (CheckBox)res.findViewById(R.id.isinvited);
 			Contact composer = getItem(position);
 			lName.setText(composer.name);
 			lYear.setText(composer.cell);
@@ -114,7 +117,7 @@ public class SelectContactActivity extends Activity {
 		public void configurePinnedHeader(View header, int position, int alpha) {
 			TextView lSectionHeader = (TextView)header;
 			lSectionHeader.setText(getSections()[getSectionForPosition(position)]);
-			lSectionHeader.setBackgroundColor(mResources.getColor(R.color.gray));
+			lSectionHeader.setBackgroundColor(mResources.getColor(R.color.titlegray));
 			lSectionHeader.setTextColor(alpha << 24 | (0x000000));
 		}
 

@@ -1,40 +1,49 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="220dp"
-    android:layout_height="120dp"
-    android:orientation="vertical"
-    android:padding="10dp" >
+    android:layout_height="wrap_content"
+    android:padding="5dp" >
     <TextView android:id="@+id/delete_text"
  	    android:textColor="@color/black"
  	    android:textSize="20sp"
  	    android:layout_marginTop="5dp"
- 	    android:layout_width="fill_parent"
- 	    android:layout_height="fill_parent"
- 	    android:layout_weight="1.0"
- 	    android:text="@string/makesure_delete_event"/>
-    <LinearLayout android:layout_width="wrap_content"
-        android:layout_height="fill_parent"
-        android:orientation="horizontal"
-        android:padding="10dp"
-        android:layout_weight="1.0">
+ 	    android:layout_width="wrap_content"
+ 	    android:layout_height="wrap_content"
+ 	    android:layout_alignParentTop="true"
+ 	    android:text="@string/makesure_delete_event"
+ 	    android:layout_centerHorizontal="true"
+ 	    android:layout_marginBottom="5dp"
+ 	    />
+    <RelativeLayout android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/delete_text"
+        android:padding="10dp">
         <Button android:id="@+id/no"
-            android:layout_width="60dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="center"
+            android:textSize="20sp"
             android:textColor="@color/black"
             android:background="@drawable/border"
+            android:layout_alignParentLeft="true"
+            android:paddingLeft="30dp"
+            android:paddingRight="30dp"
             android:text="否"/>
 
         <Button
             android:id="@+id/yes"
-            android:layout_width="60dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="30dp"
             android:gravity="center"
+            android:textSize="20sp"
             android:textColor="@color/black"
             android:background="@drawable/border"
+            android:layout_alignParentRight="true"
+            android:layout_marginLeft="5dp"
+            android:paddingLeft="30dp"
+            android:paddingRight="30dp"
             android:text="是" />
         
-    </LinearLayout>
+    </RelativeLayout>
  
-</LinearLayout>
+</RelativeLayout>

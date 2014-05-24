@@ -7,7 +7,7 @@ public class JuhuoConfig {
 	public static String EVENTINFO = "juhuo_event_info_";
 	public static String EVENTCOMMENT = "juhuo_event_comment_";
 	public static String EVENTLISTSPECIFIC = "juhuo_event_specific_list_";
-	public static String USERINFO = "juhuo_user_info";
+	public static String USERINFO = "juhuo_user_info_";
 	
 	public static int INVI_NULL=0;
 	public static int INVI_YES=1;

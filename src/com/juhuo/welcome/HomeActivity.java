@@ -1,11 +1,14 @@
 package com.juhuo.welcome;
 
+import android.content.Intent;
+import android.content.res.Resources;
 import android.graphics.Point;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.Display;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.ImageView;
 
@@ -23,10 +26,12 @@ public class HomeActivity extends SlidingFragmentActivity {
 	private int WIDTH,HEIGHT;
 	private Fragment mContent;
 	private ImageView actionTitleImg;
+	private Resources mResources;
 	@Override
 	public void onCreate(Bundle savedInstanceState){
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.home_frame);
+		mResources = getResources();
 		getSize();
 		initSlidingMenu(savedInstanceState);
 		Tool.initImageLoader(this);
@@ -120,6 +125,15 @@ public class HomeActivity extends SlidingFragmentActivity {
 				getSlidingMenu().showContent();
 			}
 		}, 50);
+	}
+	@Override
+	public void onBackPressed() { 
+	    //实现Home键效果 
+	    //super.onBackPressed();这句话一定要注掉,不然又去调用默认的back处理方式了 
+	    Intent i= new Intent(Intent.ACTION_MAIN); 
+	    i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK); 
+	    i.addCategory(Intent.CATEGORY_HOME); 
+	    startActivity(i);  
 	}
 	
 }

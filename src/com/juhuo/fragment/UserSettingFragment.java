@@ -142,7 +142,7 @@ public class UserSettingFragment extends Fragment{
 			}
 		});
 		JSONObject jsonCache = new JSONObject();
-		jsonCache = Tool.loadJsonFromFile(JuhuoConfig.USERINFO,getActivity());
+		jsonCache = Tool.loadJsonFromFile(JuhuoConfig.USERINFO+JuhuoConfig.userId,getActivity());
 		if(jsonCache==null){
 			HashMap<String,Object> mapPara = new HashMap<String,Object>();
 			mapPara.put("token", JuhuoConfig.token);
@@ -230,7 +230,6 @@ public class UserSettingFragment extends Fragment{
 				startActivity(intent);
 				getActivity().finish();
 			}
-			
 		}
 	}
 	
@@ -340,7 +339,13 @@ public class UserSettingFragment extends Fragment{
 				//sth is wrong
 				Tool.dialog(getActivity());
 			}else{
-				Tool.writeJsonToFile(result,getActivity(),JuhuoConfig.USERINFO);
+				try {
+					String id = String.valueOf(result.getInt("id"));
+					Tool.writeJsonToFile(result,getActivity(),JuhuoConfig.USERINFO+id);
+				} catch (JSONException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 				setComponentsContent(result);
 				
 			}

@@ -82,8 +82,11 @@
 	<string name="description">个人简介</string>
 	
 	<string name="my_event">我的活动</string>
+	<string name="my_follow">我的关注</string>
     <string name="my_organize">我组织的</string>
     <string name="my_participant">我参加的</string>
+    <string name="my_follower">关注人员</string>
+    <string name="my_follow_event">关注活动</string>
     <string name="no_my_organize">没有找到我组织的活动</string>
     <string name="no_my_participant">没有找到我参加的活动</string>
     

@@ -1,17 +1,39 @@
 package com.juhuo.contact;
 
-import android.os.*;
-import android.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
-import java.util.*;
+import android.content.Context;
+import android.database.Cursor;
+import android.os.SystemClock;
+import android.provider.ContactsContract;
+import android.provider.ContactsContract.CommonDataKinds.Phone;
+import android.util.Log;
+import android.util.Pair;
 
 public class Data {
 	public static final String TAG = Data.class.getSimpleName();
+	private static Context context;
+	/**
+	 * 汉字转换成拼音的类
+	 */
 	
-	public static List<Pair<String, List<Contact>>> getAllData() {
+	private static List<Contact> SourceDateList;
+	private static CharacterParser characterParser;
+	/**
+	 * 根据拼音来排列ListView里面的数据类
+	 */
+	private static PinyinComparator pinyinComparator;
+	
+	public static List<Pair<String, List<Contact>>> getAllData(Context con) {
+		//实例化汉字转拼音类
+		characterParser = CharacterParser.getInstance();
+		pinyinComparator = new PinyinComparator();
+		context = con;
 		List<Pair<String, List<Contact>>> res = new ArrayList<Pair<String, List<Contact>>>();
 		
-		for (int i = 0; i < 4; i++) {
+		for (int i = 0; i < 27; i++) {
 			res.add(getOneSection(i));
 		}
 		
@@ -39,38 +61,47 @@ public class Data {
 	}
 	
 	public static Pair<String, List<Contact>> getOneSection(int index) {
-		String[] titles = {"Renaissance", "Baroque", "Classical", "Romantic"};
-		Contact[][] composerss = {
-			{
-				new Contact("Thomas Tallis", "1510-1585"),
-				new Contact("Josquin Des Prez", "1440-1521"),
-				new Contact("Pierre de La Rue", "1460-1518"),
-			},
-			{
-				new Contact("Johann Sebastian Bach", "1685-1750"),
-				new Contact("George Frideric Handel", "1685-1759"),
-				new Contact("Antonio Vivaldi", "1678-1741"),
-				new Contact("George Philipp Telemann", "1681-1767"),
-			},
-			{
-				new Contact("Franz Joseph Haydn", "1732-1809"),
-				new Contact("Wolfgang Amadeus Mozart", "1756-1791"),
-				new Contact("Barbara of Portugal", "1711�758"),
-				new Contact("Frederick the Great", "1712�786"),
-				new Contact("John Stanley", "1712�786"),
-				new Contact("Luise Adelgunda Gottsched", "1713�762"),
-				new Contact("Johann Ludwig Krebs", "1713�780"),
-				new Contact("Carl Philipp Emanuel Bach", "1714�788"),
-				new Contact("Christoph Willibald Gluck", "1714�787"),
-				new Contact("Gottfried August Homilius", "1714�785"),
-			},
-			{
-				new Contact("Ludwig van Beethoven", "1770-1827"),
-				new Contact("Fernando Sor", "1778-1839"),
-				new Contact("Johann Strauss I", "1804-1849"),
-			},
-		};
-		return new Pair<String, List<Contact>>(titles[index], Arrays.asList(composerss[index]));
+		String[] titles = { "A", "B", "C", "D", "E", "F", "G", "H", "I",
+				"J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V",
+				"W", "X", "Y", "Z", "#" };
+		HashMap<String,List<Contact>> map = new HashMap<String,List<Contact>>();
+		for(int i=0;i<titles.length;i++){
+			map.put(titles[i], new ArrayList<Contact>());
+		}
+		Cursor cursor = null;
+	    try {
+	    	String sortOrder = ContactsContract.Contacts.DISPLAY_NAME + " COLLATE LOCALIZED ASC";
+	        cursor = context.getContentResolver().query(Phone.CONTENT_URI, null, null, null, sortOrder);
+	        int contactIdIdx = cursor.getColumnIndex(Phone._ID);
+	        int nameIdx = cursor.getColumnIndex(Phone.DISPLAY_NAME);
+	        int phoneNumberIdx = cursor.getColumnIndex(Phone.NUMBER);
+	        int photoIdIdx = cursor.getColumnIndex(Phone.PHOTO_ID);
+	        cursor.moveToFirst();
+	        do {
+	            String idContact = cursor.getString(contactIdIdx);
+	            String name = cursor.getString(nameIdx);
+	            String phoneNumber = cursor.getString(phoneNumberIdx);
+	            Contact contact = new Contact(name,phoneNumber);
+	            //汉字转换成拼音
+				String pinyin = characterParser.getSelling(name);
+				String sortString = pinyin.substring(0, 1).toUpperCase();
+				
+				// 正则表达式，判断首字母是否是英文字母
+				if(sortString.matches("[A-Z]")){
+					contact.setSortLetters(sortString.toUpperCase());
+				}else{
+					contact.setSortLetters("#");
+				}
+				map.get(contact.getSortLetters()).add(contact);
+	        } while (cursor.moveToNext());  
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    } finally {
+	        if (cursor != null) {
+	            cursor.close();
+	        }
+	    }
+	    return new Pair<String, List<Contact>>(titles[index], map.get(titles[index]));
 	}
 }
 
