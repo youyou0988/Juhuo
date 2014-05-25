@@ -14,6 +14,9 @@ public class Contact {
 	public String getName() {
 		return name;
 	}
+	public String getCell(){
+		return cell;
+	}
 	public void setName(String name) {
 		this.name = name;
 	}

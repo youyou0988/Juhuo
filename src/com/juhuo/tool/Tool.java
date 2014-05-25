@@ -99,9 +99,9 @@ public class Tool {
     }  
     
    //设置弹出框的样式为圆角并透明的矩形
-  	public static Drawable getShape(){
-	    GradientDrawable gradientDrawable = new GradientDrawable(GradientDrawable.Orientation.TL_BR, new int[] { Color.WHITE,
-	    		Color.WHITE, Color.WHITE});
+  	public static Drawable getShape(int color){
+	    GradientDrawable gradientDrawable = new GradientDrawable(GradientDrawable.Orientation.TL_BR, new int[] { color,
+	    		color, color});
 	    gradientDrawable.setGradientType(GradientDrawable.RECTANGLE);
 	    gradientDrawable.setCornerRadii(getRandomFloatArray());
 	    return gradientDrawable;
@@ -136,7 +136,7 @@ public class Tool {
 		//mind the order && donn't set background color
 		final Dialog dialog = new Dialog(activity);
 		dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-		Drawable d = Tool.getShape();
+		Drawable d = Tool.getShape(Color.WHITE);
 		dialog.getWindow().setBackgroundDrawable(d);
 		dialog.setContentView(R.layout.alert_dialog);
 		

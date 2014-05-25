@@ -1,0 +1,121 @@
+<RelativeLayout android:layout_height="match_parent" 
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:background="@color/white">
+    <include
+        android:id="@+id/titlebar"
+        android:layout_alignParentTop="true"
+        layout="@layout/title_bar" />
+    <RelativeLayout android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:paddingRight="15dp"
+        android:paddingLeft="15dp"
+        android:paddingTop="15dp"
+        android:paddingBottom="8dp"
+        android:layout_below="@+id/titlebar"
+        android:layout_above="@+id/bottomlayer"
+        >
+        <RelativeLayout android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:layout_alignParentTop="true"
+            android:id="@+id/lay1">
+            <ImageView android:layout_width="150dp"
+                android:layout_height="150dp"
+                android:background="@drawable/default_image"
+                android:scaleType="fitXY"
+                android:layout_alignParentLeft="true"
+                android:id="@+id/image"></ImageView>
+            <RelativeLayout android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:layout_toRightOf="@+id/image"
+                android:layout_alignParentRight="true"
+                android:layout_marginLeft="15dp">
+                <TextView android:layout_alignParentTop="true"
+                    android:layout_height="wrap_content"
+                    android:layout_width="wrap_content"
+                    android:textColor="@color/mgray"
+                    android:text="@string/event_name"
+                    android:id="@+id/t1"
+                    />
+                <TextView 
+                    android:layout_height="wrap_content"
+                    android:layout_width="wrap_content"
+                    android:textColor="@color/mgreen"
+                    android:layout_below="@+id/t1"
+                    android:id="@+id/t2"
+                    android:singleLine="true"
+                    android:ellipsize="end"/>
+                 <TextView 
+                    android:layout_height="wrap_content"
+                    android:layout_width="wrap_content"
+                    android:textColor="@color/mgray"
+                    android:layout_below="@+id/t2"
+                    android:id="@+id/t3"
+                    android:text="@string/begintime"
+                    android:layout_marginTop="10dp"/>
+                  <TextView 
+                    android:layout_height="wrap_content"
+                    android:layout_width="wrap_content"
+                    android:textColor="@color/mgreen"
+                    android:layout_below="@+id/t3"
+                    android:id="@+id/t4"/>
+                   <TextView 
+                    android:layout_height="wrap_content"
+                    android:layout_width="wrap_content"
+                    android:textColor="@color/mgray"
+                    android:layout_below="@+id/t4"
+                    android:id="@+id/t5"
+                    android:text="@string/endtime"
+                    android:layout_marginTop="10dp"/>
+                    <TextView 
+                    android:layout_height="wrap_content"
+                    android:layout_width="wrap_content"
+                    android:textColor="@color/mgreen"
+                    android:layout_below="@+id/t5"
+                    android:id="@+id/t6"/>
+            </RelativeLayout>
+        </RelativeLayout>
+        <View android:layout_height="0.5dp"
+            android:layout_width="fill_parent"
+            android:layout_marginTop="15dp"
+            android:id="@+id/divider"
+            android:background="@color/mgray"
+            android:layout_below="@+id/lay1"/>
+        <ListView
+                android:id="@+id/confirmlist"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/divider"
+                 />
+        
+        
+    </RelativeLayout>
+    <RelativeLayout android:layout_height="55dp"
+        android:layout_width="wrap_content"
+        android:id="@+id/bottomlayer"
+        android:layout_alignParentBottom="true"
+        android:paddingLeft="15dp"
+        android:paddingRight="15dp"
+        android:paddingBottom="8dp">
+        <View android:layout_height="0.5dp"
+	            android:layout_width="fill_parent"
+	            android:layout_marginTop="15dp"
+	            android:id="@+id/divider2"
+	            android:background="@color/mgray"
+	            android:layout_above="@+id/send_btn"
+	            
+	            />
+	    <Button android:layout_height="wrap_content"
+			        android:layout_width="fill_parent"
+			        android:background="@drawable/click_btn"
+			        android:text="@string/send_invitation"
+			        android:textColor="@color/white"
+			        android:textSize="20sp"
+			        android:id="@+id/send_btn"
+			        android:layout_marginTop="10dp"
+			        android:layout_alignParentBottom="true"
+			        />
+    </RelativeLayout>
+    
+   
+</RelativeLayout>

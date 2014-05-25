@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="240dp"
+    android:layout_height="wrap_content"
+    android:padding="5dp"
+    android:id="@+id/create_contact_lay" >
+    <TextView android:id="@+id/create_contact"
+ 	    android:textColor="@color/black"
+ 	    android:textSize="20sp"
+ 	    android:layout_marginTop="5dp"
+ 	    android:layout_width="wrap_content"
+ 	    android:layout_height="wrap_content"
+ 	    android:layout_alignParentTop="true"
+ 	    android:text="@string/create_contact"
+ 	    android:layout_centerHorizontal="true"
+ 	    android:layout_marginBottom="5dp"
+ 	    />
+    <RelativeLayout android:layout_height="wrap_content"
+        android:layout_width="fill_parent"
+        android:layout_margin="10dp"
+        android:layout_below="@+id/create_contact"
+        android:id="@+id/lay1"
+        android:background="@drawable/bg_text_2lines">
+        <EditText android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:id="@+id/name"
+            android:hint="@string/name"
+            android:layout_alignParentTop="true"
+            android:padding="@dimen/pic_margin"
+            android:background="@color/transparent"
+            android:textSize="16sp"
+            android:textColor="@color/gray"
+            android:singleLine="true"/>
+        <View android:layout_width="match_parent"
+	           android:layout_height="0.5dp"
+	           android:background="@color/gray"
+	           android:layout_centerVertical="true"
+	           android:layout_marginLeft="2dp"
+	           android:layout_marginRight="2dp"
+	           android:id="@+id/divider"/>
+        <EditText android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:id="@+id/cell"
+            android:hint="@string/cell"
+            android:layout_below="@+id/name"
+            android:padding="@dimen/pic_margin"
+            android:background="@color/transparent"
+            android:textSize="16sp"
+            android:textColor="@color/gray"
+            android:singleLine="true"
+            android:inputType="phone"/>
+    </RelativeLayout>
+    <RelativeLayout android:layout_width="wrap_content"
+        android:layout_height="40dp"
+        android:layout_below="@+id/lay1"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp">
+        <Button android:id="@+id/no"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:textSize="15sp"
+            android:textColor="@color/black"
+            android:background="@drawable/border"
+            android:layout_alignParentLeft="true"
+            android:paddingLeft="30dp"
+            android:paddingRight="30dp"
+            android:text="否"/>
+
+        <Button
+            android:id="@+id/yes"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:textSize="15sp"
+            android:textColor="@color/black"
+            android:background="@drawable/border"
+            android:layout_alignParentRight="true"
+            android:layout_marginLeft="5dp"
+            android:paddingLeft="30dp"
+            android:paddingRight="30dp"
+            android:text="是" />
+        
+    </RelativeLayout>
+ 
+</RelativeLayout>

@@ -40,6 +40,7 @@ public class JuhuoConfig {
 	public static String EVENT_DELETE = PRODUCTIONPREFIX+"event/delete/";
 	public static String EVENT_INFO	= PRODUCTIONPREFIX + "event/info/";
 	public static String EVENT_COMMENT_LIST = PRODUCTIONPREFIX+"event/listcomment/";
+	public static String EVENT_INVITE = PRODUCTIONPREFIX+"event/invite/";
 	
 	public static String COMMON_UPLOADPHOTO = PRODUCTIONPREFIX+"common/uploadphoto/";
 

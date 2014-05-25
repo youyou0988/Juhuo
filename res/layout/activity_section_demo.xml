@@ -7,20 +7,34 @@
         android:layout_alignParentTop="true"
         layout="@layout/title_bar" />
 	<com.foound.widget.AmazingListView android:layout_width="fill_parent" 
-	    android:layout_height="400dp" android:id="@+id/lsComposer"
-	    android:layout_below="@+id/titlebar"/>
-	<Button
-            android:id="@+id/send_invitation"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/lsComposer"
-            android:layout_marginTop="10dp"
-            android:layout_marginBottom="10dp"
-            android:layout_alignParentBottom="true"
-            android:background="@drawable/click_btn"
-            android:gravity="center"
-            android:layout_centerHorizontal="true"
-            android:text="@string/send_invitation"
-            android:textColor="@color/white"
-            android:textSize="20sp" />
+	    android:layout_height="wrap_content" android:id="@+id/lsComposer"
+	    android:layout_below="@+id/titlebar"
+	    android:layout_above="@+id/bottomlayer"/>
+	<RelativeLayout android:layout_height="55dp"
+        android:layout_width="wrap_content"
+        android:id="@+id/bottomlayer"
+        android:layout_alignParentBottom="true"
+        android:paddingLeft="15dp"
+        android:paddingRight="15dp"
+        android:paddingBottom="8dp">
+        <View android:layout_height="0.5dp"
+	            android:layout_width="fill_parent"
+	            android:layout_marginTop="15dp"
+	            android:id="@+id/divider2"
+	            android:background="@color/mgray"
+	            android:layout_above="@+id/send_btn"
+	            
+	            />
+	    <Button android:layout_height="wrap_content"
+			        android:layout_width="fill_parent"
+			        android:background="@drawable/click_btn"
+			        android:text="@string/confirm_invitation"
+			        android:textColor="@color/white"
+			        android:textSize="20sp"
+			        android:id="@+id/confirm_btn"
+			        android:layout_marginTop="10dp"
+			        android:layout_alignParentBottom="true"
+			        />
+    </RelativeLayout>
+	
 </RelativeLayout>

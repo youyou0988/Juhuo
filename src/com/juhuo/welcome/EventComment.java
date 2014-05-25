@@ -81,6 +81,7 @@ public class EventComment extends Activity{
 		mapPara = new HashMap<String,Object>();
 		mapPara.put("id", this.event_id);
 		mapPara.put("token", JuhuoConfig.token);
+		mapPara.put("incremental", String.valueOf(true));
 		if(jo==null){
 			//get network data
 			getNetData(mapPara);
@@ -147,7 +148,11 @@ public class EventComment extends Activity{
 				holder = (CommentHandler) convertView.getTag();
 			}
 			holder.name.setText((String)mData.get(position).get("commenter_name"));
-			holder.time.setText(((String)mData.get(position).get("time")).substring(0,19).replace('T', ' '));
+			if(((String)mData.get(position).get("time")).equals("null")){
+				holder.time.setText("1970-01-01 08:00");
+			}else{
+				holder.time.setText(((String)mData.get(position).get("time")).substring(0,19).replace('T', ' '));
+			}
 			holder.content.setText((String)mData.get(position).get("content"));
 			return convertView;
 		}

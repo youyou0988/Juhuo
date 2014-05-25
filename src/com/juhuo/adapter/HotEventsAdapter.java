@@ -16,6 +16,7 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
@@ -266,7 +267,7 @@ public class HotEventsAdapter extends BaseAdapter {
     protected void dialog(final int pos) {
 		final Dialog dialog = new Dialog(activity);
 		dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-		Drawable d = Tool.getShape();
+		Drawable d = Tool.getShape(Color.WHITE);
 		dialog.getWindow().setBackgroundDrawable(d);
 		dialog.setContentView(R.layout.delete_dialog);
 		Button yes = (Button) dialog.findViewById(R.id.yes);

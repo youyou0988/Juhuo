@@ -5,7 +5,8 @@
     <color name="transblack">#AA000000</color>
     <color name="graytrans">#55000000</color>
     <color name="mgray">#8D8A8A</color><!-- 灰色字体  -->
-    <color name="titlegray">#DEDEDE</color>
+    <color name="titlegray">#DEDEDE</color><!-- 联系人A，B的背景色 -->
+    <color name="dialoggray">#E4E4E4</color><!-- 对话框的背景色 -->
     <color name="divider">#EDEDED</color><!-- 浅灰色 -->
     <color name="mgreen">#3CBEB0</color><!-- 绿色 -->
     <color name="black">#000000</color><!--黑色 -->

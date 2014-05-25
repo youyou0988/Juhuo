@@ -641,6 +641,7 @@ public class EventDetailActivity extends Activity {
 			break;
 		case R.id.invite_friends:
 			Intent intent = new Intent(EventDetailActivity.this,SelectContactActivity.class);
+			intent.putExtra("event_id", event_id);
 			startActivity(intent);
 			break;
 		

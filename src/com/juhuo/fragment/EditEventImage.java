@@ -60,7 +60,6 @@ public class EditEventImage extends Fragment{
 		Log.i(TAG, "onCreateView");
 		parent = (RelativeLayout) inflater.inflate(
 				R.layout.edit_image, null);
-		mResources = getResources();
 		saveText = (TextView)parent.findViewById(R.id.action_title_text2);
 		chooseImg = (Button)parent.findViewById(R.id.choose_img);
 		chooseImg.setOnClickListener(new View.OnClickListener() {
