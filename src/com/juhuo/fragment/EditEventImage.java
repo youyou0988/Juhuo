@@ -1,5 +1,6 @@
 package com.juhuo.fragment;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -32,6 +33,8 @@ import com.juhuo.tool.JuhuoInfo;
 import com.juhuo.tool.Tool;
 import com.juhuo.welcome.CreateEvent;
 import com.juhuo.welcome.R;
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.ImageLoader;
 
 public class EditEventImage extends Fragment{
 	private Resources mResources;
@@ -43,16 +46,25 @@ public class EditEventImage extends Fragment{
 	private GridView imagegrid;
 	private TextView saveText;
 	private ArrayList<String> arrPath = new ArrayList<String>();
-    private ArrayList<Bitmap> thumbnails = new ArrayList<Bitmap>();
     private int[] isuploaded;
     private String photoids="";
     private boolean allUploaded;
+    private DisplayImageOptions options;
+    protected ImageLoader imageLoader = ImageLoader.getInstance();
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		Log.d(TAG, "onCreate");
 		mResources = getResources();
-		
+		options = new DisplayImageOptions.Builder()
+    	.showImageOnLoading(R.drawable.default_image)
+    	.showImageForEmptyUri(R.drawable.default_image)
+    	.showImageOnFail(R.drawable.default_image)
+    	.cacheInMemory(true)
+    	.cacheOnDisc(true)
+    	.considerExifParams(true)
+    	.bitmapConfig(Bitmap.Config.RGB_565)
+    	.build();
 	}
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -86,22 +98,21 @@ public class EditEventImage extends Fragment{
 				// TODO Auto-generated method stub
 				Intent intent = new Intent(getActivity(),CreateEvent.class);
 				intent.putExtra("photo_ids",photoids);
-				intent.putExtra("bitmap", thumbnails.get(0));
+				intent.putExtra("imageurl", "file://"+arrPath.get(0));
 				getActivity().setResult(getActivity().RESULT_OK, intent);
 				getActivity().finish();
 			}
 		});
 		imagegrid = (GridView) parent.findViewById(R.id.PhoneImageGrid);
-		imageAdapter = new ImageAdapter(arrPath,thumbnails);
+		imageAdapter = new ImageAdapter(arrPath);
 		imagegrid.setAdapter(imageAdapter);
 		return parent;
 		
 	}
-	public void setImageGrid(ArrayList<String> selectedarr,ArrayList<Bitmap> bitmap){
+	public void setImageGrid(ArrayList<String> selectedarr){
 		Log.i(TAG, selectedarr.toString());
 		this.arrPath = selectedarr;
-		this.thumbnails = bitmap;
-		this.isuploaded = new int[this.thumbnails.size()];
+		this.isuploaded = new int[this.arrPath.size()];
 		imageAdapter.notifyDataSetChanged();
 		imageAdapter.notifyDataSetInvalidated();
 		uploadimage(0);
@@ -112,7 +123,7 @@ public class EditEventImage extends Fragment{
 			//upload photo consequence
 			HashMap<String,Object> map = new HashMap<String,Object>();
 	        map.put("token", JuhuoConfig.token);
-	        map.put("photo", Tool.Bitmap2File(this.thumbnails.get(i)));
+	        map.put("photo", this.arrPath.get(i));
 	        photoup.execute(map);
 		}else{
 			Tool.myToast(getActivity(), "全部图片上传成功");
@@ -161,7 +172,7 @@ public class EditEventImage extends Fragment{
 	private class ImageAdapter extends BaseAdapter {
         private LayoutInflater mInflater;
         
-        public ImageAdapter(ArrayList<String> selectedarr,ArrayList<Bitmap> map) {
+        public ImageAdapter(ArrayList<String> selectedarr) {
         	Log.i(TAG, getActivity().toString());
             mInflater = (LayoutInflater) getActivity()
             		.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -207,7 +218,8 @@ public class EditEventImage extends Fragment{
                 }
             });
             holder.transview.setVisibility(isuploaded[position]==1?View.INVISIBLE:View.GONE);
-            holder.imageview.setImageBitmap(thumbnails.get(position));
+            imageLoader.displayImage("file://"+ arrPath.get(position), holder.imageview, options);
+//            holder.imageview.setImageBitmap(thumbnails.get(position));
             holder.id = position;
             return convertView;
         }

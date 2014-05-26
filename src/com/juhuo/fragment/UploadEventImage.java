@@ -2,7 +2,6 @@ package com.juhuo.fragment;
 
 import java.util.ArrayList;
 
-import android.R.integer;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
@@ -12,17 +11,17 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.BaseAdapter;
 import android.widget.CheckBox;
 import android.widget.GridView;
 import android.widget.ImageView;
-import android.widget.Toast;
 import android.widget.LinearLayout.LayoutParams;
 import android.widget.RelativeLayout;
 import android.widget.TableRow;
@@ -30,6 +29,13 @@ import android.widget.TextView;
 
 import com.juhuo.tool.Tool;
 import com.juhuo.welcome.R;
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.assist.FailReason;
+import com.nostra13.universalimageloader.core.assist.ImageScaleType;
+import com.nostra13.universalimageloader.core.display.SimpleBitmapDisplayer;
+import com.nostra13.universalimageloader.core.listener.ImageLoadingProgressListener;
+import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
 
 public class UploadEventImage extends Fragment{
 	private Resources mResources;
@@ -44,6 +50,8 @@ public class UploadEventImage extends Fragment{
     private TextView cancel,makesure,pager;
     private TableRow tr;
     private Fragment prevone;
+    private DisplayImageOptions options;
+    protected ImageLoader imageLoader = ImageLoader.getInstance();
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -53,23 +61,29 @@ public class UploadEventImage extends Fragment{
         final String orderBy = MediaStore.Images.Media._ID;
         Cursor imagecursor = getActivity().managedQuery(
                 MediaStore.Images.Media.EXTERNAL_CONTENT_URI, columns, null,
-                null, orderBy);
+                null, orderBy+ " DESC");
+        options = new DisplayImageOptions.Builder()
+    	.showImageOnLoading(R.drawable.default_image)
+    	.showImageForEmptyUri(R.drawable.default_image)
+    	.showImageOnFail(R.drawable.default_image)
+    	.cacheInMemory(true)
+    	.cacheOnDisc(true)
+    	.considerExifParams(true)
+    	.bitmapConfig(Bitmap.Config.RGB_565)
+    	.build();
         int image_column_index = imagecursor.getColumnIndex(MediaStore.Images.Media._ID);
         this.count = imagecursor.getCount();
-        this.thumbnails = new Bitmap[this.count];
         this.arrPath = new String[this.count];
         this.thumbnailsselection = new boolean[this.count];
         this.rowindex = new ArrayList<Integer>();
+        double a= System.currentTimeMillis();
         for (int i = 0; i < this.count; i++) {
             imagecursor.moveToPosition(i);
             int id = imagecursor.getInt(image_column_index);
             int dataColumnIndex = imagecursor.getColumnIndex(MediaStore.Images.Media.DATA);
-            thumbnails[i] = MediaStore.Images.Thumbnails.getThumbnail(
-                    getActivity().getApplicationContext().getContentResolver(), id,
-                    MediaStore.Images.Thumbnails.MICRO_KIND, null);
             arrPath[i]= imagecursor.getString(dataColumnIndex);
         }
-        
+       
 	}
 	public void setFragment(Fragment fr){
 		this.prevone = (Fragment)fr;
@@ -114,12 +128,11 @@ public class UploadEventImage extends Fragment{
                     if (thumbnailsselection[i]){
                         cnt++;
                         selectedarr.add(arrPath[i]);
-                        selectedmap.add(thumbnails[i]);
                     }
                 }
                 Tool.myToast(getActivity(), "You've selected Total " + cnt + " image(s).");
                 //put image to editimage fragment to upload
-                ((EditEventImage)prevone).setImageGrid(selectedarr,selectedmap);
+                ((EditEventImage)prevone).setImageGrid(selectedarr);
                 getFragmentManager().executePendingTransactions();
                 getActivity().getSupportFragmentManager().popBackStack();
 				break;
@@ -139,7 +152,7 @@ public class UploadEventImage extends Fragment{
         }
  
         public Object getItem(int position) {
-            return position;
+            return null;
         }
  
         public long getItemId(int position) {
@@ -178,7 +191,7 @@ public class UploadEventImage extends Fragment{
                         cb.setChecked(true);
                         thumbnailsselection[id] = true;
                         ImageView view = Tool.getNewImage(getActivity());
-                        view.setImageBitmap(thumbnails[id]);
+                        imageLoader.displayImage("file://"+ arrPath[id],view, options);
                         rowindex.add(idd);
                         tr.addView(view);
                     }
@@ -196,7 +209,8 @@ public class UploadEventImage extends Fragment{
                     startActivity(intent);
                 }
             });
-            holder.imageview.setImageBitmap(thumbnails[position]);
+//            holder.imageview.setImageBitmap(thumbnails[position]);
+            imageLoader.displayImage("file://"+ arrPath[position], holder.imageview, options);
             holder.checkbox.setChecked(thumbnailsselection[position]);
             holder.id = position;
             return convertView;

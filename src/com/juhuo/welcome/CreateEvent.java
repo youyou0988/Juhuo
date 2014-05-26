@@ -45,6 +45,10 @@ import com.juhuo.control.DateTimePickerDialog.OnDateTimeSetListener;
 import com.juhuo.tool.JuhuoConfig;
 import com.juhuo.tool.JuhuoInfo;
 import com.juhuo.tool.Tool;
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.assist.ImageScaleType;
+import com.nostra13.universalimageloader.core.display.SimpleBitmapDisplayer;
 
 public class CreateEvent extends Activity implements LocationSource,AMapLocationListener{
 	private final String TAG="CreateEvent";
@@ -69,6 +73,17 @@ public class CreateEvent extends Activity implements LocationSource,AMapLocation
 	private static final int EditDetailEvent = 1;
 	private static final int EditImage = 2;
 	final String[] items = {"交友聚会", "读书看报", "音乐电影","体育锻炼","其他"};
+	DisplayImageOptions options = new DisplayImageOptions.Builder()
+	.imageScaleType(ImageScaleType.EXACTLY)
+	.showImageOnLoading(R.drawable.default_image)
+	.showImageForEmptyUri(R.drawable.default_image)
+	.showImageOnFail(R.drawable.default_image)
+	.cacheInMemory(true)
+	.cacheOnDisc(true)
+	.considerExifParams(true)
+	.displayer(new SimpleBitmapDisplayer())
+	.build();
+	protected ImageLoader imageLoader = ImageLoader.getInstance();
 	
 	protected void onCreate(Bundle savedInstanceState){
 		super.onCreate(savedInstanceState);
@@ -293,7 +308,7 @@ public class CreateEvent extends Activity implements LocationSource,AMapLocation
 		        case EditImage:
 		        	Bundle photobuddle = data.getExtras();  
 		            photo_ids = "["+photobuddle.getString("photo_ids")+"]";
-		            image.setImageBitmap((Bitmap)data.getParcelableExtra("bitmap"));
+		            imageLoader.displayImage(photobuddle.getString("imageurl"), image,options);
 		        	break;
 	        }  
 		}	

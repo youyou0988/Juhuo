@@ -45,7 +45,7 @@ public class SelectContact extends Fragment{
 		super.onCreate(savedInstanceState);
 		Log.d(TAG, "onCreate");
 		mResources = getResources();
-		
+		all = Data.getAllData(getActivity());
 	}
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -53,7 +53,7 @@ public class SelectContact extends Fragment{
 		Log.i(TAG, "onCreateView");
 		parent = (RelativeLayout) inflater.inflate(
 				R.layout.activity_section_demo, null);
-		all = Data.getAllData(getActivity());
+		
 		mCheckedStates = new ArrayList<Boolean>(); 
 		contactList = new ArrayList<Contact>();
 		characterParser = CharacterParser.getInstance();
@@ -96,8 +96,7 @@ public class SelectContact extends Fragment{
 				for (int i = 0; i < all.size(); i++) {
 					res += all.get(i).second.size();
 				}
-				// 初始化所有checked box选中状态为false 
-			    for (int i = 0; i < res; ++i) {
+				for (int i = 0; i < res; ++i) {
 			    	if(mCheckedStates.get(i)==true){
 			    		contactList.add(adapter.getItem(i));
 			    	}

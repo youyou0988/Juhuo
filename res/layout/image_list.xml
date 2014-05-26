@@ -24,18 +24,19 @@
 	<GridView android:id="@+id/PhoneImageGrid"
         android:layout_width="fill_parent" android:layout_height="350dp"
         android:layout_below="@+id/titlebar"
+        android:layout_above="@+id/divider"
         android:numColumns="auto_fit" android:verticalSpacing="10dp"
         android:horizontalSpacing="4dp" android:columnWidth="75dp"
         android:stretchMode="columnWidth" android:gravity="center" />
 	<View android:layout_height="1dp"
 	    android:layout_width="match_parent"
 	    android:background="@color/mgreen"
-	    android:layout_below="@+id/PhoneImageGrid"
+	    android:layout_above="@+id/scrollview"
 	    android:id="@+id/divider"/>
 	<HorizontalScrollView android:layout_height="80dp"
         android:id="@+id/scrollview"
         android:layout_width="fill_parent"
-        android:layout_below="@+id/divider">
+        android:layout_above="@+id/divider2">
           <TableLayout
 			  android:id="@+id/table"
 			  android:layout_width="wrap_content"
@@ -50,15 +51,17 @@
 	</TableLayout>
     </HorizontalScrollView>
 	
-	<View android:layout_height="1dp"
+	<View android:layout_height="0.5dp"
 	    android:layout_width="match_parent"
 	    android:background="@color/mgray"
-	    android:layout_below="@+id/scrollview"
-	    android:id="@+id/divider2"/>
-	<RelativeLayout android:layout_height="fill_parent"
+	    android:id="@+id/divider2"
+	    android:layout_above="@+id/paginator"/>
+	<RelativeLayout android:layout_height="wrap_content"
+	    android:id="@+id/paginator"
 	    android:layout_width="fill_parent"
 	    android:background="@color/belowwhite"
-	    android:layout_below="@+id/divider2">
+	    android:layout_alignParentBottom="true"
+	    android:padding="5dp">
 	    <TextView android:text="@string/cancel"
 	        android:textColor="@color/mgreen"
 	        android:layout_alignParentLeft="true"
