@@ -15,6 +15,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Display;
 import android.view.View;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -40,6 +41,7 @@ public class LoginActivity extends Activity {
 	
 	protected void onCreate(Bundle savedInstanceState){
 		super.onCreate(savedInstanceState);
+		requestWindowFeature(Window.FEATURE_NO_TITLE);//»•µÙ±ÍÃ‚¿∏
 		setContentView(R.layout.login);
 		
 		initComponents();
@@ -141,6 +143,7 @@ public class LoginActivity extends Activity {
 				Intent intent2Home = new Intent(LoginActivity.this, HomeActivity.class);
 				try {
 					JuhuoConfig.token = result.getString("token");
+					JuhuoConfig.userId = result.getInt("id");
 				} catch (JSONException e) {
 					e.printStackTrace();
 				}

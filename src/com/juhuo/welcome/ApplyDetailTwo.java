@@ -44,7 +44,7 @@ public class ApplyDetailTwo extends Activity {
 		actionTitle = (TextView)findViewById(R.id.action_title);
 		actionTitleImg.setBackgroundDrawable(mResources.getDrawable(R.drawable.icon_back));
 		actionTitleImg2.setVisibility(View.INVISIBLE);
-		actionTitle.setText(mResources.getString(R.string.detail));
+		actionTitle.setText(mResources.getString(R.string.description));
 		actionTitleImg.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View arg0) {

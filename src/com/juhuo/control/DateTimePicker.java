@@ -20,11 +20,11 @@ public class DateTimePicker extends FrameLayout
     private String[] mDateDisplayValues = new String[7];
     private OnDateTimeChangedListener mOnDateTimeChangedListener;
     
-    public DateTimePicker(Context context)
+    public DateTimePicker(Context context,long milliseconds)
 	{
     	super(context);
     	 mDate = Calendar.getInstance();
-    	 
+    	 mDate.setTimeInMillis(milliseconds);
          mHour=mDate.get(Calendar.HOUR_OF_DAY);
          mMinute=mDate.get(Calendar.MINUTE);
     	 

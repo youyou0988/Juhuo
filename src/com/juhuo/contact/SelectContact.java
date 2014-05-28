@@ -80,9 +80,6 @@ public class SelectContact extends Fragment{
 		});
 		actionTitle.setText(mResources.getString(R.string.invited));
 		lsContact = (AmazingListView) parent.findViewById(R.id.lsComposer);
-//		RelativeLayout.LayoutParams listviewparams = new RelativeLayout.LayoutParams(JuhuoConfig.WIDTH, JuhuoConfig.HEIGHT-180);
-//		listviewparams.addRule(RelativeLayout.BELOW, titlelay.getId());
-//		lsContact.setLayoutParams(listviewparams);
 		lsContact.setPinnedHeaderView(LayoutInflater.from(getActivity()).inflate(R.layout.item_composer_header, lsContact, false));
 		lsContact.setAdapter(adapter = new SectionContactAdapter());
 		confirmInvi.setOnClickListener(new View.OnClickListener() {

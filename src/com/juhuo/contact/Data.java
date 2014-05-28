@@ -25,6 +25,10 @@ public class Data {
 	 * 根据拼音来排列ListView里面的数据类
 	 */
 	private static PinyinComparator pinyinComparator;
+	private static final String[] PROJECTION = new String[] {
+	    Phone.NUMBER,
+	    Phone.DISPLAY_NAME
+	};
 	
 	public static List<Pair<String, List<Contact>>> getAllData(Context con) {
 		//实例化汉字转拼音类
@@ -70,15 +74,15 @@ public class Data {
 		}
 		Cursor cursor = null;
 	    try {
-	    	String sortOrder = ContactsContract.Contacts.DISPLAY_NAME + " COLLATE LOCALIZED ASC";
-	        cursor = context.getContentResolver().query(Phone.CONTENT_URI, null, null, null, sortOrder);
-	        int contactIdIdx = cursor.getColumnIndex(Phone._ID);
+//	    	String sortOrder = ContactsContract.Contacts.DISPLAY_NAME + " COLLATE LOCALIZED ASC";
+	        cursor = context.getContentResolver().query(Phone.CONTENT_URI, PROJECTION, null, null, null);
+//	        int contactIdIdx = cursor.getColumnIndex(Phone._ID);
 	        int nameIdx = cursor.getColumnIndex(Phone.DISPLAY_NAME);
 	        int phoneNumberIdx = cursor.getColumnIndex(Phone.NUMBER);
-	        int photoIdIdx = cursor.getColumnIndex(Phone.PHOTO_ID);
+//	        int photoIdIdx = cursor.getColumnIndex(Phone.PHOTO_ID);
 	        cursor.moveToFirst();
 	        do {
-	            String idContact = cursor.getString(contactIdIdx);
+//	            String idContact = cursor.getString(contactIdIdx);
 	            String name = cursor.getString(nameIdx);
 	            String phoneNumber = cursor.getString(phoneNumberIdx);
 	            Contact contact = new Contact(name,phoneNumber);

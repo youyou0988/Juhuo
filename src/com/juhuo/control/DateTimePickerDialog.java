@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.text.format.DateUtils;
+import android.util.Log;
 
 import com.juhuo.control.DateTimePicker.OnDateTimeChangedListener;
 
@@ -14,13 +15,14 @@ public class DateTimePickerDialog extends AlertDialog implements OnClickListener
     private DateTimePicker mDateTimePicker;
     private Calendar mDate = Calendar.getInstance();
     private OnDateTimeSetListener mOnDateTimeSetListener;
+    private final String TAG="DateTimePickerDialog";
     
 	@SuppressWarnings("deprecation")
 	public DateTimePickerDialog(Context context, long date) 
 	{
 		super(context);
-		mDateTimePicker = new DateTimePicker(context);
-	    setView(mDateTimePicker);
+		mDateTimePicker = new DateTimePicker(context,date);
+		setView(mDateTimePicker);
 	    mDateTimePicker.setOnDateTimeChangedListener(new OnDateTimeChangedListener()
 		{
 			@Override
@@ -38,7 +40,7 @@ public class DateTimePickerDialog extends AlertDialog implements OnClickListener
 	    
 	    setButton("…Ë÷√", this);
         setButton2("»°œ˚", (OnClickListener)null);
-	    mDate.setTimeInMillis(date);
+        mDate.setTimeInMillis(date);
 	    updateTitle(mDate.getTimeInMillis()); 
 	}
 	

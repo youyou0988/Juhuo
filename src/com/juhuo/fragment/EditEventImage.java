@@ -7,6 +7,7 @@ import java.util.HashMap;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
@@ -49,6 +50,7 @@ public class EditEventImage extends Fragment{
     private int[] isuploaded;
     private String photoids="";
     private boolean allUploaded;
+    private ProgressDialog mPgDialog;
     private DisplayImageOptions options;
     protected ImageLoader imageLoader = ImageLoader.getInstance();
 	@Override
@@ -65,6 +67,8 @@ public class EditEventImage extends Fragment{
     	.considerExifParams(true)
     	.bitmapConfig(Bitmap.Config.RGB_565)
     	.build();
+		mPgDialog = new ProgressDialog(getActivity());
+        mPgDialog.setMessage(mResources.getString(R.string.uploading_photo));
 	}
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -95,12 +99,25 @@ public class EditEventImage extends Fragment{
 			
 			@Override
 			public void onClick(View v) {
-				// TODO Auto-generated method stub
-				Intent intent = new Intent(getActivity(),CreateEvent.class);
-				intent.putExtra("photo_ids",photoids);
-				intent.putExtra("imageurl", "file://"+arrPath.get(0));
-				getActivity().setResult(getActivity().RESULT_OK, intent);
-				getActivity().finish();
+				  // TODO Auto-generated method stub
+				  boolean completed = true;
+				  for(int i=0; i<isuploaded.length; i++) {
+				    if(isuploaded[i] == 0) {
+				       completed = false;
+				       break;
+				     }   
+				  }
+				  if(completed){
+					    //array has no zero values
+						Intent intent = new Intent(getActivity(),CreateEvent.class);
+						intent.putExtra("photo_ids",photoids);
+						intent.putExtra("imageurl", "file://"+arrPath.get(0));
+						intent.putExtra("photo_num", arrPath.size());
+						getActivity().setResult(getActivity().RESULT_OK, intent);
+						getActivity().finish();
+				  }else{
+					  Tool.myToast(getActivity(), mResources.getString(R.string.uploading_photo));
+				  }
 			}
 		});
 		imagegrid = (GridView) parent.findViewById(R.id.PhoneImageGrid);
@@ -110,9 +127,9 @@ public class EditEventImage extends Fragment{
 		
 	}
 	public void setImageGrid(ArrayList<String> selectedarr){
-		Log.i(TAG, selectedarr.toString());
 		this.arrPath = selectedarr;
 		this.isuploaded = new int[this.arrPath.size()];
+		
 		imageAdapter.notifyDataSetChanged();
 		imageAdapter.notifyDataSetInvalidated();
 		uploadimage(0);
@@ -125,8 +142,10 @@ public class EditEventImage extends Fragment{
 	        map.put("token", JuhuoConfig.token);
 	        map.put("photo", this.arrPath.get(i));
 	        photoup.execute(map);
+	        mPgDialog.show();
 		}else{
 			Tool.myToast(getActivity(), "全部图片上传成功");
+			mPgDialog.dismiss();
 			allUploaded = true;
 		}
 	}
@@ -152,7 +171,7 @@ public class EditEventImage extends Fragment{
 				Tool.dialog(getActivity());
 			}else{
 				Log.i("result-"+index, result.toString());
-				Tool.myToast(getActivity(), mResources.getString(R.string.upload_photo_success));
+//				Tool.myToast(getActivity(), mResources.getString(R.string.upload_photo_success));
 				try {
 					if(index==0){
 						photoids+=String.valueOf(result.getInt("id"));
@@ -217,7 +236,7 @@ public class EditEventImage extends Fragment{
                     startActivity(intent);
                 }
             });
-            holder.transview.setVisibility(isuploaded[position]==1?View.INVISIBLE:View.GONE);
+            holder.transview.setVisibility(isuploaded[position]==1?View.INVISIBLE:View.VISIBLE);
             imageLoader.displayImage("file://"+ arrPath.get(position), holder.imageview, options);
 //            holder.imageview.setImageBitmap(thumbnails.get(position));
             holder.id = position;

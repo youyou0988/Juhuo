@@ -286,7 +286,7 @@ public class EventDetailActivity extends Activity {
 	        }else{
 	        	eventTime.setBackgroundColor(mResources.getColor(R.color.graytrans));
 	        }	
-			eventPlace.setText(result.getString("addr"));
+			eventPlace.setText(result.getString("addr").equals("null")?"":result.getString("addr"));
 			double lat = result.getDouble("lat");
 			double lng = result.getDouble("lng");
 			LatLng marker1 = new LatLng(lat, lng);                
@@ -644,7 +644,9 @@ public class EventDetailActivity extends Activity {
 			intent.putExtra("event_id", event_id);
 			startActivity(intent);
 			break;
-		
+		case R.id.update_event:
+			Intent intentup = new Intent(EventDetailActivity.this,CreateEvent.class);
+			startActivity(intentup);
 		}
 		return super.onOptionsItemSelected(item);
 	}

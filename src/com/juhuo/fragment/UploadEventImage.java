@@ -130,7 +130,7 @@ public class UploadEventImage extends Fragment{
                         selectedarr.add(arrPath[i]);
                     }
                 }
-                Tool.myToast(getActivity(), "You've selected Total " + cnt + " image(s).");
+//                Tool.myToast(getActivity(), "You've selected Total " + cnt + " image(s).");
                 //put image to editimage fragment to upload
                 ((EditEventImage)prevone).setImageGrid(selectedarr);
                 getFragmentManager().executePendingTransactions();

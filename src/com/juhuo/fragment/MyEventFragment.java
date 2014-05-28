@@ -23,6 +23,9 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.amap.api.maps2d.CameraUpdateFactory;
+import com.amap.api.maps2d.model.CameraPosition;
+import com.amap.api.maps2d.model.LatLng;
 import com.jeremyfeinstein.slidingmenu.lib.app.SlidingFragmentActivity;
 import com.juhuo.adapter.HotEventsAdapter;
 import com.juhuo.control.MyListView;
@@ -51,6 +54,7 @@ public class MyEventFragment extends Fragment{
 	private HashMap<String,Object> mapPara;
 	private String handle;
 	private int filter;
+	private final int CREATE_EVENT = 0;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -135,7 +139,7 @@ public class MyEventFragment extends Fragment{
 			public void onClick(View arg0) {
 				// TODO Auto-generated method stub
 				Intent intent = new Intent(getActivity(),CreateEvent.class);
-				startActivity(intent);
+				startActivityForResult(intent,CREATE_EVENT);
 			}
 		});
 		filterAllEvent = (Button)parent.findViewById(R.id.filter_all_events);
@@ -156,7 +160,6 @@ public class MyEventFragment extends Fragment{
 		jsonCache = Tool.loadJsonFromFile(JuhuoConfig.EVENTLISTSPECIFIC+JuhuoConfig.userId,getActivity());
 		if(jsonCache==null){
 			noEventsText.setText(mResources.getString(R.string.no_events_found));
-			getNetData(mapPara);
 		}else{
 			try {
 				hotEventsAdapter.setJSONData(jsonCache.getJSONArray("events"),"MY");
@@ -168,7 +171,7 @@ public class MyEventFragment extends Fragment{
 			hotEventsAdapter.setListView(hotEventsList);
 			hotEventsList.setAdapter(hotEventsAdapter);
 		}
-		
+		getNetData(mapPara);
 		return parent;
 	}
 	View.OnClickListener onClickListener = new View.OnClickListener() {
@@ -196,7 +199,7 @@ public class MyEventFragment extends Fragment{
 		}
 	};
 	public void getNetData(HashMap<String,Object> map){
-//		noEventsText.setText("");
+		noEventsText.setText("");
 		hotEventsList.onRefreshing();
 		LoadEventList loadEventList = new LoadEventList();
 		loadEventList.execute(map);
@@ -235,6 +238,7 @@ public class MyEventFragment extends Fragment{
 						hotEventsAdapter.setInflater(
 								(LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE),
 								getActivity());
+//						Log.i(TAG, mData.toString());
 						hotEventsAdapter.setJSONData(mData,"MY");
 						hotEventsAdapter.notifyDataSetChanged();
 						hotEventsAdapter.setListView(hotEventsList);
@@ -255,13 +259,26 @@ public class MyEventFragment extends Fragment{
 		}
 	}
 	//make background transparent
-		public void setTrans(){
-			Log.i("sliding menu", transView.getBackground().toString());
-			transView.setVisibility(View.VISIBLE);
-		}
-		public void setTransBack(){
-			Log.i("sliding menu", transView.getBackground().toString());
-			transView.setVisibility(View.INVISIBLE);
-		}
+	public void setTrans(){
+		Log.i("sliding menu", transView.getBackground().toString());
+		transView.setVisibility(View.VISIBLE);
+	}
+	public void setTransBack(){
+		Log.i("sliding menu", transView.getBackground().toString());
+		transView.setVisibility(View.INVISIBLE);
+	}
+	@Override  
+    public void onActivityResult(int requestCode, int resultCode, Intent data)  
+    {  
+		if(data!=null){
+			switch (requestCode)  
+	        {  
+		        case CREATE_EVENT:  
+		        	getNetData(mapPara);
+		            break;  
+		        
+	        }  
+		}	
+    }
 
 }

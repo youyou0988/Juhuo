@@ -91,19 +91,33 @@ public class LeftMenuFragment extends Fragment{
 		userName = (TextView)parent.findViewById(R.id.user_name);
 		userText = (TextView)parent.findViewById(R.id.text);
 		userImage = (ImageView)parent.findViewById(R.id.image);
-		if(JuhuoConfig.token.equals(JuhuoConfig.PUBLIC_TOKEN)){
-			
-		}else{
-			mapParams.put("token", JuhuoConfig.token);
-			getNetData(mapParams);
+		if(!JuhuoConfig.token.equals(JuhuoConfig.PUBLIC_TOKEN)){
+			JSONObject jsonCache = new JSONObject();
+			jsonCache = Tool.loadJsonFromFile(JuhuoConfig.USERINFO+JuhuoConfig.userId,getActivity());
+			if(jsonCache==null){
+				mapParams.put("token", JuhuoConfig.token);
+				LoadUserInfo loadUserInfo = new LoadUserInfo();
+				loadUserInfo.execute(mapParams);
+			}else{
+				//initial components contents
+				try {
+					String name = jsonCache.getString("name");
+					userName.setText(name);
+					JuhuoConfig.userId = jsonCache.getInt("id");
+					if(jsonCache.has("suc_photos")){
+						userText.setText("");
+						String url = jsonCache.getJSONArray("suc_photos").getJSONObject(0).getString("url");
+						imageLoader.displayImage(url, userImage, options, animateFirstListener);
+					}
+				} catch (JSONException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
 		}
 		
 		initListener();
 		return parent;
-	}
-	public void getNetData(HashMap<String,Object> map){
-		LoadUserInfo loadUserInfo = new LoadUserInfo();
-		loadUserInfo.execute(map);
 	}
 	private class LoadUserInfo extends AsyncTask<HashMap<String,Object>,String,JSONObject>{
 

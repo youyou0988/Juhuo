@@ -240,7 +240,8 @@ public class HotEventsFragment extends Fragment{
 			if(po2==1){
 				mapPara.put("sort_order", "DESC");
 			}else if(po2==2){
-//				mapPara.put("", value) need put lat and lgn
+				mapPara.put("lat", "138.006");
+				mapPara.put("lng", "214.391");
 			}else if(po2==3){
 				mapPara.put("sort_order", "DESC");
 			}else if(po2==4){

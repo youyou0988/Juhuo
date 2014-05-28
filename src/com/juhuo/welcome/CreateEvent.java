@@ -53,7 +53,7 @@ import com.nostra13.universalimageloader.core.display.SimpleBitmapDisplayer;
 public class CreateEvent extends Activity implements LocationSource,AMapLocationListener{
 	private final String TAG="CreateEvent";
 	private TextView actionTitleText,actionTitleText2,eventBeginTime,eventEndTime,eventType
-		,eventDetail;
+		,eventDetail,picNumber;
 	private ImageView image;
 	private EditText eventPlace,eventTitle,eventCost;
 	private Button createBtn;
@@ -69,6 +69,7 @@ public class CreateEvent extends Activity implements LocationSource,AMapLocation
 	private int privacy=0,need_approve_apply=0,allow_apns=0;
 	private CheckBox privacyche,need_approve_che,allow_apns_che;
 	private SimpleDateFormat df = new SimpleDateFormat(Tool.ISO8601DATEFORMAT, Locale.getDefault());
+	private Calendar time_begin_cal,time_end_cal;
 	private static final int SelectLocation = 0;
 	private static final int EditDetailEvent = 1;
 	private static final int EditImage = 2;
@@ -97,6 +98,7 @@ public class CreateEvent extends Activity implements LocationSource,AMapLocation
 		eventPlace = (EditText)findViewById(R.id.event_place);
 		eventType = (TextView)findViewById(R.id.event_type);
 		eventDetail = (TextView)findViewById(R.id.event_detail_txt);
+		picNumber = (TextView)findViewById(R.id.t2);
 		eventTitle = (EditText)findViewById(R.id.event_title);
 		eventCost = (EditText)findViewById(R.id.event_cost);
 		image = (ImageView)findViewById(R.id.image);
@@ -122,9 +124,11 @@ public class CreateEvent extends Activity implements LocationSource,AMapLocation
 		mapView.onCreate(savedInstanceState);// ±ØÐëÒªÐ´
 		init();
 		time_begin = df.format(new Date());
+		time_begin_cal = Calendar.getInstance();
 		Calendar calendar = Calendar.getInstance();
 		int day = calendar.get(Calendar.DAY_OF_MONTH);
 		calendar.set(Calendar.DAY_OF_MONTH, day+1);
+		time_end_cal = calendar;
 		Date tasktime=calendar.getTime();
 		time_end = df.format(tasktime.getTime());
 		createBtn.setOnClickListener(new View.OnClickListener() {
@@ -195,10 +199,10 @@ public class CreateEvent extends Activity implements LocationSource,AMapLocation
 			TextView tv = (TextView)v;
 			switch(tv.getId()){
 				case R.id.event_begin_time:
-					showDialog("begin");
+					showDialog("begin",time_begin_cal);
 					break;
 				case R.id.event_end_time:
-					showDialog("end");
+					showDialog("end",time_end_cal);
 					break;
 			}
 		}
@@ -218,9 +222,10 @@ public class CreateEvent extends Activity implements LocationSource,AMapLocation
 		
 		alert.show(); //display it
 	}
-	public void showDialog(final String type)
+	public void showDialog(final String type,Calendar cal)
 	{
-		DateTimePickerDialog dialog  = new DateTimePickerDialog(this, System.currentTimeMillis());
+		Log.i(TAG, cal.toString());
+		DateTimePickerDialog dialog  = new DateTimePickerDialog(this, cal.getTimeInMillis());
 		dialog.setOnDateTimeSetListener(new OnDateTimeSetListener()
 	      {
 			public void OnDateTimeSet(AlertDialog dialog, long date)
@@ -254,6 +259,9 @@ public class CreateEvent extends Activity implements LocationSource,AMapLocation
 				Tool.dialog(CreateEvent.this);
 			}else{
 				Tool.myToast(CreateEvent.this, mResources.getString(R.string.create_event_success));
+				Intent intent = new Intent(CreateEvent.this,HomeActivity.class);
+				intent.putExtra("create_event", "success");
+				setResult(RESULT_OK, intent);
 				finish();
 			}	
 		}
@@ -308,6 +316,7 @@ public class CreateEvent extends Activity implements LocationSource,AMapLocation
 		        case EditImage:
 		        	Bundle photobuddle = data.getExtras();  
 		            photo_ids = "["+photobuddle.getString("photo_ids")+"]";
+		            picNumber.setText(photobuddle.getInt("photo_num")+"ÕÅ");
 		            imageLoader.displayImage(photobuddle.getString("imageurl"), image,options);
 		        	break;
 	        }  

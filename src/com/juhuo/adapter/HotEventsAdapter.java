@@ -95,7 +95,7 @@ public class HotEventsAdapter extends BaseAdapter {
 		picNumber = new int[ja.length()];
 		for(int i=0;i<ja.length();i++){
 			try {
-				if(ja.getJSONObject(i).has("suc_photos")){
+				if(ja.getJSONObject(i).has("suc_photos")&&ja.getJSONObject(i).getJSONArray("suc_photos").length()!=0){
 					URLS[i] = ja.getJSONObject(i).getJSONArray("suc_photos").
 							getJSONObject(0).getString("url");
 					this.picNumber[i] = ja.getJSONObject(i).getJSONArray("suc_photos").length();
