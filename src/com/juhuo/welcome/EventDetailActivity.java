@@ -16,6 +16,7 @@ import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.content.res.Resources;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -59,6 +60,12 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.nostra13.universalimageloader.core.display.SimpleBitmapDisplayer;
 import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
+import com.tencent.mm.sdk.openapi.IWXAPI;
+import com.tencent.mm.sdk.openapi.SendMessageToWX;
+import com.tencent.mm.sdk.openapi.WXAPIFactory;
+import com.tencent.mm.sdk.openapi.WXMediaMessage;
+import com.tencent.mm.sdk.openapi.WXWebpageObject;
+import com.tencent.mm.sdk.platformtools.BackwardSupportUtil.BitmapFactory;
 
 public class EventDetailActivity extends Activity {
 	//可下拉刷新的layout
@@ -111,6 +118,8 @@ public class EventDetailActivity extends Activity {
 	private String description="";
 	private String type,title;
 	private Calendar startcal,endcal;
+	private IWXAPI wxApi;
+	private String WX_APP_ID="";
 	
 	protected void onCreate(Bundle savedInstanceState){
 		super.onCreate(savedInstanceState);
@@ -122,15 +131,21 @@ public class EventDetailActivity extends Activity {
 		mapPara = new HashMap<String,Object>();
 		mapPara.put("id", this.event_id);
 		mapPara.put("token", JuhuoConfig.token);
-		if(jo==null){
+		if(jo!=null){
 			//get network data
-			getNetData(mapPara);
-		}else{
 			setViewsContent(jo);
 		}
-
+		getNetData(mapPara);
+		//实例化
+		wxApi = WXAPIFactory.createWXAPI(this, WX_APP_ID);
+		wxApi.registerApp(WX_APP_ID);
+		/**
+		 * 微信分享 （这里仅提供一个分享网页的示例，其它请参看官网示例代码）
+		 * @param flag(0:分享到微信好友，1：分享到微信朋友圈)
+		 */
 	}
 	public void getNetData(HashMap<String,Object> map){
+		mRefreshableView.onRefreshing();
 		LoadEventInfo loadEventInfo = new LoadEventInfo();
 		loadEventInfo.execute(map);
 	}
@@ -464,6 +479,25 @@ public class EventDetailActivity extends Activity {
 		}
 	};
 	
+	
+	private void wechatShare(int flag){
+		WXWebpageObject webpage = new WXWebpageObject();
+		webpage.webpageUrl = "http://baidu.com";
+		WXMediaMessage msg = new WXMediaMessage(webpage);
+		msg.title = "这里填写标题";
+		msg.description = "这里填写内容";
+		//这里替换一张自己工程里的图片资源
+//		Bitmap thumb = BitmapFactory.decodeResource(getResources(), R.drawable.default_image);
+//		msg.setThumbImage(thumb);
+		
+		SendMessageToWX.Req req = new SendMessageToWX.Req();
+		req.transaction = String.valueOf(System.currentTimeMillis());
+		req.message = msg;
+		req.scene = flag==0?SendMessageToWX.Req.WXSceneSession:SendMessageToWX.Req.WXSceneTimeline;
+		wxApi.sendReq(req);
+	}
+	
+	
 	/**
 	 * 初始化AMap对象
 	 */
@@ -647,7 +681,42 @@ public class EventDetailActivity extends Activity {
 		case R.id.update_event:
 			Intent intentup = new Intent(EventDetailActivity.this,CreateEvent.class);
 			startActivity(intentup);
+			break;
+		case R.id.share_event:
+			//在需要分享的地方添加代码：
+			wechatShare(0);//分享到微信好友
+//			wechatShare(1);//分享到微信朋友圈
+			break;
+		case R.id.send_remind:
+			HashMap<String,Object> map = new HashMap<String,Object>();
+			map.put("token", JuhuoConfig.token);
+			map.put("id", event_id);
+			SendRemind task = new SendRemind();
+			task.execute(map);
 		}
 		return super.onOptionsItemSelected(item);
+	}
+	private class SendRemind extends AsyncTask<HashMap<String,Object>,String,JSONObject>{
+
+		@Override
+		protected JSONObject doInBackground(HashMap<String, Object>... arg0) {
+			// TODO Auto-generated method stub
+			HashMap<String,Object> mapped = arg0[0];
+			return new JuhuoInfo().loadNetData(mapped,JuhuoConfig.EVENT_REMIND);
+		}
+		@Override
+		protected void onPostExecute(JSONObject result) {
+			if(result == null){
+				Log.i(TAG,"cannot get any");//we have reveived 500 error page
+				Tool.myToast(EventDetailActivity.this, mResources.getString(R.string.error_network));
+			}else if(result.has("wrong_data")){
+				//sth is wrong
+				Tool.dialog(EventDetailActivity.this);
+			}else{
+				Tool.myToast(EventDetailActivity.this,mResources.getString(R.string.send_remind_success));
+				finish();
+			}
+			
+		}
 	}
 }

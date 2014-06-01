@@ -1,6 +1,9 @@
 package com.juhuo.fragment;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
 
 import android.content.Context;
 import android.content.Intent;
@@ -27,13 +30,16 @@ import android.widget.RelativeLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 
+import com.juhuo.adapter.HotEventsAdapter.AnimateFirstDisplayListener;
 import com.juhuo.tool.Tool;
 import com.juhuo.welcome.R;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
+import com.nostra13.universalimageloader.core.display.FadeInBitmapDisplayer;
 import com.nostra13.universalimageloader.core.display.SimpleBitmapDisplayer;
+import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
 import com.nostra13.universalimageloader.core.listener.ImageLoadingProgressListener;
 import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
 
@@ -52,6 +58,7 @@ public class UploadEventImage extends Fragment{
     private Fragment prevone;
     private DisplayImageOptions options;
     protected ImageLoader imageLoader = ImageLoader.getInstance();
+    
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -117,6 +124,7 @@ public class UploadEventImage extends Fragment{
 			case R.id.cancel:
 				getFragmentManager().beginTransaction().remove(UploadEventImage.this).commit();
 				getActivity().getSupportFragmentManager().popBackStack();
+				getActivity().finish();
 				break;
 			case R.id.makesure:
 				final int len = thumbnailsselection.length;

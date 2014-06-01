@@ -3,14 +3,12 @@ package com.juhuo.contact;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.foound.widget.AmazingAdapter;
-import com.foound.widget.AmazingListView;
-import com.juhuo.tool.Tool;
-import com.juhuo.welcome.R;
-
 import android.app.Dialog;
+import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
@@ -27,6 +25,11 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.foound.widget.AmazingAdapter;
+import com.foound.widget.AmazingListView;
+import com.juhuo.tool.Tool;
+import com.juhuo.welcome.R;
+
 public class SelectContact extends Fragment{
 	private Resources mResources;
 	private String TAG = "EditEventImage";
@@ -40,12 +43,62 @@ public class SelectContact extends Fragment{
 	private static CharacterParser characterParser;
 	private ArrayList<Boolean> mCheckedStates = null; 
 	private ArrayList<Contact> contactList;
+	private ProgressDialog mDialog;
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		Log.d(TAG, "onCreate");
 		mResources = getResources();
-		all = Data.getAllData(getActivity());
+		mDialog = new ProgressDialog(getActivity());
+		mDialog.setMessage(mResources.getString(R.string.reading_contacts));
+		GetContactList task = new GetContactList();
+		task.execute(getActivity());
+	}
+	private class GetContactList extends AsyncTask<Context,String,List<Pair<String, List<Contact>>>>{
+		@Override
+		protected void onPreExecute(){
+			mDialog.show(); 
+		}
+		@Override
+		protected List<Pair<String, List<Contact>>> doInBackground(
+				Context... arg0) {
+			// TODO Auto-generated method stub
+			all = Data.getAllData(getActivity());
+			return all;
+		}
+		@Override
+		protected void onPostExecute(final List<Pair<String, List<Contact>>> all){
+			mDialog.dismiss();
+			lsContact.setPinnedHeaderView(LayoutInflater.from(getActivity()).inflate(R.layout.item_composer_header, lsContact, false));
+			lsContact.setAdapter(adapter = new SectionContactAdapter());
+			confirmInvi.setOnClickListener(new View.OnClickListener() {
+				
+				@Override
+				public void onClick(View arg0) {
+					// TODO Auto-generated method stub
+					Fragment confirm = new ConfirmInvitation();
+					//set confirm contact list
+					int res = 0;
+					for (int i = 0; i < all.size(); i++) {
+						res += all.get(i).second.size();
+					}
+					for (int i = 0; i < res; ++i) {
+				    	if(mCheckedStates.get(i)==true){
+				    		contactList.add(adapter.getItem(i));
+				    	}
+				  	}
+				    ((ConfirmInvitation)confirm).setData(contactList);
+					FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
+
+					transaction.setCustomAnimations(R.anim.enter, R.anim.exit, R.anim.pop_enter, R.anim.pop_exit)
+						.replace(R.id.content_frame, confirm,"ConfirmInvitation");
+					transaction.addToBackStack(null);
+
+					// Commit the transaction
+					transaction.commit();
+				}
+			});
+		}
 	}
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -80,35 +133,7 @@ public class SelectContact extends Fragment{
 		});
 		actionTitle.setText(mResources.getString(R.string.invited));
 		lsContact = (AmazingListView) parent.findViewById(R.id.lsComposer);
-		lsContact.setPinnedHeaderView(LayoutInflater.from(getActivity()).inflate(R.layout.item_composer_header, lsContact, false));
-		lsContact.setAdapter(adapter = new SectionContactAdapter());
-		confirmInvi.setOnClickListener(new View.OnClickListener() {
-			
-			@Override
-			public void onClick(View arg0) {
-				// TODO Auto-generated method stub
-				Fragment confirm = new ConfirmInvitation();
-				//set confirm contact list
-				int res = 0;
-				for (int i = 0; i < all.size(); i++) {
-					res += all.get(i).second.size();
-				}
-				for (int i = 0; i < res; ++i) {
-			    	if(mCheckedStates.get(i)==true){
-			    		contactList.add(adapter.getItem(i));
-			    	}
-			  	}
-			    ((ConfirmInvitation)confirm).setData(contactList);
-				FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
-
-				transaction.setCustomAnimations(R.anim.enter, R.anim.exit, R.anim.pop_enter, R.anim.pop_exit)
-					.replace(R.id.content_frame, confirm,"ConfirmInvitation");
-				transaction.addToBackStack(null);
-
-				// Commit the transaction
-				transaction.commit();
-			}
-		});
+		
 		return parent;
 	}
 	class SectionContactAdapter extends AmazingAdapter {

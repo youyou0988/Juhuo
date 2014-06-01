@@ -158,7 +158,7 @@ public class HotEventsFragment extends Fragment{
 		JSONObject jsonCache = new JSONObject();
 		jsonCache = Tool.loadJsonFromFile(JuhuoConfig.EVENTLISTFILE,getActivity());
 		if(jsonCache==null){
-			getNetData(mapPara);
+			noEventsText.setText(mResources.getString(R.string.no_events_found));	
 		}else{
 			try {
 				hotEventsAdapter.setJSONData(jsonCache.getJSONArray("events"),"HOT");
@@ -170,7 +170,7 @@ public class HotEventsFragment extends Fragment{
 			hotEventsAdapter.setListView(hotEventsList);
 			hotEventsList.setAdapter(hotEventsAdapter);
 		}
-		
+		getNetData(mapPara);
 		return parent;
 	}
 	public void loadMoreData(){
@@ -259,7 +259,7 @@ public class HotEventsFragment extends Fragment{
 	};
 
 	public void getNetData(HashMap<String,Object> map){
-		noEventsText.setText("");
+		
 		hotEventsList.onRefreshing();
 		LoadEventList loadEventList = new LoadEventList();
 		loadEventList.execute(map);
@@ -275,13 +275,17 @@ public class HotEventsFragment extends Fragment{
 		}
 		@Override
 		protected void onPostExecute(JSONObject result) {
+			if(getActivity()==null){
+				return;
+			}
 			if(result == null){
 				Log.i(TAG,"cannot get any");//we have reveived 500 error page
-				
+				Tool.myToast(getActivity(), mResources.getString(R.string.error_network));
 			}else if(result.has("wrong_data")){
 				//sth is wrong
 				Tool.dialog(getActivity());
 			}else{
+				noEventsText.setText("");
 				try {
 					if(result.has("handle")){
 						handle = result.getString("handle");

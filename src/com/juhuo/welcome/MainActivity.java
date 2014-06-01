@@ -2,8 +2,6 @@ package com.juhuo.welcome;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.content.pm.ActivityInfo;
-import android.content.res.Configuration;
 import android.graphics.Point;
 import android.os.Bundle;
 import android.util.Log;
@@ -14,6 +12,7 @@ import android.view.animation.Animation.AnimationListener;
 import android.view.animation.AnimationUtils;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import com.juhuo.tool.JuhuoConfig;
 import com.juhuo.tool.Tool;
@@ -21,6 +20,7 @@ import com.juhuo.tool.Tool;
 public class MainActivity extends Activity {
 	private LinearLayout login;
 	private LinearLayout skipLogin;
+	private TextView titleText;
 	private int width,height;
 	private String TAG="MainActivity";
 	Animation animationSlideInTop,animationSlideInTop2;
@@ -44,6 +44,9 @@ public class MainActivity extends Activity {
 	private void initComponents(){
 		Log.i(TAG, String.valueOf(Tool.px2dip(MainActivity.this, width)));
 		Log.i(TAG, String.valueOf(Tool.px2dip(MainActivity.this, height)));
+		titleText = (TextView)findViewById(R.id.text);
+		RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams)titleText.getLayoutParams();
+		lp.setMargins(0, height/24, 0, 0);
 		
 		login = (LinearLayout)findViewById(R.id.sl_login);
 		RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams)login.getLayoutParams();

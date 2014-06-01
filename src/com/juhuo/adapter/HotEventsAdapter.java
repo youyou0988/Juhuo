@@ -13,7 +13,6 @@ import org.json.JSONObject;
 
 import android.app.Activity;
 import android.app.Dialog;
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
@@ -40,7 +39,6 @@ import com.juhuo.tool.JuhuoInfo;
 import com.juhuo.tool.Tool;
 import com.juhuo.welcome.EventDetailActivity;
 import com.juhuo.welcome.R;
-import com.juhuo.welcome.SearchEvent;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
@@ -316,11 +314,13 @@ public class HotEventsAdapter extends BaseAdapter {
 				//sth is wrong
 				Tool.dialog(activity);
 			}else{
-				URLS[pos]="";
+				for(int i=pos;i<URLS.length-1;i++){
+					URLS[pos] = URLS[pos+1];
+				}
 				mData.remove(this.pos);
 				Log.i("datalist", String.valueOf(mData.size()));
 				notifyDataSetChanged();
-				notifyDataSetInvalidated();
+//				notifyDataSetInvalidated();
 			}
 		}
 	}

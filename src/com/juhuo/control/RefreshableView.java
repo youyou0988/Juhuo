@@ -165,7 +165,7 @@ public class RefreshableView extends LinearLayout {
                         setMargin(0);
                         changeHeaderViewByState(state, false);
                         onRefresh();
-                        Log.i(TAG, "由松开刷新状态，到done状态");
+                        Log.i(TAG, "由松开刷新状态，到正在刷新状态");
                     }
 
                 }
@@ -283,6 +283,13 @@ public class RefreshableView extends LinearLayout {
             refreshListener.onRefresh(this);
         }
     }
+    public void onRefreshing(){
+    	setMargin(0);
+    	mElastic.showArrow(View.GONE);
+        mElastic.showProgressBar(View.VISIBLE);
+        mElastic.setTips(note_refreshing);
+    	
+    }
 
     /**
      * 
@@ -362,7 +369,7 @@ public class RefreshableView extends LinearLayout {
             Log.i(TAG, "down");
             break;
         case MotionEvent.ACTION_MOVE:
-            Log.i(TAG, "move");
+//            Log.i(TAG, "move");
             break;
         case MotionEvent.ACTION_UP:
             Log.i(TAG, "up");

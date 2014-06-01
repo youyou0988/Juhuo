@@ -2,7 +2,10 @@ package com.juhuo.fragment;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -24,11 +27,11 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-
 import com.juhuo.tool.JuhuoConfig;
 import com.juhuo.tool.JuhuoInfo;
 import com.juhuo.tool.Tool;
@@ -36,6 +39,9 @@ import com.juhuo.welcome.CreateEvent;
 import com.juhuo.welcome.R;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.display.FadeInBitmapDisplayer;
+import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
+import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
 
 public class EditEventImage extends Fragment{
 	private Resources mResources;
@@ -45,11 +51,11 @@ public class EditEventImage extends Fragment{
 	private Fragment mContent;
 	private ImageAdapter imageAdapter;
 	private GridView imagegrid;
-	private TextView saveText;
+	private TextView saveText,cancelText;
 	private ArrayList<String> arrPath = new ArrayList<String>();
     private int[] isuploaded;
     private String photoids="";
-    private boolean allUploaded;
+    private boolean allUploaded,activityFinish=false;
     private ProgressDialog mPgDialog;
     private DisplayImageOptions options;
     protected ImageLoader imageLoader = ImageLoader.getInstance();
@@ -77,6 +83,7 @@ public class EditEventImage extends Fragment{
 		parent = (RelativeLayout) inflater.inflate(
 				R.layout.edit_image, null);
 		saveText = (TextView)parent.findViewById(R.id.action_title_text2);
+		cancelText = (TextView)parent.findViewById(R.id.action_title_text);
 		chooseImg = (Button)parent.findViewById(R.id.choose_img);
 		chooseImg.setOnClickListener(new View.OnClickListener() {
 			
@@ -95,31 +102,57 @@ public class EditEventImage extends Fragment{
 				transaction.commit();
 			}
 		});
-		saveText.setOnClickListener(new View.OnClickListener() {
+		
+		OnClickListener txtClick = new View.OnClickListener() {
 			
 			@Override
-			public void onClick(View v) {
+			public void onClick(View arg0) {
 				  // TODO Auto-generated method stub
+				 TextView v = (TextView)arg0;
 				  boolean completed = true;
-				  for(int i=0; i<isuploaded.length; i++) {
-				    if(isuploaded[i] == 0) {
-				       completed = false;
-				       break;
-				     }   
+				  if(isuploaded!=null){
+					  for(int i=0; i<isuploaded.length; i++) {
+					    if(isuploaded[i] == 0) {
+					       completed = false;
+					       break;
+					     }   
+					  }
 				  }
 				  if(completed){
 					    //array has no zero values
-						Intent intent = new Intent(getActivity(),CreateEvent.class);
-						intent.putExtra("photo_ids",photoids);
-						intent.putExtra("imageurl", "file://"+arrPath.get(0));
-						intent.putExtra("photo_num", arrPath.size());
-						getActivity().setResult(getActivity().RESULT_OK, intent);
-						getActivity().finish();
+					    switch(v.getId()){
+						case R.id.action_title_text:
+							getFragmentManager().beginTransaction().remove(EditEventImage.this).commit();
+							getActivity().getSupportFragmentManager().popBackStack();
+							getActivity().finish();
+							break;
+						case R.id.action_title_text2:
+							Intent intent = new Intent(getActivity(),CreateEvent.class);
+							intent.putExtra("photo_ids",photoids);
+							intent.putExtra("imageurl", "file://"+arrPath.get(0));
+							intent.putExtra("photo_num", arrPath.size());
+							getActivity().setResult(getActivity().RESULT_OK, intent);
+							getActivity().finish();
+							activityFinish = true;
+						}
+						
 				  }else{
-					  Tool.myToast(getActivity(), mResources.getString(R.string.uploading_photo));
+						switch(v.getId()){
+						case R.id.action_title_text:
+							getFragmentManager().beginTransaction().remove(EditEventImage.this).commit();
+							getActivity().getSupportFragmentManager().popBackStack();
+							getActivity().finish();
+							activityFinish = true;
+							break;
+						case R.id.action_title_text2:
+							Tool.myToast(getActivity(), mResources.getString(R.string.uploading_photo));
+						}
 				  }
+				
 			}
-		});
+		};
+		saveText.setOnClickListener(txtClick);
+		cancelText.setOnClickListener(txtClick);
 		imagegrid = (GridView) parent.findViewById(R.id.PhoneImageGrid);
 		imageAdapter = new ImageAdapter(arrPath);
 		imagegrid.setAdapter(imageAdapter);
@@ -142,30 +175,41 @@ public class EditEventImage extends Fragment{
 	        map.put("token", JuhuoConfig.token);
 	        map.put("photo", this.arrPath.get(i));
 	        photoup.execute(map);
-	        mPgDialog.show();
 		}else{
-			Tool.myToast(getActivity(), "全部图片上传成功");
-			mPgDialog.dismiss();
-			allUploaded = true;
+			//如果此时还没有取消上传照片的操作
+			if(activityFinish==false){
+				Tool.myToast(getActivity(), "全部图片上传成功");
+				allUploaded = true;
+			}
+			
 		}
 	}
-	private class UploadPhoto extends AsyncTask<HashMap<String,Object>,String,JSONObject>{
+	private class UploadPhoto extends AsyncTask<HashMap<String,Object>,Integer,JSONObject>{
 		int index;
 		protected UploadPhoto(int i){
 			this.index = i;
 		}
+		@Override
+		protected void onPreExecute(){
+//			mPgDialog.show(); 
+		}
     	@Override
 		protected JSONObject doInBackground(HashMap<String,Object>... map) {
 			// TODO Auto-generated method stub
-
+    		
 			HashMap<String,Object> mapped = map[0];
 			return new JuhuoInfo().callPost(mapped,JuhuoConfig.COMMON_UPLOADPHOTO);
 		}
+    	@Override
+    	protected void onProgressUpdate(Integer... values) {  
+//    		mPgDialog.setMessage("当前上传进度：" + values[0] + "%");  
+        }
 		@Override
 		protected void onPostExecute(JSONObject result) {
+//			mPgDialog.dismiss();
 			if(result == null){
 				Log.i(TAG,"cannot get any");//we have reveived 500 error page
-				
+				Tool.myToast(getActivity(), mResources.getString(R.string.error_network));
 			}else if(result.has("wrong_data")){
 				//sth is wrong
 				Tool.dialog(getActivity());
@@ -184,6 +228,7 @@ public class EditEventImage extends Fragment{
 					e.printStackTrace();
 				}
 				isuploaded[index] = 1;
+				imageAdapter.notifyDataSetChanged();
 				uploadimage(index+1);
 			}	
 		}
@@ -192,15 +237,13 @@ public class EditEventImage extends Fragment{
         private LayoutInflater mInflater;
         
         public ImageAdapter(ArrayList<String> selectedarr) {
-        	Log.i(TAG, getActivity().toString());
-            mInflater = (LayoutInflater) getActivity()
+        	mInflater = (LayoutInflater) getActivity()
             		.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             
         }
  
         public int getCount() {
-        	Log.i(TAG, String.valueOf(arrPath.size()));
-            return arrPath.size();
+        	return arrPath.size();
         }
  
         public Object getItem(int position) {
@@ -218,7 +261,8 @@ public class EditEventImage extends Fragment{
                 convertView = mInflater.inflate(
                         R.layout.uploaditem, null);
                 holder.imageview = (ImageView) convertView.findViewById(R.id.thumbImage);
-                holder.transview = (View)convertView.findViewById(R.id.above);
+//                holder.transview = (ImageView)convertView.findViewById(R.id.above);
+                holder.che = (CheckBox)convertView.findViewById(R.id.che);
                 convertView.setTag(holder);
             }
             else {
@@ -236,16 +280,17 @@ public class EditEventImage extends Fragment{
                     startActivity(intent);
                 }
             });
-            holder.transview.setVisibility(isuploaded[position]==1?View.INVISIBLE:View.VISIBLE);
+            holder.che.setChecked(isuploaded[position]==1?true:false);
             imageLoader.displayImage("file://"+ arrPath.get(position), holder.imageview, options);
-//            holder.imageview.setImageBitmap(thumbnails.get(position));
+//            holder.transview.setVisibility(isuploaded[position]==1?View.INVISIBLE:View.VISIBLE);
             holder.id = position;
             return convertView;
         }
     }
 	class ViewHolder {
         ImageView imageview;
-        View transview;
+//        ImageView transview;
+        CheckBox che;
         int id;
     }
 
