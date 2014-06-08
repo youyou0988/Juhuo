@@ -325,7 +325,7 @@ public class Tool {
 		Activity acc = (Activity)context;
 		int imageWidth;
 		if(acc.getClass()==EventDetailActivity.class){
-			imageWidth = (JuhuoConfig.WIDTH-75)*4/21;
+			imageWidth = JuhuoConfig.WIDTH*61/(21*16);
 			Log.i("height", String.valueOf(imageWidth));
 		}else{
 			imageWidth = JuhuoConfig.WIDTH*7/30;
@@ -334,7 +334,7 @@ public class Tool {
 		ImageView view = new ImageView(context);
         view.setImageResource(R.drawable.default_image);
         TableRow.LayoutParams imPara = new TableRow.LayoutParams(imageWidth,imageWidth);
-        imPara.setMargins(0, 0, imageWidth/16, 0);
+        imPara.setMargins(0, 0, imageWidth/8, 0);
         view.setLayoutParams(imPara);
         view.setScaleType(ScaleType.FIT_XY);
         return view;

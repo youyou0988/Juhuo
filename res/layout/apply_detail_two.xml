@@ -2,10 +2,40 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:background="@color/white">
-    <include
-        android:id="@+id/titlebar"
-        android:layout_alignParentTop="true"
-        layout="@layout/title_bar" />
+    <RelativeLayout android:layout_height="45dp"
+	     android:layout_width="fill_parent"
+	     android:background="@drawable/bg_titlebar"
+	     android:id="@+id/titlebar"
+	     android:padding="@dimen/titlebar_padding"
+	     android:layout_alignParentTop="true"
+	     >
+	     <ImageView android:layout_width="wrap_content"
+	         android:layout_height="wrap_content"
+	         android:background="@drawable/icon_back"
+	         android:layout_marginTop="8dp"
+	         android:layout_marginBottom="6dp"
+	         android:layout_marginLeft="9dp"
+	         android:layout_alignParentLeft="true"
+	         android:layout_marginRight="9dp"
+	         android:id="@+id/action_title_img"/>
+	     <TextView android:id="@+id/action_title"
+	         android:layout_width="wrap_content"
+	         android:layout_height="wrap_content"
+	         android:text="@string/login_name"
+	         android:textColor="@color/white"
+	         android:gravity="center"
+	         android:textStyle="bold"
+	         android:layout_centerInParent="true"
+	         android:textSize="22sp"/>
+	     <TextView android:layout_width="wrap_content"
+	         android:layout_height="wrap_content"
+	         android:visibility="visible"
+	         android:layout_margin="@dimen/pic_margin"
+	         android:id="@+id/action_title_txt2"
+	         android:layout_alignParentRight="true"
+	         android:text="@string/follow"
+	         android:textColor="@color/white"/>
+	</RelativeLayout>
     <RelativeLayout android:layout_height="wrap_content"
         android:layout_width="match_parent"
         android:padding="15dp"

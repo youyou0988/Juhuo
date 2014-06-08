@@ -5,6 +5,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
 
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.app.Activity;
@@ -12,7 +14,6 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
-import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.location.Location;
 import android.os.AsyncTask;
@@ -74,6 +75,7 @@ public class CreateEvent extends Activity implements LocationSource,AMapLocation
 	private static final int EditDetailEvent = 1;
 	private static final int EditImage = 2;
 	final String[] items = {"交友聚会", "读书看报", "音乐电影","体育锻炼","其他"};
+	private String[] eventTypeStr={"所有活动","交友聚会","读书看报","音乐电影","体育锻炼","其他"};
 	DisplayImageOptions options = new DisplayImageOptions.Builder()
 	.imageScaleType(ImageScaleType.EXACTLY)
 	.showImageOnLoading(R.drawable.default_image)
@@ -123,14 +125,25 @@ public class CreateEvent extends Activity implements LocationSource,AMapLocation
 		mapView = (MapView) findViewById(R.id.map);
 		mapView.onCreate(savedInstanceState);// 必须要写
 		init();
-		time_begin = df.format(new Date());
-		time_begin_cal = Calendar.getInstance();
-		Calendar calendar = Calendar.getInstance();
-		int day = calendar.get(Calendar.DAY_OF_MONTH);
-		calendar.set(Calendar.DAY_OF_MONTH, day+1);
-		time_end_cal = calendar;
-		Date tasktime=calendar.getTime();
-		time_end = df.format(tasktime.getTime());
+		if(getIntent().getExtras().getString("type").equals("update")){
+			createBtn.setText(mResources.getString(R.string.update_event));
+			JSONObject jo = new JSONObject();
+			jo = Tool.loadJsonFromFile(JuhuoConfig.EVENTINFO+getIntent().getExtras().getString("event_id"), this);
+			if(jo!=null){
+				//get network data
+				setViewsContent(jo);
+			}
+		}else{
+			time_begin = df.format(new Date());
+			time_begin_cal = Calendar.getInstance();
+			Calendar calendar = Calendar.getInstance();
+			int day = calendar.get(Calendar.DAY_OF_MONTH);
+			calendar.set(Calendar.DAY_OF_MONTH, day+1);
+			time_end_cal = calendar;
+			Date tasktime=calendar.getTime();
+			time_end = df.format(tasktime.getTime());
+			
+		}
 		createBtn.setOnClickListener(new View.OnClickListener() {
 			
 			@Override
@@ -161,6 +174,42 @@ public class CreateEvent extends Activity implements LocationSource,AMapLocation
 				task.execute(map);
 			}
 		});
+		
+	}
+	private void setViewsContent(JSONObject result){
+		try {
+			if(result.has("suc_photos")){
+				JSONArray ja = result.getJSONArray("suc_photos");
+				picNumber.setText(ja.length()+"张");
+	            imageLoader.displayImage( ja.getJSONObject(0).getString("url"), image,options);
+			}
+			eventTitle.setText(title);
+			String tb = result.getString("time_begin").substring(0,19).replace('T', ' ');
+			String te = result.getString("time_end").substring(0,19).replace('T', ' ');
+			eventBeginTime.setText(tb);
+			eventEndTime.setText(te);
+			eventPlace.setText(result.getString("addr").equals("null")?"":result.getString("addr"));
+			double lat = result.getDouble("lat");
+			double lng = result.getDouble("lng");
+			LatLng marker1 = new LatLng(lat, lng);                
+	        //设置中心点和缩放比例  
+	        aMap.moveCamera(CameraUpdateFactory.newCameraPosition(new CameraPosition(marker1,8,8,8)));  
+	        aMap.moveCamera(CameraUpdateFactory.zoomTo(13));
+			int et = Integer.parseInt(result.getString("event_type").equals("")?"1":
+				result.getString("event_type"));
+			eventType.setText(eventTypeStr[et]);
+			privacyche.setChecked(result.getInt("privacy")==0?true:false);
+			eventCost.setText(result.getInt("cost")!=0?String.valueOf(result.getInt("cost")):"免费");
+			if(!result.getString("description").equals("")){
+				eventDetail.setText(result.getString("description"));
+				findViewById(R.id.detailgone).setOnClickListener(typeClick);
+			}else{
+				findViewById(R.id.detailgone).setVisibility(View.GONE);
+			}
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	OnClickListener imageClick = new View.OnClickListener() {
 		

@@ -126,4 +126,24 @@
     <string name="add_to_calendar_success">添加日历成功！</string>
     <string name="makesure_delete_event">确定删除这个活动么？</string>
     
+    <string name="xlistview_header_hint_normal">下拉刷新</string>
+    <string name="xlistview_header_hint_ready">松开刷新数据</string>
+    <string name="xlistview_header_hint_loading">正在加载...</string>
+    <string name="xlistview_header_last_time">上次更新时间：</string>
+    <string name="xlistview_footer_hint_normal">查看更多</string>
+    <string name="xlistview_footer_hint_ready">松开载入更多</string>
+    <string name="apply_event">申请参加</string>
+    <string name="makesure_event">确定参加</string>
+    <string name="maybe_event">可能参加</string>
+    <string name="refuse_event">拒绝参加</string>
+    <string name="apply_event_success">申请活动成功</string>
+    <string name="change_status_success">修改状态成功</string>
+    <string name="apply_eventing">正在申请</string>
+    <string name="follow">关注</string>
+    <string name="cancel_follow">取消关注</string>
+    <string name="add_follow_success">添加关注成功</string>
+    <string name="decline">拒绝</string>
+    <string name="approve">同意</string>
+    <string name="approve_success">审批成功</string>
+    <string name="approving">正在审批</string>
 </resources>

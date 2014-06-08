@@ -1,9 +1,11 @@
 package com.juhuo.welcome;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.TimeZone;
 
 import org.json.JSONArray;
@@ -16,7 +18,6 @@ import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.content.res.Resources;
-import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -33,6 +34,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout.LayoutParams;
 import android.widget.RelativeLayout;
@@ -65,7 +67,6 @@ import com.tencent.mm.sdk.openapi.SendMessageToWX;
 import com.tencent.mm.sdk.openapi.WXAPIFactory;
 import com.tencent.mm.sdk.openapi.WXMediaMessage;
 import com.tencent.mm.sdk.openapi.WXWebpageObject;
-import com.tencent.mm.sdk.platformtools.BackwardSupportUtil.BitmapFactory;
 
 public class EventDetailActivity extends Activity {
 	//可下拉刷新的layout
@@ -76,6 +77,8 @@ public class EventDetailActivity extends Activity {
 	private ArrayList<View> imagePageViews = null;
 	private ViewGroup main = null;
 	private ViewPager viewPager = null;
+	private Button applyEventBtn;
+	private RelativeLayout statusbarLay;
 	// 当前ViewPager索引
 	private int pageIndex = 0; 
 	// event_id to work as cache index
@@ -119,12 +122,13 @@ public class EventDetailActivity extends Activity {
 	private String type,title;
 	private Calendar startcal,endcal;
 	private IWXAPI wxApi;
-	private String WX_APP_ID="";
+	private String WX_APP_ID="wx2e90a4742b88917d";
+	private SimpleDateFormat df = new SimpleDateFormat(Tool.ISO8601DATEFORMAT, Locale.getDefault());
 	
 	protected void onCreate(Bundle savedInstanceState){
 		super.onCreate(savedInstanceState);
-		initViews(savedInstanceState);
 		this.event_id = getIntent().getExtras().getString("eventId");
+		initViews(savedInstanceState);
 		Tool.initImageLoader(this);
 		JSONObject jo = new JSONObject();
 		jo = Tool.loadJsonFromFile(JuhuoConfig.EVENTINFO+event_id, this);
@@ -139,10 +143,7 @@ public class EventDetailActivity extends Activity {
 		//实例化
 		wxApi = WXAPIFactory.createWXAPI(this, WX_APP_ID);
 		wxApi.registerApp(WX_APP_ID);
-		/**
-		 * 微信分享 （这里仅提供一个分享网页的示例，其它请参看官网示例代码）
-		 * @param flag(0:分享到微信好友，1：分享到微信朋友圈)
-		 */
+		
 	}
 	public void getNetData(HashMap<String,Object> map){
 		mRefreshableView.onRefreshing();
@@ -242,6 +243,7 @@ public class EventDetailActivity extends Activity {
 		eventCost = (TextView)findViewById(R.id.event_cost);
 		eventLink = (TextView)findViewById(R.id.event_link);
 		eventDetail = (TextView)findViewById(R.id.event_detail);
+		applyEventBtn = (Button)findViewById(R.id.apply_event_btn);
 		RelativeLayout eventComment = (RelativeLayout)findViewById(R.id.commentlay);
 		eventComment.setOnClickListener(InviListener);
 		
@@ -250,16 +252,107 @@ public class EventDetailActivity extends Activity {
 		init();
 		
 		RelativeLayout applyLay = (RelativeLayout)findViewById(R.id.applylay);
+		statusbarLay = (RelativeLayout)findViewById(R.id.statusbar);
 		type=getIntent().getExtras().getString("type");
 		if(type.equals("HOT")){
 			applyLay.setVisibility(View.GONE);
-		}else{//my events' detail
+			applyEventBtn.setVisibility(View.VISIBLE);
+			statusbarLay.setVisibility(View.GONE);
+		}else if(type.equals("MYorganizer")){//my events' detail
 			applyLay.setVisibility(View.VISIBLE);
+			applyEventBtn.setVisibility(View.GONE);
+			statusbarLay.setVisibility(View.GONE);
+		}else{
+			applyLay.setVisibility(View.VISIBLE);
+			applyEventBtn.setVisibility(View.GONE);
+			statusbarLay.setVisibility(View.VISIBLE);
 		}
+		applyEventBtn.setOnClickListener(btnClickListener);
 		
 		mRefreshableView = (RefreshableView) findViewById(R.id.refresh_root);    
 		mRefreshableView.setRefreshListener(mRefreshListener);    
 		mRefreshableView.setPullDownElastic(new PullDownElasticImp(this)); 
+	}
+	OnClickListener btnClickListener = new View.OnClickListener() {
+		
+		@Override
+		public void onClick(View arg0) {
+			// TODO Auto-generated method stub
+			Button vb = (Button)arg0;
+			HashMap<String,Object> params = new HashMap<String,Object>();
+			params.put("token", JuhuoConfig.token);
+			params.put("id", event_id);
+			switch(vb.getId()){
+			case R.id.apply_event_btn:
+				
+				params.put("time", df.format(new Date()));
+				ApplyEventClass task = new ApplyEventClass();
+				task.execute(params);
+				vb.setText(mResources.getString(R.string.apply_eventing));
+				break;
+			case R.id.status1:
+				params.put("status", String.valueOf(1));
+				ConfirmEventClass task2 = new ConfirmEventClass();
+				task2.execute(params);
+				vb.setTextColor(mResources.getColor(R.color.mgreen));
+				break;
+			case R.id.status2:
+				params.put("status", String.valueOf(2));
+				ConfirmEventClass task3 = new ConfirmEventClass();
+				task3.execute(params);
+				vb.setTextColor(mResources.getColor(R.color.mgreen));
+				break;
+			case R.id.status3:
+				params.put("status", String.valueOf(3));
+				ConfirmEventClass task4 = new ConfirmEventClass();
+				task4.execute(params);
+				vb.setTextColor(mResources.getColor(R.color.mgreen));
+				break;
+				
+			}
+		}
+	};
+	private class ConfirmEventClass extends AsyncTask<HashMap<String,Object>,String,JSONObject>{
+
+		@Override
+		protected JSONObject doInBackground(HashMap<String, Object>... arg0) {
+			// TODO Auto-generated method stub
+			HashMap<String,Object> mapped = arg0[0];
+			return new JuhuoInfo().loadNetData(mapped,JuhuoConfig.EVENT_CONFIRM);
+		}
+		@Override
+		protected void onPostExecute(JSONObject result){
+			if(result == null){
+				Log.i(TAG,"cannot get any");//we have reveived 500 error page
+				Tool.myToast(EventDetailActivity.this, mResources.getString(R.string.error_network));
+			}else if(result.has("wrong_data")){
+				//sth is wrong
+				Tool.dialog(EventDetailActivity.this);
+			}else{
+				Tool.myToast(EventDetailActivity.this, mResources.getString(R.string.change_status_success));
+			}
+		}
+	}
+	private class ApplyEventClass extends AsyncTask<HashMap<String,Object>,String,JSONObject>{
+
+		@Override
+		protected JSONObject doInBackground(HashMap<String, Object>... arg0) {
+			// TODO Auto-generated method stub
+			HashMap<String,Object> mapped = arg0[0];
+			return new JuhuoInfo().loadNetData(mapped,JuhuoConfig.EVENT_APPLY);
+		}
+		@Override
+		protected void onPostExecute(JSONObject result){
+			if(result == null){
+				Log.i(TAG,"cannot get any");//we have reveived 500 error page
+				Tool.myToast(EventDetailActivity.this, mResources.getString(R.string.error_network));
+			}else if(result.has("wrong_data")){
+				//sth is wrong
+				Tool.dialog(EventDetailActivity.this);
+			}else{
+				Tool.myToast(EventDetailActivity.this, mResources.getString(R.string.apply_event_success));
+			}
+		}
 	}
 	RefreshListener mRefreshListener = new RefreshListener(){
 
@@ -473,6 +566,7 @@ public class EventDetailActivity extends Activity {
 				applytent.putExtra("APPLY_URLS", map.get(JuhuoConfig.INVI_APPLY));
 				applytent.putExtra("TYPE", Status.APPLY);
 				applytent.putExtra("PAGE", type);
+				applytent.putExtra("event_id", event_id);
 				startActivity(applytent);
 				break;
 			}
@@ -481,6 +575,7 @@ public class EventDetailActivity extends Activity {
 	
 	
 	private void wechatShare(int flag){
+		Log.i(TAG, "share");
 		WXWebpageObject webpage = new WXWebpageObject();
 		webpage.webpageUrl = "http://baidu.com";
 		WXMediaMessage msg = new WXMediaMessage(webpage);
@@ -680,6 +775,8 @@ public class EventDetailActivity extends Activity {
 			break;
 		case R.id.update_event:
 			Intent intentup = new Intent(EventDetailActivity.this,CreateEvent.class);
+			intentup.putExtra("event_id", event_id);
+			intentup.putExtra("type", "update");
 			startActivity(intentup);
 			break;
 		case R.id.share_event:

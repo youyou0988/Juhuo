@@ -135,7 +135,7 @@ public class HotEventsAdapter extends BaseAdapter {
 	public void setListView(ListView lv){
 		this.listView = lv;
 		this.listView.setOnItemClickListener(evlistOnClickListener);
-		if(type=="MY"){
+		if(type!="HOT"){
 			this.listView.setOnItemLongClickListener(evlistLoneClickListener);
 		}
 		

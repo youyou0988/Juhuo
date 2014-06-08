@@ -9,20 +9,25 @@ import java.util.List;
 
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.BaseAdapter;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ImageView.ScaleType;
 import android.widget.ListView;
@@ -30,6 +35,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.juhuo.tool.JuhuoConfig;
+import com.juhuo.tool.JuhuoInfo;
 import com.juhuo.tool.JuhuoConfig.Status;
 import com.juhuo.tool.Tool;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
@@ -52,11 +58,14 @@ public class ApplyDetailOne extends Activity {
 	private ListView applyList;
 	private ImageView actionTitleImg,actionTitleImg2;
 	private TextView actionTitle;
+	private EditText messageTxt;
 	private Resources mResources;
+	private RelativeLayout approve;
 	private ApplyDetailAdapter mAdapter;
 	private ArrayList<HashMap<String,Object>> mData;
 	private LayoutInflater mInflater;
 	private ArrayList<String> urls;
+	private ProgressDialog mPgDialog;
 	DisplayImageOptions options = new DisplayImageOptions.Builder()
 	.imageScaleType(ImageScaleType.IN_SAMPLE_INT)
 	.showImageOnLoading(R.drawable.default_image)
@@ -71,10 +80,14 @@ public class ApplyDetailOne extends Activity {
 	private ImageLoadingListener animateFirstListener = new AnimateFirstDisplayListener();
 	private String TAG="ApplyDetailOne";
 	private String type="HOT";
+	private Status st;
+	private String event_id;
 	protected void onCreate(Bundle savedInstanceState){
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.apply_detail_one);
 		mResources = getResources();
+		mPgDialog = new ProgressDialog(this);
+        mPgDialog.setMessage(mResources.getString(R.string.approving));
 		actionTitleImg = (ImageView)findViewById(R.id.action_title_img);
 		actionTitleImg2 = (ImageView)findViewById(R.id.action_title_img2);
 		actionTitle = (TextView)findViewById(R.id.action_title);
@@ -87,8 +100,10 @@ public class ApplyDetailOne extends Activity {
 				finish();
 			}
 		});
+		messageTxt = (EditText)findViewById(R.id.message);
 		applyList = (ListView)findViewById(R.id.applylist);
-		Status st = (Status)getIntent().getExtras().get("TYPE");
+		st = (Status)getIntent().getExtras().get("TYPE");
+		event_id = getIntent().getExtras().getString("event_id");
 		String res="";
 		switch (st){
 		case PARTICIPANT:
@@ -127,20 +142,87 @@ public class ApplyDetailOne extends Activity {
 		applyList.setAdapter(mAdapter);
 		applyList.setOnItemClickListener(mListListener);
 	}
+	private class EventApproveClass extends AsyncTask<HashMap<String,Object>,String,JSONObject>{
+    	public int pos;
+		public EventApproveClass(int pos){
+    		this.pos = pos;
+    	}
+		@Override
+	    protected void onPreExecute() {
+			mPgDialog.show();
+	    }
+		@Override
+		protected JSONObject doInBackground(HashMap<String,Object>... map) {
+			// TODO Auto-generated method stub
+
+			HashMap<String,Object> mapped = map[0];
+			return new JuhuoInfo().callPostPlain(mapped,JuhuoConfig.EVENT_APPROVE);
+		}
+		@Override
+		protected void onPostExecute(JSONObject result) {
+			if(result == null){
+				Log.i(TAG,"cannot get any");//we have reveived 500 error page
+			}else if(result.has("wrong_data")){
+				//sth is wrong
+				Tool.dialog(ApplyDetailOne.this);
+			}else{
+				Tool.myToast(ApplyDetailOne.this, mResources.getString(R.string.approve_success));
+				mData.remove(pos);
+				mAdapter.notifyDataSetChanged();
+				approve.setVisibility(View.GONE);
+				mPgDialog.dismiss();
+			}
+		}
+	}
 	OnItemClickListener mListListener = new OnItemClickListener(){
 
 		@Override
-		public void onItemClick(AdapterView<?> parent, View arg1, int position,
+		public void onItemClick(AdapterView<?> parent, View arg1, final int position,
 				long arg3) {
 			// TODO Auto-generated method stub
-			Intent intent = new Intent(ApplyDetailOne.this,ApplyDetailTwo.class);
-			intent.putExtra("name", (String)mData.get(position).get("name"));
-			intent.putExtra("age", (String)mData.get(position).get("birthday"));
-			intent.putExtra("gender", (String)mData.get(position).get("gender"));
-			intent.putExtra("cell", (String)mData.get(position).get("cell"));
-			intent.putExtra("description", (String)mData.get(position).get("description"));
-			intent.putExtra("url", urls.get(position));
-			startActivity(intent);
+			if(st==JuhuoConfig.Status.APPLY){
+				approve = (RelativeLayout)findViewById(R.id.approve);
+				approve.setVisibility(View.VISIBLE);
+				TextView approveTxt = (TextView)findViewById(R.id.approvetxt);
+				TextView declinedTxt = (TextView)findViewById(R.id.declinetxt);
+				TextView refereeTxt = (TextView)findViewById(R.id.referee);
+				String res = mData.get(position).get("referee_name")==null?"":(String)mData.get(position).get("referee_name");
+				refereeTxt.setText("ÍÆ¼öÈË£º"+res);
+				OnClickListener txtClick = new View.OnClickListener() {
+					
+					@Override
+					public void onClick(View arg0) {
+						// TODO Auto-generated method stub
+						TextView tv = (TextView)arg0;
+						HashMap<String,Object> params = new HashMap<String,Object>();
+						params.put("token", JuhuoConfig.token);
+						params.put("id", event_id);
+						params.put("message", messageTxt.getEditableText().toString());
+						params.put("guest_id", (String)mData.get(position).get("id"));
+						switch(tv.getId()){
+						case R.id.approvetxt:
+							params.put("decision", 0);
+							break;
+						case R.id.declinetxt:
+							params.put("decision", 1);
+							break;
+						}
+						EventApproveClass task = new EventApproveClass(position);
+						task.execute(params);
+					}
+				};
+				approveTxt.setOnClickListener(txtClick);
+				declinedTxt.setOnClickListener(txtClick);
+			}else{
+				Intent intent = new Intent(ApplyDetailOne.this,ApplyDetailTwo.class);
+				intent.putExtra("name", (String)mData.get(position).get("name"));
+				intent.putExtra("age", (String)mData.get(position).get("birthday"));
+				intent.putExtra("gender", (String)mData.get(position).get("gender"));
+				intent.putExtra("cell", (String)mData.get(position).get("cell"));
+				intent.putExtra("description", (String)mData.get(position).get("description"));
+				intent.putExtra("url", urls.get(position));
+				startActivity(intent);
+			}	
 		}
 		
 	};

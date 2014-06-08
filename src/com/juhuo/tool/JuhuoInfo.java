@@ -181,8 +181,6 @@ public class JuhuoInfo {
 			if (responseEntity != null) {
 				String entityStr = EntityUtils.toString(responseEntity);
 				String resultCode = getCode(entityStr);
-				Log.i(TAG, resultCode);
-				
 				if(resultCode.equals(SUCCESS_STATUS)){
 					return getData(entityStr);
 				}else if(resultCode.equals(INVALID_TOKEN)){

@@ -53,7 +53,7 @@
         android:gravity="center"
         android:id="@+id/no_events_found"/>
     
-    <com.juhuo.control.MyListView
+    <com.juhuo.refreshview.XListView
         android:id="@+id/hotevents_listview"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

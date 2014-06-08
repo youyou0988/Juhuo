@@ -3,7 +3,6 @@ package com.juhuo.fragment;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -33,9 +32,9 @@ import android.widget.TextView;
 import com.jeremyfeinstein.slidingmenu.lib.app.SlidingFragmentActivity;
 import com.juhuo.adapter.FilterEventAdapter;
 import com.juhuo.adapter.HotEventsAdapter;
-import com.juhuo.control.MyListView;
 import com.juhuo.control.MyListView.OnLoadListener;
 import com.juhuo.control.MyListView.OnRefreshListener;
+import com.juhuo.refreshview.XListView;
 import com.juhuo.tool.JuhuoConfig;
 import com.juhuo.tool.JuhuoInfo;
 import com.juhuo.tool.Tool;
@@ -49,7 +48,7 @@ public class HotEventsFragment extends Fragment{
 	private ImageView actionTitleImg2;
 	private TextView actionTitle,noEventsText;
 	private RelativeLayout parent,filterlistlayout;
-	private MyListView hotEventsList;
+	private XListView hotEventsList;
 	private ListView subFilterView01,subFilterView02;
 	private Button filterAllEvent,filterDefaultEvent;
 	private View transView,transView2;
@@ -67,6 +66,8 @@ public class HotEventsFragment extends Fragment{
 	private int[] focus2={1,0,0,0,0};
 	private List<HashMap<String,String>> cacheList= new ArrayList<HashMap<String,String>>();
     private String handle;
+    private final int COUNT=20;
+    private int offset=20;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -83,32 +84,35 @@ public class HotEventsFragment extends Fragment{
 			Bundle savedInstanceState) {
 		parent = (RelativeLayout) inflater.inflate(
 				R.layout.hot_event, null);
-		hotEventsList = (MyListView)parent.findViewById(R.id.hotevents_listview);
-		hotEventsList.setonRefreshListener(new OnRefreshListener() {
-			
+		hotEventsList = (XListView)parent.findViewById(R.id.hotevents_listview);
+		hotEventsList.setPullLoadEnable(true);
+		hotEventsList.setXListViewListener(new XListView.IXListViewListener(){
+
+			@Override
 			public void onRefresh() {
 				// TODO Auto-generated method stub
 				Log.i("pull", "refresh");
 				getNetData(mapPara);
 			}
-		});
-		hotEventsList.setonLoadListener(new OnLoadListener() {  
-            
-            @Override  
-            public void onLoad() {  
-                //TODO 加载更多  
-                Log.e(TAG, "onLoad");
-                if(handle.equals("")){
-                	hotEventsList.onLoadComplete(); //加载更多完成  
+
+			@Override
+			public void onLoadMore() {
+				// TODO Auto-generated method stub
+				if(handle.equals("")){
+					onLoaded();
                 }else{
                 	HashMap<String,Object> mapMore = new HashMap<String,Object>();
                     mapMore.put("token", JuhuoConfig.token);
                     mapMore.put("handle", handle);
-//                    loadMoreData(mapMore);
+                    mapMore.put("count", String.valueOf(COUNT));
+                    mapMore.put("offset", String.valueOf(offset));
+                    offset = offset+COUNT;
+                    LoadMoreEvents task = new LoadMoreEvents();
+                    task.execute(mapMore);
                 }
-                
-            }  
-        });
+			}
+			
+		});
 		
 		
 		filterlistlayout = (RelativeLayout)parent.findViewById(R.id.filterlistlayout);
@@ -173,8 +177,10 @@ public class HotEventsFragment extends Fragment{
 		getNetData(mapPara);
 		return parent;
 	}
-	public void loadMoreData(){
-		hotEventsList.onLoadComplete(); //加载更多完成  
+	private void onLoaded() {
+		hotEventsList.stopRefresh();
+		hotEventsList.stopLoadMore();
+		hotEventsList.setRefreshTime("刚刚");
 	}
 	View.OnClickListener onClickListener = new View.OnClickListener() {
 		
@@ -259,10 +265,49 @@ public class HotEventsFragment extends Fragment{
 	};
 
 	public void getNetData(HashMap<String,Object> map){
-		
-		hotEventsList.onRefreshing();
 		LoadEventList loadEventList = new LoadEventList();
 		loadEventList.execute(map);
+	}
+	private class LoadMoreEvents extends AsyncTask<HashMap<String,Object>,String,JSONObject>{
+
+		@Override
+		protected JSONObject doInBackground(HashMap<String, Object>... arg0) {
+			// TODO Auto-generated method stub
+			HashMap<String,Object> mapped = arg0[0];
+			return new JuhuoInfo().loadNetData(mapped,JuhuoConfig.EVENT_LIST_INCREMENTAL);
+		}
+		@Override
+		protected void onPostExecute(JSONObject result){
+			if(getActivity()==null){
+				return;
+			}
+			if(result == null){
+				Log.i(TAG,"cannot get any");//we have reveived 500 error page
+				Tool.myToast(getActivity(), mResources.getString(R.string.error_network));
+			}else if(result.has("wrong_data")){
+				//sth is wrong
+				Tool.dialog(getActivity());
+			}else{
+				try {
+					JSONArray ja = result.getJSONArray("events");
+					if(ja.length()!=0) {
+						for(int i=0;i<ja.length();i++){
+							mData.put(ja.getJSONObject(i));
+						}
+						hotEventsAdapter.setJSONData(mData,"HOT");
+						hotEventsAdapter.notifyDataSetChanged();
+						
+					}else{
+						Tool.myToast(getActivity(), mResources.getString(R.string.no_events_found));
+					}
+					onLoaded();
+					
+				} catch (JSONException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		}
 	}
 	private class LoadEventList extends AsyncTask<HashMap<String,Object>,String,JSONObject>{
 
@@ -303,12 +348,14 @@ public class HotEventsFragment extends Fragment{
 						hotEventsAdapter.notifyDataSetChanged();
 						hotEventsAdapter.setListView(hotEventsList);
 						hotEventsList.setAdapter(hotEventsAdapter);
+						offset = ja.length();
 					}else{
 						//no events found
 						hotEventsList.setVisibility(View.INVISIBLE);
 						noEventsText.setText(mResources.getString(R.string.no_events_found));	
 					}
-					hotEventsList.onRefreshComplete();
+//					hotEventsList.onRefreshComplete();
+					onLoaded();
 					
 				} catch (JSONException e) {
 					// TODO Auto-generated catch block

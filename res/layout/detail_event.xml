@@ -413,7 +413,7 @@
                         <TextView
                             android:id="@+id/event_detail"
                             android:layout_width="wrap_content"
-                            android:layout_height="80dp"
+                            android:layout_height="wrap_content"
                             android:layout_marginLeft="7dp"
                             android:paddingBottom="4dp"
                             android:textColor="@color/mgreen"
@@ -686,4 +686,67 @@
         </RelativeLayout>
     </com.juhuo.control.ScrollViewExtend>
 	</com.juhuo.control.RefreshableView>
+	<Button android:layout_width="fill_parent"
+	    android:layout_height="wrap_content"
+	    android:layout_alignParentBottom="true"
+	    android:text="@string/apply_event"
+	    android:textColor="@color/mgray"
+        android:textSize="15sp"
+        android:textStyle="bold"
+	    android:id="@+id/apply_event_btn"
+	    android:background="@drawable/bg_event_filter"
+	    android:visibility="gone"/>
+	<RelativeLayout android:id="@+id/statusbar"
+        android:layout_width="match_parent"
+        android:layout_height="45dp"
+        android:layout_alignParentBottom="true"
+        android:visibility="gone"
+        >
+        <Button android:id="@+id/status1"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:text="@string/makesure_event"
+            android:textColor="@color/mgray"
+            android:textSize="15sp"
+            android:textStyle="bold"
+            android:background="@drawable/bg_event_filter"
+            android:layout_toLeftOf="@+id/divider">
+        </Button>
+        <View android:layout_height="match_parent"
+            android:layout_width="2dp"
+            android:id="@+id/divider"
+            android:background="@drawable/divider_event_filter"
+            android:layout_toLeftOf="@+id/status2"/>
+        <Button android:id="@+id/status2"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:layout_centerInParent="true"
+            android:text="@string/maybe_event"
+            android:textColor="@color/mgray"
+            android:textSize="15sp"
+            android:textStyle="bold"
+            android:background="@drawable/bg_event_filter"
+            >
+        </Button>
+        <View android:layout_height="match_parent"
+            android:layout_width="2dp"
+            android:id="@+id/divider2"
+            android:background="@drawable/divider_event_filter"
+            android:layout_toRightOf="@+id/status2"/>
+        <Button android:id="@+id/status3"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:text="@string/refuse_event"
+            android:textColor="@color/mgray"
+            android:textSize="15sp"
+            android:textStyle="bold"
+            android:background="@drawable/bg_event_filter"
+            android:layout_toRightOf="@+id/divider2"
+            
+            >
+        </Button>
+    </RelativeLayout>
 </RelativeLayout>

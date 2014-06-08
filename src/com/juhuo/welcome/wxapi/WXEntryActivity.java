@@ -1,9 +1,8 @@
 package com.juhuo.welcome.wxapi;
 
-import java.util.logging.LogManager;
-
 import android.app.Activity;
 import android.os.Bundle;
+import android.util.Log;
 
 import com.tencent.mm.sdk.openapi.BaseReq;
 import com.tencent.mm.sdk.openapi.BaseResp;
@@ -15,9 +14,10 @@ import com.tencent.mm.sdk.openapi.WXAPIFactory;
 public class WXEntryActivity extends Activity implements IWXAPIEventHandler {
 	// IWXAPI 是第三方app和微信通信的openapi接口
     private IWXAPI api;
+    private final String TAG = "WXEntryActivity";
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		api = WXAPIFactory.createWXAPI(this, "这里替换第一步申请的APP_ID", false);
+		api = WXAPIFactory.createWXAPI(this, "wx2e90a4742b88917d", false);
 		api.handleIntent(getIntent(), this);
 		super.onCreate(savedInstanceState);
 	}
@@ -26,8 +26,8 @@ public class WXEntryActivity extends Activity implements IWXAPIEventHandler {
 
 	@Override
 	public void onResp(BaseResp resp) {
-//		LogManager.show(TAG, "resp.errCode:" + resp.errCode + ",resp.errStr:"
-//				+ resp.errStr, 1);
+		Log.i(TAG, "resp.errCode:" + resp.errCode + ",resp.errStr:"
+				+ resp.errStr);
 		switch (resp.errCode) {
 		case BaseResp.ErrCode.ERR_OK:
 			//分享成功

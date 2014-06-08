@@ -23,14 +23,11 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.amap.api.maps2d.CameraUpdateFactory;
-import com.amap.api.maps2d.model.CameraPosition;
-import com.amap.api.maps2d.model.LatLng;
 import com.jeremyfeinstein.slidingmenu.lib.app.SlidingFragmentActivity;
 import com.juhuo.adapter.HotEventsAdapter;
-import com.juhuo.control.MyListView;
 import com.juhuo.control.MyListView.OnLoadListener;
 import com.juhuo.control.MyListView.OnRefreshListener;
+import com.juhuo.refreshview.XListView;
 import com.juhuo.tool.JuhuoConfig;
 import com.juhuo.tool.JuhuoInfo;
 import com.juhuo.tool.Tool;
@@ -44,7 +41,7 @@ public class MyEventFragment extends Fragment{
 	private ImageView actionTitleImg2;
 	private TextView actionTitle,noEventsText;
 	private RelativeLayout parent,filterlistlayout;
-	private MyListView hotEventsList;
+	private XListView hotEventsList;
 	private Button filterAllEvent,filterDefaultEvent;
 	private View transView,transView2;
 	private HotEventsAdapter hotEventsAdapter;
@@ -55,6 +52,8 @@ public class MyEventFragment extends Fragment{
 	private String handle;
 	private int filter;
 	private final int CREATE_EVENT = 0;
+	private final int COUNT=20;
+    private int offset=20;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -72,9 +71,10 @@ public class MyEventFragment extends Fragment{
 			Bundle savedInstanceState) {
 		parent = (RelativeLayout) inflater.inflate(
 				R.layout.hot_event, null);
-		hotEventsList = (MyListView)parent.findViewById(R.id.hotevents_listview);
-		hotEventsList.setonRefreshListener(new OnRefreshListener() {
-			
+		hotEventsList = (XListView)parent.findViewById(R.id.hotevents_listview);
+		hotEventsList.setXListViewListener(new XListView.IXListViewListener(){
+
+			@Override
 			public void onRefresh() {
 				// TODO Auto-generated method stub
 				Log.i("pull", "refresh");
@@ -84,31 +84,31 @@ public class MyEventFragment extends Fragment{
 				mapPara.put("incremental", "true");
 				if(filter==0){
 					mapPara.put("organizer", String.valueOf(JuhuoConfig.userId));
-					getNetData(mapPara);
+					getNetData(mapPara,"organizer");
 				}else{
 					mapPara.put("related", String.valueOf(JuhuoConfig.userId));
-					getNetData(mapPara);
+					getNetData(mapPara,"related");
 				}
-				
 			}
-		});
-		hotEventsList.setonLoadListener(new OnLoadListener() {  
-            
-            @Override  
-            public void onLoad() {  
-                //TODO 加载更多  
-                Log.e(TAG, "onLoad");
+
+			@Override
+			public void onLoadMore() {
+				// TODO Auto-generated method stub
+				Log.e(TAG, "onLoad");
                 if(handle.equals("")){
-                	hotEventsList.onLoadComplete(); //加载更多完成  
+                	onLoaded();
                 }else{
                 	HashMap<String,Object> mapMore = new HashMap<String,Object>();
                     mapMore.put("token", JuhuoConfig.token);
                     mapMore.put("handle", handle);
-//                    loadMoreData(mapMore);
+                    mapMore.put("count", String.valueOf(COUNT));
+                    mapMore.put("offset", String.valueOf(offset));
+                    offset = offset+COUNT;
+                    LoadMoreEvents task = new LoadMoreEvents();
+                    task.execute(mapMore);
                 }
-                
-            }  
-        });
+			}
+		});
 		
 		
 		filterlistlayout = (RelativeLayout)parent.findViewById(R.id.filterlistlayout);
@@ -139,6 +139,7 @@ public class MyEventFragment extends Fragment{
 			public void onClick(View arg0) {
 				// TODO Auto-generated method stub
 				Intent intent = new Intent(getActivity(),CreateEvent.class);
+				intent.putExtra("type", "create");
 				startActivityForResult(intent,CREATE_EVENT);
 			}
 		});
@@ -171,7 +172,7 @@ public class MyEventFragment extends Fragment{
 			hotEventsAdapter.setListView(hotEventsList);
 			hotEventsList.setAdapter(hotEventsAdapter);
 		}
-		getNetData(mapPara);
+		getNetData(mapPara,"organizer");
 		return parent;
 	}
 	View.OnClickListener onClickListener = new View.OnClickListener() {
@@ -188,24 +189,68 @@ public class MyEventFragment extends Fragment{
 				filterDefaultEvent.setTextColor(mResources.getColor(R.color.mgray));
 				filter = 0;
 				mapPara.put("organizer", String.valueOf(JuhuoConfig.userId));
+				getNetData(mapPara,"organizer");
 				break;
 			case R.id.filter_default_event:
 				filterAllEvent.setTextColor(mResources.getColor(R.color.mgray));
 				filter = 1;
 				mapPara.put("related", String.valueOf(JuhuoConfig.userId));
+				getNetData(mapPara,"related");
 				break;
 			}
-			getNetData(mapPara);
 		}
 	};
-	public void getNetData(HashMap<String,Object> map){
-		
-		hotEventsList.onRefreshing();
-		LoadEventList loadEventList = new LoadEventList();
+	private class LoadMoreEvents extends AsyncTask<HashMap<String,Object>,String,JSONObject>{
+
+		@Override
+		protected JSONObject doInBackground(HashMap<String, Object>... arg0) {
+			// TODO Auto-generated method stub
+			HashMap<String,Object> mapped = arg0[0];
+			return new JuhuoInfo().loadNetData(mapped,JuhuoConfig.EVENT_LIST_INCREMENTAL);
+		}
+		@Override
+		protected void onPostExecute(JSONObject result){
+			if(getActivity()==null){
+				return;
+			}
+			if(result == null){
+				Log.i(TAG,"cannot get any");//we have reveived 500 error page
+				Tool.myToast(getActivity(), mResources.getString(R.string.error_network));
+			}else if(result.has("wrong_data")){
+				//sth is wrong
+				Tool.dialog(getActivity());
+			}else{
+				try {
+					JSONArray ja = result.getJSONArray("events");
+					Log.i(TAG, ja.toString());
+					if(ja.length()!=0) {
+						for(int i=0;i<ja.length();i++){
+							mData.put(ja.getJSONObject(i));
+						}
+						hotEventsAdapter.setJSONData(mData,"HOT");
+						hotEventsAdapter.notifyDataSetChanged();
+						
+					}else{
+						Tool.myToast(getActivity(), mResources.getString(R.string.no_events_found));
+					}
+					onLoaded();
+					
+				} catch (JSONException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		}
+	}
+	public void getNetData(HashMap<String,Object> map,String type){
+		LoadEventList loadEventList = new LoadEventList(type);
 		loadEventList.execute(map);
 	}
 	private class LoadEventList extends AsyncTask<HashMap<String,Object>,String,JSONObject>{
-
+		String type;
+		public LoadEventList(String type){
+			this.type = type;
+		}
 		@Override
 		protected JSONObject doInBackground(HashMap<String,Object>... map) {
 			// TODO Auto-generated method stub
@@ -243,16 +288,17 @@ public class MyEventFragment extends Fragment{
 								(LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE),
 								getActivity());
 //						Log.i(TAG, mData.toString());
-						hotEventsAdapter.setJSONData(mData,"MY");
+						hotEventsAdapter.setJSONData(mData,"MY"+type);
 						hotEventsAdapter.notifyDataSetChanged();
 						hotEventsAdapter.setListView(hotEventsList);
 						hotEventsList.setAdapter(hotEventsAdapter);
+						offset = ja.length();
 					}else{
 						//no events found
 						hotEventsList.setVisibility(View.INVISIBLE);
 						noEventsText.setText(mResources.getString(R.string.no_events_found));	
 					}
-					hotEventsList.onRefreshComplete();
+					onLoaded();
 					
 				} catch (JSONException e) {
 					// TODO Auto-generated catch block
@@ -278,11 +324,16 @@ public class MyEventFragment extends Fragment{
 			switch (requestCode)  
 	        {  
 		        case CREATE_EVENT:  
-		        	getNetData(mapPara);
+		        	getNetData(mapPara,"organizer");
 		            break;  
 		        
 	        }  
 		}	
     }
+	private void onLoaded() {
+		hotEventsList.stopRefresh();
+		hotEventsList.stopLoadMore();
+		hotEventsList.setRefreshTime("刚刚");
+	}
 
 }

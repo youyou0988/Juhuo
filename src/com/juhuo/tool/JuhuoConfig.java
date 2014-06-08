@@ -37,11 +37,17 @@ public class JuhuoConfig {
 	
 	public static String EVENT_CREATE = PRODUCTIONPREFIX+"event/create/";
 	public static String EVENT_LIST = PRODUCTIONPREFIX+"event/list/";
+	public static String EVENT_LIST_INCREMENTAL = PRODUCTIONPREFIX+"event/listincremental/";
 	public static String EVENT_DELETE = PRODUCTIONPREFIX+"event/delete/";
 	public static String EVENT_INFO	= PRODUCTIONPREFIX + "event/info/";
 	public static String EVENT_COMMENT_LIST = PRODUCTIONPREFIX+"event/listcomment/";
 	public static String EVENT_INVITE = PRODUCTIONPREFIX+"event/invite/";
 	public static String EVENT_REMIND = PRODUCTIONPREFIX+"event/remind/";
+	public static String EVENT_APPLY = PRODUCTIONPREFIX+"event/apply/";
+	public static String EVENT_CONFIRM = PRODUCTIONPREFIX+"event/confirm/";
+	public static String EVENT_APPROVE = PRODUCTIONPREFIX+"event/approve/";
+	
+	public static String CONTACT_CREATE = PRODUCTIONPREFIX+"contact/create/";
 	
 	public static String COMMON_UPLOADPHOTO = PRODUCTIONPREFIX+"common/uploadphoto/";
 

@@ -1,13 +1,22 @@
 package com.juhuo.welcome;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import android.app.Activity;
 import android.content.res.Resources;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.juhuo.tool.JuhuoConfig;
+import com.juhuo.tool.JuhuoInfo;
 import com.juhuo.tool.Tool;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
@@ -15,15 +24,17 @@ import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.nostra13.universalimageloader.core.display.SimpleBitmapDisplayer;
 
 public class ApplyDetailTwo extends Activity {
+	private final String TAG="ApplyDetailTwo";
 	private TextView name;
 	private TextView age;
 	private TextView gender;
 	private TextView cell;
 	private TextView description;
 	private ImageView image;
-	private ImageView actionTitleImg,actionTitleImg2;
-	private TextView actionTitle;
+	private ImageView actionTitleImg;
+	private TextView actionTitle,actionTitleTxt2;
 	private Resources mResources;
+	private String ids;
 	DisplayImageOptions options = new DisplayImageOptions.Builder()
 	.imageScaleType(ImageScaleType.IN_SAMPLE_INT)
 	.showImageOnLoading(R.drawable.default_image)
@@ -40,16 +51,38 @@ public class ApplyDetailTwo extends Activity {
 		setContentView(R.layout.apply_detail_two);
 		mResources = getResources();
 		actionTitleImg = (ImageView)findViewById(R.id.action_title_img);
-		actionTitleImg2 = (ImageView)findViewById(R.id.action_title_img2);
+		actionTitleTxt2 = (TextView)findViewById(R.id.action_title_img2);
 		actionTitle = (TextView)findViewById(R.id.action_title);
 		actionTitleImg.setBackgroundDrawable(mResources.getDrawable(R.drawable.icon_back));
-		actionTitleImg2.setVisibility(View.INVISIBLE);
 		actionTitle.setText(mResources.getString(R.string.description));
 		actionTitleImg.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View arg0) {
 				// TODO Auto-generated method stub
 				finish();
+			}
+		});
+		actionTitleTxt2.setOnClickListener(new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View arg0) {
+				// TODO Auto-generated method stub
+				TextView tv = (TextView)arg0;
+				if(tv.getText().equals("¹Ø×¢")){
+					CreateFollowClass task = new CreateFollowClass();
+					HashMap<String,Object> params = new HashMap<String,Object>();
+					params.put("token", JuhuoConfig.token);
+					ArrayList<HashMap<String,String>> paraslist = new ArrayList<HashMap<String,String>>();
+					HashMap<String,String> map = new HashMap<String,String>();
+					map.put("name", getIntent().getExtras().getString("name"));
+					map.put("cell", getIntent().getExtras().getString("cell"));
+					paraslist.add(map);
+					params.put("contacts", paraslist);
+					task.execute(params);
+				}else{
+					
+				}
+				
 			}
 		});
 		name = (TextView)findViewById(R.id.t2);
@@ -72,6 +105,34 @@ public class ApplyDetailTwo extends Activity {
 		image.getLayoutParams().height = JuhuoConfig.WIDTH*150/320;
 		image.getLayoutParams().width = JuhuoConfig.WIDTH*150/320;
 		imageLoader.displayImage(getIntent().getExtras().getString("url"),image, options);
+	}
+	private class CreateFollowClass extends AsyncTask<HashMap<String,Object>,String,JSONObject>{
+
+		@Override
+		protected JSONObject doInBackground(HashMap<String, Object>... arg0) {
+			// TODO Auto-generated method stub
+			HashMap<String,Object> mapped = arg0[0];
+			return new JuhuoInfo().callPostPlain(mapped,JuhuoConfig.CONTACT_CREATE);
+		}
+		@Override
+		protected void onPostExecute(JSONObject result){
+			if(result == null){
+				Log.i(TAG,"cannot get any");//we have reveived 500 error page
+				Tool.myToast(ApplyDetailTwo.this, mResources.getString(R.string.error_network));
+			}else if(result.has("wrong_data")){
+				//sth is wrong
+				Tool.dialog(ApplyDetailTwo.this);
+			}else{
+				try {
+					ids = result.getString("ids");
+				} catch (JSONException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				Tool.myToast(ApplyDetailTwo.this, mResources.getString(R.string.add_follow_success));
+				actionTitleTxt2.setText(mResources.getString(R.string.cancel_follow));
+			}
+		}
 	}
 
 }

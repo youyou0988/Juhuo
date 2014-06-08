@@ -8,7 +8,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.content.Context;
-import android.content.Intent;
 import android.content.res.Resources;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -24,13 +23,12 @@ import android.widget.TextView;
 
 import com.jeremyfeinstein.slidingmenu.lib.app.SlidingFragmentActivity;
 import com.juhuo.adapter.HotEventsAdapter;
-import com.juhuo.control.MyListView;
 import com.juhuo.control.MyListView.OnLoadListener;
 import com.juhuo.control.MyListView.OnRefreshListener;
+import com.juhuo.refreshview.XListView;
 import com.juhuo.tool.JuhuoConfig;
 import com.juhuo.tool.JuhuoInfo;
 import com.juhuo.tool.Tool;
-import com.juhuo.welcome.CreateEvent;
 import com.juhuo.welcome.R;
 
 public class FollowFragment extends Fragment{
@@ -40,7 +38,7 @@ public class FollowFragment extends Fragment{
 	private ImageView actionTitleImg2;
 	private TextView actionTitle,noEventsText;
 	private RelativeLayout parent,filterlistlayout;
-	private MyListView hotEventsList;
+	private XListView hotEventsList;
 	private Button filterAllEvent,filterDefaultEvent;
 	private View transView,transView2;
 	private HotEventsAdapter hotEventsAdapter;
@@ -67,44 +65,44 @@ public class FollowFragment extends Fragment{
 			Bundle savedInstanceState) {
 		parent = (RelativeLayout) inflater.inflate(
 				R.layout.hot_event, null);
-		hotEventsList = (MyListView)parent.findViewById(R.id.hotevents_listview);
-		hotEventsList.setonRefreshListener(new OnRefreshListener() {
-			
-			public void onRefresh() {
-				// TODO Auto-generated method stub
-				Log.i("pull", "refresh");
-				//check refresh whom
-				mapPara = new HashMap<String,Object>();
-				mapPara.put("token", JuhuoConfig.token);
-				mapPara.put("incremental", "true");
-				if(filter==0){
-					mapPara.put("organizer", String.valueOf(JuhuoConfig.userId));
-					getNetData(mapPara);
-				}else{
-					mapPara.put("related", String.valueOf(JuhuoConfig.userId));
-					getNetData(mapPara);
-				}
-				
-			}
-		});
-		hotEventsList.setonLoadListener(new OnLoadListener() {  
-            
-            @Override  
-            public void onLoad() {  
-                //TODO 加载更多  
-                Log.e(TAG, "onLoad");
-                if(handle.equals("")){
-                	hotEventsList.onLoadComplete(); //加载更多完成  
-                }else{
-                	HashMap<String,Object> mapMore = new HashMap<String,Object>();
-                    mapMore.put("token", JuhuoConfig.token);
-                    mapMore.put("handle", handle);
-//                    loadMoreData(mapMore);
-                }
-                
-            }  
-        });
-		
+		hotEventsList = (XListView)parent.findViewById(R.id.hotevents_listview);
+//		hotEventsList.setonRefreshListener(new OnRefreshListener() {
+//			
+//			public void onRefresh() {
+//				// TODO Auto-generated method stub
+//				Log.i("pull", "refresh");
+//				//check refresh whom
+//				mapPara = new HashMap<String,Object>();
+//				mapPara.put("token", JuhuoConfig.token);
+//				mapPara.put("incremental", "true");
+//				if(filter==0){
+//					mapPara.put("organizer", String.valueOf(JuhuoConfig.userId));
+//					getNetData(mapPara);
+//				}else{
+//					mapPara.put("related", String.valueOf(JuhuoConfig.userId));
+//					getNetData(mapPara);
+//				}
+//				
+//			}
+//		});
+//		hotEventsList.setonLoadListener(new OnLoadListener() {  
+//            
+//            @Override  
+//            public void onLoad() {  
+//                //TODO 加载更多  
+//                Log.e(TAG, "onLoad");
+//                if(handle.equals("")){
+//                	hotEventsList.onLoadComplete(); //加载更多完成  
+//                }else{
+//                	HashMap<String,Object> mapMore = new HashMap<String,Object>();
+//                    mapMore.put("token", JuhuoConfig.token);
+//                    mapMore.put("handle", handle);
+////                    loadMoreData(mapMore);
+//                }
+//                
+//            }  
+//        });
+//		
 		
 		filterlistlayout = (RelativeLayout)parent.findViewById(R.id.filterlistlayout);
 		
@@ -184,8 +182,6 @@ public class FollowFragment extends Fragment{
 		}
 	};
 	public void getNetData(HashMap<String,Object> map){
-//		noEventsText.setText("");
-		hotEventsList.onRefreshing();
 		LoadEventList loadEventList = new LoadEventList();
 		loadEventList.execute(map);
 	}
@@ -232,7 +228,6 @@ public class FollowFragment extends Fragment{
 						hotEventsList.setVisibility(View.INVISIBLE);
 						noEventsText.setText(mResources.getString(R.string.no_events_found));	
 					}
-					hotEventsList.onRefreshComplete();
 					
 				} catch (JSONException e) {
 					// TODO Auto-generated catch block
