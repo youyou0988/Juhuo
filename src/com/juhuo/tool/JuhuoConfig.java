@@ -8,6 +8,7 @@ public class JuhuoConfig {
 	public static String EVENTCOMMENT = "juhuo_event_comment_";
 	public static String EVENTLISTSPECIFIC = "juhuo_event_specific_list_";
 	public static String USERINFO = "juhuo_user_info_";
+	public static String APP_ID_WECHAT = "wxb4d0cc21ea52f7c4";
 	
 	public static int INVI_NULL=0;
 	public static int INVI_YES=1;

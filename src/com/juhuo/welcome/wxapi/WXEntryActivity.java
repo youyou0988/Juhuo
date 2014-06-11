@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.util.Log;
 
+import com.juhuo.tool.JuhuoConfig;
 import com.tencent.mm.sdk.openapi.BaseReq;
 import com.tencent.mm.sdk.openapi.BaseResp;
 import com.tencent.mm.sdk.openapi.IWXAPI;
@@ -17,7 +18,7 @@ public class WXEntryActivity extends Activity implements IWXAPIEventHandler {
     private final String TAG = "WXEntryActivity";
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		api = WXAPIFactory.createWXAPI(this, "wx2e90a4742b88917d", false);
+		api = WXAPIFactory.createWXAPI(this, JuhuoConfig.APP_ID_WECHAT, false);
 		api.handleIntent(getIntent(), this);
 		super.onCreate(savedInstanceState);
 	}
@@ -33,6 +34,7 @@ public class WXEntryActivity extends Activity implements IWXAPIEventHandler {
 			//分享成功
 			break;
 		case BaseResp.ErrCode.ERR_USER_CANCEL:
+			Log.i(TAG, "canceled");
 			//分享取消
 			break;
 		case BaseResp.ErrCode.ERR_AUTH_DENIED:

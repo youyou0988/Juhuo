@@ -1,5 +1,9 @@
 package com.juhuo.welcome;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -18,6 +22,8 @@ import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -119,10 +125,10 @@ public class EventDetailActivity extends Activity {
 	
 	private final String TAG = "EventDetailActivity";
 	private String description="";
-	private String type,title;
+	private String type,title,organizer,sharepicurl="",shareLink;
 	private Calendar startcal,endcal;
+	private Bitmap thumb;
 	private IWXAPI wxApi;
-	private String WX_APP_ID="wx2e90a4742b88917d";
 	private SimpleDateFormat df = new SimpleDateFormat(Tool.ISO8601DATEFORMAT, Locale.getDefault());
 	
 	protected void onCreate(Bundle savedInstanceState){
@@ -141,14 +147,29 @@ public class EventDetailActivity extends Activity {
 		}
 		getNetData(mapPara);
 		//实例化
-		wxApi = WXAPIFactory.createWXAPI(this, WX_APP_ID);
-		wxApi.registerApp(WX_APP_ID);
+		wxApi = WXAPIFactory.createWXAPI(this, JuhuoConfig.APP_ID_WECHAT);
+		wxApi.registerApp(JuhuoConfig.APP_ID_WECHAT);
 		
 	}
 	public void getNetData(HashMap<String,Object> map){
 		mRefreshableView.onRefreshing();
 		LoadEventInfo loadEventInfo = new LoadEventInfo();
 		loadEventInfo.execute(map);
+		
+		
+	}
+	private class GetBitMapClass extends AsyncTask<String,String,Bitmap>{
+
+		@Override
+		protected Bitmap doInBackground(String... map) {
+			// TODO Auto-generated method stub
+			return getBitmapFromURL(map[0]);
+		}
+		@Override
+		protected void onPostExecute(Bitmap result) {
+			thumb = result;
+		}
+		
 	}
 	private class LoadEventInfo extends AsyncTask<HashMap<String,Object>,String,JSONObject>{
 
@@ -171,6 +192,8 @@ public class EventDetailActivity extends Activity {
 				setViewsContent(result);
 			}
 			mRefreshableView.finishRefresh("最近更新:" + new Date().toLocaleString()); 
+			GetBitMapClass task = new GetBitMapClass();
+			task.execute(sharepicurl);
 		}
 		
 	}
@@ -372,6 +395,7 @@ public class EventDetailActivity extends Activity {
 				for(int i=0;i<ja.length();i++){
 					String url = ja.getJSONObject(i).getString("url");
 					imagePageViews.set(i, slideLayout.getSlideImageLayout2(url));
+					if(i==0) sharepicurl = url;
 				}
 			}
 			adapter = new SlideImageAdapter();
@@ -379,6 +403,7 @@ public class EventDetailActivity extends Activity {
 		    viewPager.setOnPageChangeListener(new ImagePageChangeListener());
 			title = result.getString("title");
 			description = result.getString("description");
+			shareLink = result.getString("share_link");
 			eventTitle.setText(title);
 			String tb = result.getString("time_begin").substring(0,19).replace('T', ' ');
 			String te = result.getString("time_end").substring(0,19).replace('T', ' ');
@@ -577,19 +602,39 @@ public class EventDetailActivity extends Activity {
 	private void wechatShare(int flag){
 		Log.i(TAG, "share");
 		WXWebpageObject webpage = new WXWebpageObject();
-		webpage.webpageUrl = "http://baidu.com";
+		webpage.webpageUrl = shareLink;
 		WXMediaMessage msg = new WXMediaMessage(webpage);
-		msg.title = "这里填写标题";
-		msg.description = "这里填写内容";
+		msg.title = "组织者:"+organizer;
+		msg.description = "活动邀请:"+title;
 		//这里替换一张自己工程里的图片资源
-//		Bitmap thumb = BitmapFactory.decodeResource(getResources(), R.drawable.default_image);
-//		msg.setThumbImage(thumb);
+
+		if(sharepicurl.equals("")){
+			thumb = BitmapFactory.decodeResource(getResources(), R.drawable.default_image);
+			msg.setThumbImage(thumb);
+		}else{
+			msg.setThumbImage(thumb);
+		}
+		
 		
 		SendMessageToWX.Req req = new SendMessageToWX.Req();
 		req.transaction = String.valueOf(System.currentTimeMillis());
 		req.message = msg;
 		req.scene = flag==0?SendMessageToWX.Req.WXSceneSession:SendMessageToWX.Req.WXSceneTimeline;
 		wxApi.sendReq(req);
+	}
+	public static Bitmap getBitmapFromURL(String src) {
+	    try {
+	        URL url = new URL(src);
+	        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+	        connection.setDoInput(true);
+	        connection.connect();
+	        InputStream input = connection.getInputStream();
+	        Bitmap myBitmap = BitmapFactory.decodeStream(input);
+	        return myBitmap;
+	    } catch (IOException e) {
+	        e.printStackTrace();
+	        return null;
+	    }
 	}
 	
 	
