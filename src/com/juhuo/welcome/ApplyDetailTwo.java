@@ -51,7 +51,7 @@ public class ApplyDetailTwo extends Activity {
 		setContentView(R.layout.apply_detail_two);
 		mResources = getResources();
 		actionTitleImg = (ImageView)findViewById(R.id.action_title_img);
-		actionTitleTxt2 = (TextView)findViewById(R.id.action_title_img2);
+		actionTitleTxt2 = (TextView)findViewById(R.id.action_title_txt2);
 		actionTitle = (TextView)findViewById(R.id.action_title);
 		actionTitleImg.setBackgroundDrawable(mResources.getDrawable(R.drawable.icon_back));
 		actionTitle.setText(mResources.getString(R.string.description));

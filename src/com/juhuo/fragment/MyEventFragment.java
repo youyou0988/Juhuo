@@ -104,7 +104,12 @@ public class MyEventFragment extends Fragment{
                     mapMore.put("count", String.valueOf(COUNT));
                     mapMore.put("offset", String.valueOf(offset));
                     offset = offset+COUNT;
-                    LoadMoreEvents task = new LoadMoreEvents();
+                    LoadMoreEvents task;
+                    if(filter==0){
+                    	task = new LoadMoreEvents("organizer");
+    				}else{
+    					task = new LoadMoreEvents("related");
+    				}
                     task.execute(mapMore);
                 }
 			}
@@ -201,7 +206,10 @@ public class MyEventFragment extends Fragment{
 		}
 	};
 	private class LoadMoreEvents extends AsyncTask<HashMap<String,Object>,String,JSONObject>{
-
+		String type;
+		public LoadMoreEvents(String type){
+			this.type = type;
+		}
 		@Override
 		protected JSONObject doInBackground(HashMap<String, Object>... arg0) {
 			// TODO Auto-generated method stub
@@ -227,7 +235,7 @@ public class MyEventFragment extends Fragment{
 						for(int i=0;i<ja.length();i++){
 							mData.put(ja.getJSONObject(i));
 						}
-						hotEventsAdapter.setJSONData(mData,"HOT");
+						hotEventsAdapter.setJSONData(mData,"MY"+type);
 						hotEventsAdapter.notifyDataSetChanged();
 						
 					}else{

@@ -58,7 +58,8 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentRight="true"
                 android:background="@drawable/icon_phone"
-                android:id="@+id/dail"/>
+                android:id="@+id/dail"
+                android:layout_margin="5dp"/>
         </RelativeLayout>
     </RelativeLayout>
 </RelativeLayout>

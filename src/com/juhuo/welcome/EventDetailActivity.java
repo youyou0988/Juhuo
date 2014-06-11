@@ -1,5 +1,6 @@
 package com.juhuo.welcome;
 
+import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
@@ -12,11 +13,13 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.TimeZone;
 
+import org.apache.http.util.ByteArrayBuffer;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.ActivityNotFoundException;
 import android.content.ContentResolver;
 import android.content.ContentValues;
@@ -24,6 +27,7 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -79,16 +83,18 @@ public class EventDetailActivity extends Activity {
 	private RefreshableView mRefreshableView;
 	// 滑动图片的集合，这里设置成了固定加载，当然也可动态加载。
 	private int[] slideImages;
+	private ProgressDialog mPgDialog;
 	// 滑动图片的集合
 	private ArrayList<View> imagePageViews = null;
 	private ViewGroup main = null;
 	private ViewPager viewPager = null;
-	private Button applyEventBtn;
-	private RelativeLayout statusbarLay;
+	private Button applyEventBtn,status1,status2,status3;
+	private RelativeLayout statusbarLay,applyLay;
 	// 当前ViewPager索引
 	private int pageIndex = 0; 
 	// event_id to work as cache index
 	private String event_id;
+	private int organizer_status;
 	
 	// 包含圆点图片的View
 	private ViewGroup imageCircleView = null;
@@ -145,58 +151,17 @@ public class EventDetailActivity extends Activity {
 			//get network data
 			setViewsContent(jo);
 		}
-		getNetData(mapPara);
+		mRefreshableView.onRefreshing();
+		LoadEventInfo loadEventInfo = new LoadEventInfo();
+		loadEventInfo.execute(mapPara);
+		mPgDialog = new ProgressDialog(this);
+        
 		//实例化
 		wxApi = WXAPIFactory.createWXAPI(this, JuhuoConfig.APP_ID_WECHAT);
 		wxApi.registerApp(JuhuoConfig.APP_ID_WECHAT);
 		
 	}
-	public void getNetData(HashMap<String,Object> map){
-		mRefreshableView.onRefreshing();
-		LoadEventInfo loadEventInfo = new LoadEventInfo();
-		loadEventInfo.execute(map);
-		
-		
-	}
-	private class GetBitMapClass extends AsyncTask<String,String,Bitmap>{
-
-		@Override
-		protected Bitmap doInBackground(String... map) {
-			// TODO Auto-generated method stub
-			return getBitmapFromURL(map[0]);
-		}
-		@Override
-		protected void onPostExecute(Bitmap result) {
-			thumb = result;
-		}
-		
-	}
-	private class LoadEventInfo extends AsyncTask<HashMap<String,Object>,String,JSONObject>{
-
-		@Override
-		protected JSONObject doInBackground(HashMap<String, Object>... map) {
-			// TODO Auto-generated method stub
-			HashMap<String,Object> mapped = map[0];
-			return new JuhuoInfo().loadNetData(mapped,JuhuoConfig.EVENT_INFO);
-		}
-		@Override
-		protected void onPostExecute(JSONObject result) {
-			if(result == null){
-				Log.i(TAG,"cannot get any");//we have reveived 500 error page
-				
-			}else if(result.has("wrong_data")){
-				//sth is wrong
-				Tool.dialog(EventDetailActivity.this);
-			}else{
-				Tool.writeJsonToFile(result, EventDetailActivity.this, JuhuoConfig.EVENTINFO+event_id);
-				setViewsContent(result);
-			}
-			mRefreshableView.finishRefresh("最近更新:" + new Date().toLocaleString()); 
-			GetBitMapClass task = new GetBitMapClass();
-			task.execute(sharepicurl);
-		}
-		
-	}
+	
 	private void initViews(Bundle savedInstanceState){
 		mResources = getResources();
 		int length = getIntent().getExtras().getInt("picNumber")==0?1:getIntent().getExtras().getInt("picNumber");
@@ -274,23 +239,25 @@ public class EventDetailActivity extends Activity {
 		mapView.onCreate(savedInstanceState);// 必须要写
 		init();
 		
-		RelativeLayout applyLay = (RelativeLayout)findViewById(R.id.applylay);
+		applyLay = (RelativeLayout)findViewById(R.id.applylay);
 		statusbarLay = (RelativeLayout)findViewById(R.id.statusbar);
 		type=getIntent().getExtras().getString("type");
-		if(type.equals("HOT")){
-			applyLay.setVisibility(View.GONE);
-			applyEventBtn.setVisibility(View.VISIBLE);
-			statusbarLay.setVisibility(View.GONE);
-		}else if(type.equals("MYorganizer")){//my events' detail
+		applyLay.setVisibility(View.GONE);
+		applyEventBtn.setVisibility(View.GONE);
+		statusbarLay.setVisibility(View.GONE);
+		if(type.equals("MYorganizer")){//my events' detail
 			applyLay.setVisibility(View.VISIBLE);
 			applyEventBtn.setVisibility(View.GONE);
 			statusbarLay.setVisibility(View.GONE);
-		}else{
+		}else if(type.endsWith("MYrelated")){
 			applyLay.setVisibility(View.VISIBLE);
 			applyEventBtn.setVisibility(View.GONE);
 			statusbarLay.setVisibility(View.VISIBLE);
 		}
 		applyEventBtn.setOnClickListener(btnClickListener);
+		status1 = (Button)findViewById(R.id.status1);
+		status2 = (Button)findViewById(R.id.status2);
+		status3 = (Button)findViewById(R.id.status3);
 		
 		mRefreshableView = (RefreshableView) findViewById(R.id.refresh_root);    
 		mRefreshableView.setRefreshListener(mRefreshListener);    
@@ -335,55 +302,16 @@ public class EventDetailActivity extends Activity {
 			}
 		}
 	};
-	private class ConfirmEventClass extends AsyncTask<HashMap<String,Object>,String,JSONObject>{
-
-		@Override
-		protected JSONObject doInBackground(HashMap<String, Object>... arg0) {
-			// TODO Auto-generated method stub
-			HashMap<String,Object> mapped = arg0[0];
-			return new JuhuoInfo().loadNetData(mapped,JuhuoConfig.EVENT_CONFIRM);
-		}
-		@Override
-		protected void onPostExecute(JSONObject result){
-			if(result == null){
-				Log.i(TAG,"cannot get any");//we have reveived 500 error page
-				Tool.myToast(EventDetailActivity.this, mResources.getString(R.string.error_network));
-			}else if(result.has("wrong_data")){
-				//sth is wrong
-				Tool.dialog(EventDetailActivity.this);
-			}else{
-				Tool.myToast(EventDetailActivity.this, mResources.getString(R.string.change_status_success));
-			}
-		}
-	}
-	private class ApplyEventClass extends AsyncTask<HashMap<String,Object>,String,JSONObject>{
-
-		@Override
-		protected JSONObject doInBackground(HashMap<String, Object>... arg0) {
-			// TODO Auto-generated method stub
-			HashMap<String,Object> mapped = arg0[0];
-			return new JuhuoInfo().loadNetData(mapped,JuhuoConfig.EVENT_APPLY);
-		}
-		@Override
-		protected void onPostExecute(JSONObject result){
-			if(result == null){
-				Log.i(TAG,"cannot get any");//we have reveived 500 error page
-				Tool.myToast(EventDetailActivity.this, mResources.getString(R.string.error_network));
-			}else if(result.has("wrong_data")){
-				//sth is wrong
-				Tool.dialog(EventDetailActivity.this);
-			}else{
-				Tool.myToast(EventDetailActivity.this, mResources.getString(R.string.apply_event_success));
-			}
-		}
-	}
+	
 	RefreshListener mRefreshListener = new RefreshListener(){
 
 		@Override
 		public void onRefresh(RefreshableView view) {
 			// TODO Auto-generated method stub
 			Log.i(TAG, "on refresh");
-			getNetData(mapPara);
+			mRefreshableView.onRefreshing();
+			LoadEventInfo loadEventInfo = new LoadEventInfo();
+			loadEventInfo.execute(mapPara);
 		}
 		
 	};
@@ -426,7 +354,8 @@ public class EventDetailActivity extends Activity {
 	        //设置中心点和缩放比例  
 	        aMap.moveCamera(CameraUpdateFactory.newCameraPosition(new CameraPosition(marker1,8,8,8)));  
 	        aMap.moveCamera(CameraUpdateFactory.zoomTo(13));
-			eventOrganizer.setText(result.getString("organizer_name"));
+	        organizer = result.getString("organizer_name");
+			eventOrganizer.setText(organizer);
 			int et = Integer.parseInt(result.getString("event_type").equals("")?"1":
 				result.getString("event_type"));
 			eventType.setText(eventTypeStr[et]);
@@ -449,6 +378,10 @@ public class EventDetailActivity extends Activity {
 			}
 			for(int i=0;i<jaChoices.length();i++){
 				int status = jaChoices.getJSONObject(i).getInt("status");
+				int id = jaChoices.getJSONObject(i).getInt("id");
+				if(id==JuhuoConfig.userId){
+					organizer_status = status;
+				}
 				String url;
 				if(jaChoices.getJSONObject(i).has("suc_photos")){
 					url = jaChoices.getJSONObject(i).
@@ -469,6 +402,21 @@ public class EventDetailActivity extends Activity {
 			setChoicesTable(JuhuoConfig.INVI_NULL,map);
 			setChoicesTable(JuhuoConfig.INVI_NO,map);
 			setChoicesTable(JuhuoConfig.INVI_APPLY,map);
+			if(organizer_status==3||organizer_status==1||organizer_status==2){
+				applyLay.setVisibility(View.GONE);
+				applyEventBtn.setVisibility(View.GONE);
+				statusbarLay.setVisibility(View.VISIBLE);
+				status1.setTextColor(mResources.getColor(R.color.mgray));
+				status2.setTextColor(mResources.getColor(R.color.mgray));
+				status3.setTextColor(mResources.getColor(R.color.mgray));
+				if(organizer_status==1) status1.setTextColor(mResources.getColor(R.color.mgreen));
+				if(organizer_status==2) status2.setTextColor(mResources.getColor(R.color.mgreen));
+				if(organizer_status==3) status3.setTextColor(mResources.getColor(R.color.mgreen));
+			}else if(organizer_status==5){
+				applyLay.setVisibility(View.GONE);
+				applyEventBtn.setVisibility(View.GONE);
+				statusbarLay.setVisibility(View.GONE);
+			}
 		} catch (JSONException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -600,20 +548,20 @@ public class EventDetailActivity extends Activity {
 	
 	
 	private void wechatShare(int flag){
-		Log.i(TAG, "share");
+		
 		WXWebpageObject webpage = new WXWebpageObject();
 		webpage.webpageUrl = shareLink;
 		WXMediaMessage msg = new WXMediaMessage(webpage);
 		msg.title = "组织者:"+organizer;
 		msg.description = "活动邀请:"+title;
 		//这里替换一张自己工程里的图片资源
-
-		if(sharepicurl.equals("")){
-			thumb = BitmapFactory.decodeResource(getResources(), R.drawable.default_image);
+		Log.i(TAG, String.valueOf(thumb.getByteCount()));
+//		if(sharepicurl.equals("")){
+//			thumb = BitmapFactory.decodeResource(getResources(), R.drawable.default_image);
+//			msg.setThumbImage(thumb);
+//		}else{
 			msg.setThumbImage(thumb);
-		}else{
-			msg.setThumbImage(thumb);
-		}
+//		}
 		
 		
 		SendMessageToWX.Req req = new SendMessageToWX.Req();
@@ -621,21 +569,36 @@ public class EventDetailActivity extends Activity {
 		req.message = msg;
 		req.scene = flag==0?SendMessageToWX.Req.WXSceneSession:SendMessageToWX.Req.WXSceneTimeline;
 		wxApi.sendReq(req);
+		Log.i(TAG, "share");    
 	}
-	public static Bitmap getBitmapFromURL(String src) {
+	public Bitmap getBitmapFromURL(String src) {
 	    try {
 	        URL url = new URL(src);
 	        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 	        connection.setDoInput(true);
 	        connection.connect();
 	        InputStream input = connection.getInputStream();
-	        Bitmap myBitmap = BitmapFactory.decodeStream(input);
-	        return myBitmap;
+	        final BitmapFactory.Options options = new BitmapFactory.Options();
+
+            BufferedInputStream bis = new BufferedInputStream(input, 4*1024);
+            ByteArrayBuffer baf = new ByteArrayBuffer(50);
+            int current = 0;
+            while ((current = bis.read()) != -1) {
+                baf.append((byte)current);
+            }
+            byte[] imageData = baf.toByteArray();
+            options.inJustDecodeBounds = true;
+            BitmapFactory.decodeByteArray(imageData, 0, imageData.length, options);
+            options.inSampleSize = 4;
+            options.inJustDecodeBounds = false;
+            Bitmap bitmap = BitmapFactory.decodeByteArray(imageData, 0, imageData.length,options);
+            return bitmap;
 	    } catch (IOException e) {
 	        e.printStackTrace();
 	        return null;
 	    }
 	}
+    
 	
 	
 	/**
@@ -839,7 +802,12 @@ public class EventDetailActivity extends Activity {
 		return super.onOptionsItemSelected(item);
 	}
 	private class SendRemind extends AsyncTask<HashMap<String,Object>,String,JSONObject>{
-
+		@Override
+	    protected void onPreExecute() {
+	        super.onPreExecute();
+	        mPgDialog.setMessage(mResources.getString(R.string.reminding));
+	        mPgDialog.show();
+	    }
 		@Override
 		protected JSONObject doInBackground(HashMap<String, Object>... arg0) {
 			// TODO Auto-generated method stub
@@ -860,5 +828,97 @@ public class EventDetailActivity extends Activity {
 			}
 			
 		}
+	}
+	private class ConfirmEventClass extends AsyncTask<HashMap<String,Object>,String,JSONObject>{
+		@Override
+	    protected void onPreExecute() {
+	        super.onPreExecute();
+	        mPgDialog.setMessage(mResources.getString(R.string.changing));
+	        mPgDialog.show();
+	    }
+		@Override
+		protected JSONObject doInBackground(HashMap<String, Object>... arg0) {
+			// TODO Auto-generated method stub
+			HashMap<String,Object> mapped = arg0[0];
+			return new JuhuoInfo().loadNetData(mapped,JuhuoConfig.EVENT_CONFIRM);
+		}
+		@Override
+		protected void onPostExecute(JSONObject result){
+			mPgDialog.dismiss();
+			if(result == null){
+				Log.i(TAG,"cannot get any");//we have reveived 500 error page
+				Tool.myToast(EventDetailActivity.this, mResources.getString(R.string.error_network));
+			}else if(result.has("wrong_data")){
+				//sth is wrong
+				Tool.dialog(EventDetailActivity.this);
+			}else{
+				Tool.myToast(EventDetailActivity.this, mResources.getString(R.string.change_status_success));
+			}
+		}
+	}
+	private class ApplyEventClass extends AsyncTask<HashMap<String,Object>,String,JSONObject>{
+		@Override
+	    protected void onPreExecute() {
+	        super.onPreExecute();
+	        mPgDialog.setMessage(mResources.getString(R.string.apply_eventing));
+	        mPgDialog.show();
+	    }
+		@Override
+		protected JSONObject doInBackground(HashMap<String, Object>... arg0) {
+			// TODO Auto-generated method stub
+			HashMap<String,Object> mapped = arg0[0];
+			return new JuhuoInfo().loadNetData(mapped,JuhuoConfig.EVENT_APPLY);
+		}
+		@Override
+		protected void onPostExecute(JSONObject result){
+			if(result == null){
+				Log.i(TAG,"cannot get any");//we have reveived 500 error page
+				Tool.myToast(EventDetailActivity.this, mResources.getString(R.string.error_network));
+			}else if(result.has("wrong_data")){
+				//sth is wrong
+				Tool.dialog(EventDetailActivity.this);
+			}else{
+				Tool.myToast(EventDetailActivity.this, mResources.getString(R.string.apply_event_success));
+			}
+		}
+	}
+	private class GetBitMapClass extends AsyncTask<String,String,Bitmap>{
+
+		@Override
+		protected Bitmap doInBackground(String... map) {
+			// TODO Auto-generated method stub
+			return getBitmapFromURL(map[0]);
+		}
+		@Override
+		protected void onPostExecute(Bitmap result) {
+			thumb = result;
+		}
+		
+	}
+	private class LoadEventInfo extends AsyncTask<HashMap<String,Object>,String,JSONObject>{
+
+		@Override
+		protected JSONObject doInBackground(HashMap<String, Object>... map) {
+			// TODO Auto-generated method stub
+			HashMap<String,Object> mapped = map[0];
+			return new JuhuoInfo().loadNetData(mapped,JuhuoConfig.EVENT_INFO);
+		}
+		@Override
+		protected void onPostExecute(JSONObject result) {
+			if(result == null){
+				Log.i(TAG,"cannot get any");//we have reveived 500 error page
+				
+			}else if(result.has("wrong_data")){
+				//sth is wrong
+				Tool.dialog(EventDetailActivity.this);
+			}else{
+				Tool.writeJsonToFile(result, EventDetailActivity.this, JuhuoConfig.EVENTINFO+event_id);
+				setViewsContent(result);
+			}
+			mRefreshableView.finishRefresh("最近更新:" + new Date().toLocaleString()); 
+			GetBitMapClass task = new GetBitMapClass();
+			task.execute(sharepicurl);
+		}
+		
 	}
 }

@@ -31,16 +31,19 @@
             <TextView android:layout_height="wrap_content"
                 android:layout_width="wrap_content"
                 android:text="@string/decline"
+                android:textColor="@color/mgray"
                 android:id="@+id/declinetxt"
                 android:layout_alignParentLeft="true"
                 />
             <TextView android:layout_height="wrap_content"
                 android:layout_width="wrap_content"
                 android:id="@+id/referee"
+                android:textColor="@color/mgray"
                 android:layout_centerInParent="true"></TextView>
             <TextView android:layout_height="wrap_content"
                 android:layout_width="wrap_content"
                 android:text="@string/approve"
+                android:textColor="@color/mgray"
                 android:id="@+id/approvetxt"
                 android:layout_alignParentRight="true"
                 />
@@ -56,7 +59,6 @@
             android:id="@+id/message"
             android:layout_alignParentBottom="true"
             android:layout_below="@+id/divider"
-            android:background="@color/white"
             android:focusable="true"
             android:gravity="top"
             />

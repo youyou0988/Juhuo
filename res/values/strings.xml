@@ -146,4 +146,6 @@
     <string name="approve">同意</string>
     <string name="approve_success">审批成功</string>
     <string name="approving">正在审批</string>
+    <string name="changing">正在更改状态</string>
+    <string name="reminding">正在发送提醒</string>
 </resources>

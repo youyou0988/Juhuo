@@ -277,7 +277,7 @@ public class ApplyDetailOne extends Activity {
 				holder.dailImg.setVisibility(View.VISIBLE);
 			}
 			holder.name.setText((String)mData.get(position).get("name"));
-//			holder.cell.setText((String)mData.get(position).get("cell"));
+			holder.cell.setText((String)mData.get(position).get("cell"));
 			holder.description.setText((String)mData.get(position).get("description"));
 			holder.status.setText(JuhuoConfig.STATUS[Integer.parseInt((String)mData.get(position).get("status"))]);
 			imageLoader.displayImage(urls.get(position), holder.img, options, animateFirstListener);
