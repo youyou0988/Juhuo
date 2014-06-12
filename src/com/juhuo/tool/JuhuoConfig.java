@@ -28,6 +28,7 @@ public class JuhuoConfig {
 	
 	public static String PRODUCTIONPREFIX = "http://115.28.211.238/v0/";
 //	public static String PRODUCTIONPREFIX="http://115.29.141.31/v0/";
+	public static String REGISTER = PRODUCTIONPREFIX+"user/register/";
 	public static String LOGIN = PRODUCTIONPREFIX+"user/login/";
 	public static String LOGOUT = PRODUCTIONPREFIX+"user/logout/";
 	public static String USER_INFO = PRODUCTIONPREFIX+"user/info/";
@@ -47,6 +48,7 @@ public class JuhuoConfig {
 	public static String EVENT_APPLY = PRODUCTIONPREFIX+"event/apply/";
 	public static String EVENT_CONFIRM = PRODUCTIONPREFIX+"event/confirm/";
 	public static String EVENT_APPROVE = PRODUCTIONPREFIX+"event/approve/";
+	public static String EVENT_COMMENT = PRODUCTIONPREFIX+"event/comment/";
 	
 	public static String CONTACT_CREATE = PRODUCTIONPREFIX+"contact/create/";
 	

@@ -13,7 +13,6 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.TimeZone;
 
-import org.apache.http.util.ByteArrayBuffer;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -27,7 +26,7 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Matrix;
+import android.graphics.Rect;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -88,13 +87,13 @@ public class EventDetailActivity extends Activity {
 	private ArrayList<View> imagePageViews = null;
 	private ViewGroup main = null;
 	private ViewPager viewPager = null;
-	private Button applyEventBtn,status1,status2,status3;
-	private RelativeLayout statusbarLay,applyLay;
+	private Button applyEventBtn,status1,status2,status3,cancelBtn;
+	private RelativeLayout statusbarLay,applyLay,shareLay;
 	// 当前ViewPager索引
 	private int pageIndex = 0; 
 	// event_id to work as cache index
 	private String event_id;
-	private int organizer_status;
+	private int organizer_status=7;
 	
 	// 包含圆点图片的View
 	private ViewGroup imageCircleView = null;
@@ -107,7 +106,7 @@ public class EventDetailActivity extends Activity {
 	private HashMap<Integer,JSONArray> applyList;
 	
 	private SlideImageAdapter adapter;
-	private ImageView actionTitleImg,actionTitleImg2;
+	private ImageView actionTitleImg,actionTitleImg2,wechat,weibo,timeline;
 	private TextView actionTitle,eventTitle,eventBeginTime,eventEndTime,eventPlace
 	 ,eventOrganizer,eventIspublic,eventCost,eventLink,eventType,eventTime,eventDetail;
 	private TableRow partiRow;
@@ -213,6 +212,12 @@ public class EventDetailActivity extends Activity {
 				case R.id.action_title_img2:
 					openOptionsMenu();
 					break;
+				case R.id.wechat:
+					wechatShare(0);
+					break;
+				case R.id.timeline:
+					wechatShare(1);
+					break;
 				}
 				
 			}
@@ -241,6 +246,14 @@ public class EventDetailActivity extends Activity {
 		
 		applyLay = (RelativeLayout)findViewById(R.id.applylay);
 		statusbarLay = (RelativeLayout)findViewById(R.id.statusbar);
+		shareLay = (RelativeLayout)findViewById(R.id.share_layout);
+		wechat = (ImageView)findViewById(R.id.wechat);
+		timeline = (ImageView)findViewById(R.id.timeline);
+		weibo = (ImageView)findViewById(R.id.weibo);
+		timeline.setOnClickListener(clickListener);
+		wechat.setOnClickListener(clickListener);
+		weibo.setOnClickListener(clickListener);
+		cancelBtn = (Button)findViewById(R.id.cancel_btn);
 		type=getIntent().getExtras().getString("type");
 		applyLay.setVisibility(View.GONE);
 		applyEventBtn.setVisibility(View.GONE);
@@ -255,10 +268,16 @@ public class EventDetailActivity extends Activity {
 			statusbarLay.setVisibility(View.VISIBLE);
 		}
 		applyEventBtn.setOnClickListener(btnClickListener);
+		cancelBtn.setOnClickListener(btnClickListener);
 		status1 = (Button)findViewById(R.id.status1);
 		status2 = (Button)findViewById(R.id.status2);
 		status3 = (Button)findViewById(R.id.status3);
-		
+		status2.setMinimumWidth(0);
+		status2.setWidth(JuhuoConfig.WIDTH/3);
+		status1.setOnClickListener(btnClickListener);
+		status2.setOnClickListener(btnClickListener);
+		status3.setOnClickListener(btnClickListener);
+		Log.i(TAG, String.valueOf(status2.getWidth()));
 		mRefreshableView = (RefreshableView) findViewById(R.id.refresh_root);    
 		mRefreshableView.setRefreshListener(mRefreshListener);    
 		mRefreshableView.setPullDownElastic(new PullDownElasticImp(this)); 
@@ -282,23 +301,25 @@ public class EventDetailActivity extends Activity {
 				break;
 			case R.id.status1:
 				params.put("status", String.valueOf(1));
-				ConfirmEventClass task2 = new ConfirmEventClass();
+				ConfirmEventClass task2 = new ConfirmEventClass(1);
 				task2.execute(params);
 				vb.setTextColor(mResources.getColor(R.color.mgreen));
 				break;
 			case R.id.status2:
 				params.put("status", String.valueOf(2));
-				ConfirmEventClass task3 = new ConfirmEventClass();
+				ConfirmEventClass task3 = new ConfirmEventClass(2);
 				task3.execute(params);
 				vb.setTextColor(mResources.getColor(R.color.mgreen));
 				break;
 			case R.id.status3:
 				params.put("status", String.valueOf(3));
-				ConfirmEventClass task4 = new ConfirmEventClass();
+				ConfirmEventClass task4 = new ConfirmEventClass(3);
 				task4.execute(params);
 				vb.setTextColor(mResources.getColor(R.color.mgreen));
 				break;
-				
+			case R.id.cancel_btn:
+				shareLay.setVisibility(View.GONE);
+				break;
 			}
 		}
 	};
@@ -402,7 +423,8 @@ public class EventDetailActivity extends Activity {
 			setChoicesTable(JuhuoConfig.INVI_NULL,map);
 			setChoicesTable(JuhuoConfig.INVI_NO,map);
 			setChoicesTable(JuhuoConfig.INVI_APPLY,map);
-			if(organizer_status==3||organizer_status==1||organizer_status==2){
+			Log.i(TAG+"map", map.toString());
+			if(organizer_status==3||organizer_status==1||organizer_status==2||organizer_status==0){
 				applyLay.setVisibility(View.GONE);
 				applyEventBtn.setVisibility(View.GONE);
 				statusbarLay.setVisibility(View.VISIBLE);
@@ -415,6 +437,16 @@ public class EventDetailActivity extends Activity {
 			}else if(organizer_status==5){
 				applyLay.setVisibility(View.GONE);
 				applyEventBtn.setVisibility(View.GONE);
+				statusbarLay.setVisibility(View.GONE);
+			}else if(organizer_status==7){
+				applyLay.setVisibility(View.GONE);
+				applyEventBtn.setVisibility(View.VISIBLE);
+				statusbarLay.setVisibility(View.GONE);
+			}else if(organizer_status==4){
+				applyLay.setVisibility(View.GONE);
+				applyEventBtn.setVisibility(View.VISIBLE);
+				applyEventBtn.setText(mResources.getString(R.string.apply_eventing));
+				applyEventBtn.setClickable(false);
 				statusbarLay.setVisibility(View.GONE);
 			}
 		} catch (JSONException e) {
@@ -531,6 +563,7 @@ public class EventDetailActivity extends Activity {
 				Intent comintent = new Intent(EventDetailActivity.this,EventComment.class);
 				comintent.putExtra("id", event_id);
 				comintent.putExtra("PAGE", type);
+				comintent.putExtra("organizer_status",organizer_status);
 				startActivity(comintent);
 				break;
 			case R.id.applywid:
@@ -555,14 +588,10 @@ public class EventDetailActivity extends Activity {
 		msg.title = "组织者:"+organizer;
 		msg.description = "活动邀请:"+title;
 		//这里替换一张自己工程里的图片资源
-		Log.i(TAG, String.valueOf(thumb.getByteCount()));
-//		if(sharepicurl.equals("")){
-//			thumb = BitmapFactory.decodeResource(getResources(), R.drawable.default_image);
-//			msg.setThumbImage(thumb);
-//		}else{
+//		Log.i(TAG, String.valueOf(thumb.getByteCount()));
+		if(!sharepicurl.equals("")){
 			msg.setThumbImage(thumb);
-//		}
-		
+		}
 		
 		SendMessageToWX.Req req = new SendMessageToWX.Req();
 		req.transaction = String.valueOf(System.currentTimeMillis());
@@ -581,17 +610,17 @@ public class EventDetailActivity extends Activity {
 	        final BitmapFactory.Options options = new BitmapFactory.Options();
 
             BufferedInputStream bis = new BufferedInputStream(input, 4*1024);
-            ByteArrayBuffer baf = new ByteArrayBuffer(50);
-            int current = 0;
-            while ((current = bis.read()) != -1) {
-                baf.append((byte)current);
-            }
-            byte[] imageData = baf.toByteArray();
-            options.inJustDecodeBounds = true;
-            BitmapFactory.decodeByteArray(imageData, 0, imageData.length, options);
+//            ByteArrayBuffer baf = new ByteArrayBuffer(50);
+//            int current = 0;
+//            while ((current = bis.read()) != -1) {
+//                baf.append((byte)current);
+//            }
+//            byte[] imageData = baf.toByteArray();
+//            options.inJustDecodeBounds = true;
+//            BitmapFactory.decodeStream(input, new Rect(), options);
             options.inSampleSize = 4;
             options.inJustDecodeBounds = false;
-            Bitmap bitmap = BitmapFactory.decodeByteArray(imageData, 0, imageData.length,options);
+            Bitmap bitmap = BitmapFactory.decodeStream(input, new Rect(), options);
             return bitmap;
 	    } catch (IOException e) {
 	        e.printStackTrace();
@@ -746,7 +775,7 @@ public class EventDetailActivity extends Activity {
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.main, menu);
-		if(type.equals("MY")){
+		if(type.equals("MYorganizer")){
 			menu.clear();
 			getMenuInflater().inflate(R.menu.most, menu);
 		}
@@ -756,7 +785,7 @@ public class EventDetailActivity extends Activity {
 	public boolean onPrepareOptionsMenu(Menu menu){
 		MenuInflater inflater = getMenuInflater();
 		menu.clear();
-		if(type.equals("MY")){
+		if(type.equals("MYorganizer")){
 			Log.i(TAG, type);
 			inflater.inflate(R.menu.most, menu);
 		}else{//click image
@@ -789,7 +818,8 @@ public class EventDetailActivity extends Activity {
 			break;
 		case R.id.share_event:
 			//在需要分享的地方添加代码：
-			wechatShare(0);//分享到微信好友
+			shareLay.setVisibility(View.VISIBLE);
+//			wechatShare(0);//分享到微信好友
 //			wechatShare(1);//分享到微信朋友圈
 			break;
 		case R.id.send_remind:
@@ -830,6 +860,10 @@ public class EventDetailActivity extends Activity {
 		}
 	}
 	private class ConfirmEventClass extends AsyncTask<HashMap<String,Object>,String,JSONObject>{
+		public int status;
+		public ConfirmEventClass(int st){
+			this.status = st;
+		}
 		@Override
 	    protected void onPreExecute() {
 	        super.onPreExecute();
@@ -852,6 +886,12 @@ public class EventDetailActivity extends Activity {
 				//sth is wrong
 				Tool.dialog(EventDetailActivity.this);
 			}else{
+				status1.setTextColor(mResources.getColor(R.color.mgray));
+				status2.setTextColor(mResources.getColor(R.color.mgray));
+				status3.setTextColor(mResources.getColor(R.color.mgray));
+				if(status==1) status1.setTextColor(mResources.getColor(R.color.mgreen));
+				if(status==2) status2.setTextColor(mResources.getColor(R.color.mgreen));
+				if(status==3) status3.setTextColor(mResources.getColor(R.color.mgreen));
 				Tool.myToast(EventDetailActivity.this, mResources.getString(R.string.change_status_success));
 			}
 		}
@@ -917,7 +957,7 @@ public class EventDetailActivity extends Activity {
 			}
 			mRefreshableView.finishRefresh("最近更新:" + new Date().toLocaleString()); 
 			GetBitMapClass task = new GetBitMapClass();
-			task.execute(sharepicurl);
+			if(!sharepicurl.equals("")) task.execute(sharepicurl);
 		}
 		
 	}

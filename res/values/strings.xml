@@ -19,6 +19,14 @@
     <string name="refresh_down_text">下拉可刷新</string>
 	<string name="refresh_release_text">松开可刷新</string>
     <string name="hint">登录聚伙账号</string>
+    <string name="register_password_hint1">请输入密码</string>
+    <string name="register_password_hint2">请确认密码</string>
+    <string name="register">注册</string>
+    <string name="registering">正在注册</string>
+    <string name="password_incorrect">两次输入的密码不符</string>
+    <string name="register_notice">我已阅读并同意</string>
+    <string name="register_protocol"><u>聚伙用户协议</u></string>
+    <string name="register_success">注册成功</string>
     
     <string name="login_input_name_password">请输入用户名和密码</string>
     <string name="loginning">正在登录...</string>
@@ -145,7 +153,9 @@
     <string name="decline">拒绝</string>
     <string name="approve">同意</string>
     <string name="approve_success">审批成功</string>
+    <string name="send_comment_success">发送评论成功</string>
     <string name="approving">正在审批</string>
     <string name="changing">正在更改状态</string>
     <string name="reminding">正在发送提醒</string>
+    <string name="commenting">正在发送评论</string>
 </resources>

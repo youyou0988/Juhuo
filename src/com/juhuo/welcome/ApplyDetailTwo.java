@@ -7,6 +7,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.res.Resources;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -34,6 +35,7 @@ public class ApplyDetailTwo extends Activity {
 	private ImageView actionTitleImg;
 	private TextView actionTitle,actionTitleTxt2;
 	private Resources mResources;
+	private ProgressDialog mPgDialog;
 	private String ids;
 	DisplayImageOptions options = new DisplayImageOptions.Builder()
 	.imageScaleType(ImageScaleType.IN_SAMPLE_INT)
@@ -50,6 +52,7 @@ public class ApplyDetailTwo extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.apply_detail_two);
 		mResources = getResources();
+		mPgDialog = new ProgressDialog(this);
 		actionTitleImg = (ImageView)findViewById(R.id.action_title_img);
 		actionTitleTxt2 = (TextView)findViewById(R.id.action_title_txt2);
 		actionTitle = (TextView)findViewById(R.id.action_title);
@@ -107,7 +110,12 @@ public class ApplyDetailTwo extends Activity {
 		imageLoader.displayImage(getIntent().getExtras().getString("url"),image, options);
 	}
 	private class CreateFollowClass extends AsyncTask<HashMap<String,Object>,String,JSONObject>{
-
+		@Override
+	    protected void onPreExecute() {
+	        super.onPreExecute();
+//	        mPgDialog.setMessage(mResources.getString(R.string.changing));
+	        mPgDialog.show();
+	    }
 		@Override
 		protected JSONObject doInBackground(HashMap<String, Object>... arg0) {
 			// TODO Auto-generated method stub

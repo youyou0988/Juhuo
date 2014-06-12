@@ -27,10 +27,10 @@ import com.juhuo.tool.JuhuoConfig;
 import com.juhuo.tool.JuhuoInfo;
 import com.juhuo.tool.Tool;
 
-public class LoginActivity extends Activity {
+public class RegisterActivity extends Activity {
 	private ImageView action_title_img;
 	private EditText mUserName;
-	private EditText mPassword;
+	private EditText mPassword,mPassword2;
 	private Button loginBtn;
 	private TextView registerFree;
 	private Resources mResources;
@@ -42,7 +42,7 @@ public class LoginActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState){
 		super.onCreate(savedInstanceState);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);//去掉标题栏
-		setContentView(R.layout.login);
+		setContentView(R.layout.register);
 		
 		initComponents();
         setListener();
@@ -58,23 +58,11 @@ public class LoginActivity extends Activity {
 		action_title_img = (ImageView)findViewById(R.id.action_title_img);
 		mUserName = (EditText)findViewById(R.id.user_name);
 		mPassword = (EditText)findViewById(R.id.user_password);
+		mPassword2 = (EditText)findViewById(R.id.user_password2);
 		loginBtn = (Button)findViewById(R.id.login_btn);
-		registerFree = (TextView)findViewById(R.id.register_free);
-		registerFree.setOnClickListener(new View.OnClickListener() {
-			
-			@Override
-			public void onClick(View arg0) {
-				// TODO Auto-generated method stub
-				Intent intent = new Intent(LoginActivity.this,RegisterActivity.class);
-				startActivity(intent);
-				LoginActivity.this.finish();
-			}
-		});
 		mPgDialog = new ProgressDialog(this);
-        mPgDialog.setMessage(mResources.getString(R.string.loginning));
-        //just for test
-        mUserName.setText("+8615210588692");
-        mPassword.setText("123456");
+        mPgDialog.setMessage(mResources.getString(R.string.registering));
+
 	}
 	private void setListener(){
 		mUserName.setOnFocusChangeListener(new View.OnFocusChangeListener() {
@@ -94,7 +82,7 @@ public class LoginActivity extends Activity {
 			@Override
 			public void onClick(View arg0) {
 				// TODO Auto-generated method stub
-				LoginActivity.this.finish();
+				RegisterActivity.this.finish();
 			}
 		});
 		loginBtn.setOnClickListener(new View.OnClickListener() {
@@ -102,24 +90,31 @@ public class LoginActivity extends Activity {
 			@Override
 			public void onClick(View arg0) {
 				// TODO Auto-generated method stub
-				if (Tool.networkAvaliable(LoginActivity.this)) {
+				if (Tool.networkAvaliable(RegisterActivity.this)) {
 					//登录用户名密码不为空验证
 					if (!"".equals(mUserName.getText().toString().trim())
 							&& !"".equals(mPassword.getText().toString()
 									.trim())) {
-						mPgDialog.show();
-						new LoginTask().execute();
+						if(!mPassword.getText().toString()
+									.trim().equals(mPassword2.getText().toString()
+									.trim())){
+							
+							new RegisterTask().execute();
+						}else{
+							Tool.myToast(RegisterActivity.this, mResources.getString(R.string.password_incorrect));
+						}
+						
 						
 					} else {
-						Tool.myToast(LoginActivity.this, mResources.getString(R.string.login_input_name_password));
+						Tool.myToast(RegisterActivity.this, mResources.getString(R.string.login_input_name_password));
 					}
 				} else {
-					Tool.myToast(LoginActivity.this,mResources.getString(R.string.current_net_invalide));
+					Tool.myToast(RegisterActivity.this,mResources.getString(R.string.current_net_invalide));
 				}
 			}
 		});
 	}
-	private class LoginTask extends AsyncTask<String, String, JSONObject> {
+	private class RegisterTask extends AsyncTask<String, String, JSONObject> {
 		@Override
         protected JSONObject doInBackground(String... strings)
         {
@@ -127,30 +122,25 @@ public class LoginActivity extends Activity {
 			HashMap<String,Object> map = new HashMap<String,Object>();
 			map.put("cell", mUserName.getText().toString().trim());
 			map.put("passwd", mPassword.getText().toString());
-        	JSONObject tmpResult = new JuhuoInfo().loadNetData(map, JuhuoConfig.LOGIN);
+        	JSONObject tmpResult = new JuhuoInfo().loadNetData(map, JuhuoConfig.REGISTER);
         	return tmpResult;
         }
 
 		@Override
 		protected void onPreExecute() {
 			super.onPreExecute();
+			mPgDialog.show();
 		}
 
-		public LoginTask() {
-			
-			super();
-		}
-
+		
 		@Override
 		protected void onPostExecute(JSONObject result) {
 			if(result == null){
 				Log.i(TAG,"i am not in");
-				Tool.myToast(LoginActivity.this,mResources.getString(R.string.login_failed_username_password));
-			}else if(result.has("no_data")){
-				Tool.myToast(LoginActivity.this,mResources.getString(R.string.current_net_invalide));
+				Tool.myToast(RegisterActivity.this,mResources.getString(R.string.current_net_invalide));
 			}else{
-//				Tool.myToast(LoginActivity.this,mResources.getString(R.string.login_success));
-				Intent intent2Home = new Intent(LoginActivity.this, HomeActivity.class);
+				Tool.myToast(RegisterActivity.this,mResources.getString(R.string.register_success));
+				Intent intent2Home = new Intent(RegisterActivity.this, HomeActivity.class);
 				try {
 					JuhuoConfig.token = result.getString("token");
 					JuhuoConfig.userId = result.getInt("id");
@@ -158,7 +148,7 @@ public class LoginActivity extends Activity {
 					e.printStackTrace();
 				}
 				startActivity(intent2Home);
-                LoginActivity.this.finish();
+				RegisterActivity.this.finish();
 			}
 			mPgDialog.dismiss();
 		}
@@ -175,3 +165,4 @@ public class LoginActivity extends Activity {
 	}
 
 }
+

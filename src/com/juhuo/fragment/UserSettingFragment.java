@@ -104,7 +104,7 @@ public class UserSettingFragment extends Fragment{
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		parent = (RelativeLayout) inflater.inflate(
-				R.layout.apply_detail_two, null);
+				R.layout.user_setting_layout, null);
 		logout = (Button)parent.findViewById(R.id.logout);
 		transView = (View)parent.findViewById(R.id.transview);
 		

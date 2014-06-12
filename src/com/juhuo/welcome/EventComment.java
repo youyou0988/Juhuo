@@ -1,13 +1,17 @@
 package com.juhuo.welcome;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.Locale;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.res.Resources;
 import android.os.AsyncTask;
@@ -39,6 +43,7 @@ public class EventComment extends Activity{
 	private ImageView actionTitleImg,actionTitleImg2;
 	private TextView actionTitle;
 	private Resources mResources;
+	private ProgressDialog mPgDialog;
 	private MyListView commentList;
 	private CommentListAdapter mAdapter;
 	private ArrayList<HashMap<String,Object>> mData;
@@ -48,10 +53,12 @@ public class EventComment extends Activity{
 	private EditText message;
 	private ImageView send;
 	private TextView noCommentText;
+	private SimpleDateFormat df = new SimpleDateFormat(Tool.ISO8601DATEFORMAT, Locale.getDefault());
 	protected void onCreate(Bundle savedInstanceState){
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.comment);
 		mResources = getResources();
+		mPgDialog = new ProgressDialog(this);
 		mData = new ArrayList<HashMap<String,Object>>();
 		actionTitleImg = (ImageView)findViewById(R.id.action_title_img);
 		actionTitleImg2 = (ImageView)findViewById(R.id.action_title_img2);
@@ -72,8 +79,14 @@ public class EventComment extends Activity{
 		send = (ImageView)findViewById(R.id.send_comment);
 		noCommentText = (TextView)findViewById(R.id.no_comments_found);
 		RelativeLayout comLay = (RelativeLayout)findViewById(R.id.commentlay);
-		String page = getIntent().getExtras().getString("PAGE");
-		comLay.setVisibility(page.equals("HOT")?View.INVISIBLE:View.VISIBLE);
+//		String page = getIntent().getExtras().getString("PAGE");
+//		comLay.setVisibility(page.equals("HOT")?View.INVISIBLE:View.VISIBLE);
+		int organizer_status = getIntent().getExtras().getInt("organizer_status");
+		if(organizer_status==0||organizer_status==1||organizer_status==3||organizer_status==5){
+			comLay.setVisibility(View.VISIBLE);
+		}else{
+			comLay.setVisibility(View.INVISIBLE);
+		}
 		this.event_id = getIntent().getExtras().getString("id");
 		//read from cache
 		JSONObject jo = new JSONObject();
@@ -84,7 +97,8 @@ public class EventComment extends Activity{
 		mapPara.put("incremental", String.valueOf(true));
 		if(jo==null){
 			//get network data
-			getNetData(mapPara);
+			LoadEventComment loadEventComment = new LoadEventComment();
+			loadEventComment.execute(mapPara);
 		}else{
 			JSONArray ja;
 			try {
@@ -107,7 +121,22 @@ public class EventComment extends Activity{
 			public void onRefresh() {
 				// TODO Auto-generated method stub
 				Log.i("pull", "refresh");
-				getNetData(mapPara);
+				LoadEventComment loadEventComment = new LoadEventComment();
+				loadEventComment.execute(mapPara);
+			}
+		});
+		send.setOnClickListener(new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View arg0) {
+				// TODO Auto-generated method stub
+				HashMap<String,Object> mapPara = new HashMap<String,Object>();
+				mapPara.put("token", JuhuoConfig.token);
+				mapPara.put("id", event_id);
+				mapPara.put("content", message.getEditableText().toString());
+				mapPara.put("time", df.format(new Date()));
+				SendCommentClass task = new SendCommentClass();
+				task.execute(mapPara);
 			}
 		});
 		
@@ -158,13 +187,39 @@ public class EventComment extends Activity{
 		}
 		
 	}
-	public void getNetData(HashMap<String,Object> map){
-		noCommentText.setText("");
-		LoadEventComment loadEventComment = new LoadEventComment();
-		loadEventComment.execute(map);
+
+	private class SendCommentClass extends AsyncTask<HashMap<String,Object>,String,JSONObject>{
+		@Override
+	    protected void onPreExecute() {
+	        super.onPreExecute();
+	        mPgDialog.setMessage(mResources.getString(R.string.commenting));
+	        mPgDialog.show();
+	    }
+		@Override
+		protected JSONObject doInBackground(HashMap<String, Object>... arg0) {
+			// TODO Auto-generated method stub
+			HashMap<String,Object> mapped = arg0[0];
+			return new JuhuoInfo().loadNetData(mapped,JuhuoConfig.EVENT_COMMENT);
+		}
+		@Override
+		protected void onPostExecute(JSONObject result){
+			if(result == null){
+				Log.i(TAG,"cannot get any");//we have reveived 500 error page
+				Tool.myToast(EventComment.this, mResources.getString(R.string.error_network));
+			}else if(result.has("wrong_data")){
+				//sth is wrong
+				Tool.dialog(EventComment.this);
+			}else{
+				Tool.myToast(EventComment.this, mResources.getString(R.string.send_comment_success));
+			}
+		}
 	}
 	private class LoadEventComment extends AsyncTask<HashMap<String,Object>,String,JSONObject>{
-
+		@Override
+	    protected void onPreExecute() {
+	        super.onPreExecute();
+	        noCommentText.setText("");
+	    }
 		@Override
 		protected JSONObject doInBackground(HashMap<String, Object>... map) {
 			// TODO Auto-generated method stub
