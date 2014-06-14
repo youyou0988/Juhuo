@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">Welcome</string>
+    <string name="app_name">Juhuo</string>
     <string name="action_settings">Settings</string>
     <string name="hello_world">Hello world!</string>
     <string name="footer_name">鼎宗科技</string>
@@ -84,6 +84,7 @@
 	<string name="cha_info_success">修改信息成功！</string>
 	<string name="upload_photo_success">上传头像成功！</string>
 	<string name="create_event_success">创建活动成功！</string>
+	<string name="update_event_success">修改活动成功！</string>
 	<string name="send_invitation_success">发送邀请成功！</string>
 	<string name="send_remind_success">提醒已发送！</string>
 	
@@ -158,4 +159,11 @@
     <string name="changing">正在更改状态</string>
     <string name="reminding">正在发送提醒</string>
     <string name="commenting">正在发送评论</string>
+    <string name="pulling_eventlist">正在获取活动列表</string>
+    
+    <string name="follow_me_txt">关注我的人员</string>
+    <string name="my_follow_txt">我关注的人员</string>
+    <string name="follow_event_txt">我关注的活动</string>
+    
+    <string name="backhint">再按一次退出程序</string>
 </resources>

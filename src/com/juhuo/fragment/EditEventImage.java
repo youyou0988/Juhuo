@@ -1,11 +1,6 @@
 package com.juhuo.fragment;
-
-import java.io.File;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -39,26 +34,25 @@ import com.juhuo.welcome.CreateEvent;
 import com.juhuo.welcome.R;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.display.FadeInBitmapDisplayer;
-import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
-import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
 
 public class EditEventImage extends Fragment{
 	private Resources mResources;
 	private String TAG = "EditEventImage";
 	private RelativeLayout parent;
-	private Button chooseImg;
+	private Button chooseImg,uploadBtn,existBtn;;
 	private Fragment mContent;
 	private ImageAdapter imageAdapter;
 	private GridView imagegrid;
 	private TextView saveText,cancelText;
-	private ArrayList<String> arrPath = new ArrayList<String>();
+	private ArrayList<String> originalarrPath = new ArrayList<String>();
+	private ArrayList<String> existarrPath = new ArrayList<String>();
     private int[] isuploaded;
-    private String photoids="";
     private boolean allUploaded,activityFinish=false;
     private ProgressDialog mPgDialog;
     private DisplayImageOptions options;
     protected ImageLoader imageLoader = ImageLoader.getInstance();
+    private String createOrUpdate;
+    private ArrayList<Integer> photoarrid = new ArrayList<Integer>();
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -75,6 +69,7 @@ public class EditEventImage extends Fragment{
     	.build();
 		mPgDialog = new ProgressDialog(getActivity());
         mPgDialog.setMessage(mResources.getString(R.string.uploading_photo));
+        createOrUpdate = getActivity().getIntent().getExtras().getString("createOrUpdate");
 	}
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -103,77 +98,108 @@ public class EditEventImage extends Fragment{
 			}
 		});
 		
-		OnClickListener txtClick = new View.OnClickListener() {
-			
-			@Override
-			public void onClick(View arg0) {
-				  // TODO Auto-generated method stub
-				 TextView v = (TextView)arg0;
-				  boolean completed = true;
-				  if(isuploaded!=null){
-					  for(int i=0; i<isuploaded.length; i++) {
-					    if(isuploaded[i] == 0) {
-					       completed = false;
-					       break;
-					     }   
-					  }
-				  }
-				  if(completed){
-					    //array has no zero values
-					    switch(v.getId()){
-						case R.id.action_title_text:
-							getFragmentManager().beginTransaction().remove(EditEventImage.this).commit();
-							getActivity().getSupportFragmentManager().popBackStack();
-							getActivity().finish();
-							break;
-						case R.id.action_title_text2:
-							Intent intent = new Intent(getActivity(),CreateEvent.class);
-							intent.putExtra("photo_ids",photoids);
-							intent.putExtra("imageurl", "file://"+arrPath.get(0));
-							intent.putExtra("photo_num", arrPath.size());
-							getActivity().setResult(getActivity().RESULT_OK, intent);
-							getActivity().finish();
-							activityFinish = true;
-						}
-						
-				  }else{
-						switch(v.getId()){
-						case R.id.action_title_text:
-							getFragmentManager().beginTransaction().remove(EditEventImage.this).commit();
-							getActivity().getSupportFragmentManager().popBackStack();
-							getActivity().finish();
-							activityFinish = true;
-							break;
-						case R.id.action_title_text2:
-							Tool.myToast(getActivity(), mResources.getString(R.string.uploading_photo));
-						}
-				  }
-				
-			}
-		};
+		
 		saveText.setOnClickListener(txtClick);
 		cancelText.setOnClickListener(txtClick);
 		imagegrid = (GridView) parent.findViewById(R.id.PhoneImageGrid);
-		imageAdapter = new ImageAdapter(arrPath);
+		imageAdapter = new ImageAdapter(originalarrPath);
 		imagegrid.setAdapter(imageAdapter);
+		uploadBtn = (Button)parent.findViewById(R.id.filter_all_events);
+		existBtn = (Button)parent.findViewById(R.id.filter_default_event);
+		uploadBtn.setOnClickListener(onClickListener);
+		existBtn.setOnClickListener(onClickListener);
 		return parent;
 		
 	}
-	public void setImageGrid(ArrayList<String> selectedarr){
-		this.arrPath = selectedarr;
-		this.isuploaded = new int[this.arrPath.size()];
+	View.OnClickListener onClickListener = new View.OnClickListener() {
 		
+		@Override
+		public void onClick(View v) {
+			Button mb = (Button)v;
+			mb.setTextColor(mResources.getColor(R.color.mgreen));
+			
+			switch(v.getId()){
+			case R.id.filter_all_events:
+				existBtn.setTextColor(mResources.getColor(R.color.mgray));
+				imageAdapter.setArrPath(originalarrPath);
+				imageAdapter.notifyDataSetChanged();
+				break;
+			case R.id.filter_default_event:
+				uploadBtn.setTextColor(mResources.getColor(R.color.mgray));
+				if(createOrUpdate.equals("update")){
+					existarrPath = (ArrayList<String>) getActivity().getIntent().getExtras().get("arrPath");
+					photoarrid = (ArrayList<Integer>) getActivity().getIntent().getExtras().get("arrPathid");
+				}
+				Log.i(TAG, existarrPath.toString());
+				imageAdapter.setArrPath(existarrPath);
+				imageAdapter.notifyDataSetChanged();
+				break;
+			}
+		}
+	};
+	OnClickListener txtClick = new View.OnClickListener() {
+		
+		@Override
+		public void onClick(View arg0) {
+			  // TODO Auto-generated method stub
+			 TextView v = (TextView)arg0;
+			  boolean completed = true;
+			  if(isuploaded!=null){
+				  for(int i=0; i<isuploaded.length; i++) {
+				    if(isuploaded[i] == 0) {
+				       completed = false;
+				       break;
+				     }   
+				  }
+			  }
+			  if(completed){
+				    //array has no zero values
+				    switch(v.getId()){
+					case R.id.action_title_text:
+						getFragmentManager().beginTransaction().remove(EditEventImage.this).commit();
+						getActivity().getSupportFragmentManager().popBackStack();
+						getActivity().finish();
+						break;
+					case R.id.action_title_text2:
+						Intent intent = new Intent(getActivity(),CreateEvent.class);
+						intent.putExtra("photo_ids",photoarrid.toString());
+						intent.putExtra("imageurl", "file://"+originalarrPath.get(0));
+						intent.putExtra("photo_num", originalarrPath.size()+existarrPath.size());
+						getActivity().setResult(getActivity().RESULT_OK, intent);
+						getActivity().finish();
+						activityFinish = true;
+					}
+					
+			  }else{
+					switch(v.getId()){
+					case R.id.action_title_text:
+						getFragmentManager().beginTransaction().remove(EditEventImage.this).commit();
+						getActivity().getSupportFragmentManager().popBackStack();
+						getActivity().finish();
+						activityFinish = true;
+						break;
+					case R.id.action_title_text2:
+						Tool.myToast(getActivity(), mResources.getString(R.string.uploading_photo));
+					}
+			  }
+			
+		}
+	};
+	public void setImageGrid(ArrayList<String> selectedarr){
+		this.originalarrPath = selectedarr;
+		this.isuploaded = new int[this.originalarrPath.size()];
+		imageAdapter.setArrPath(selectedarr);
 		imageAdapter.notifyDataSetChanged();
 		imageAdapter.notifyDataSetInvalidated();
 		uploadimage(0);
 	}
 	public void uploadimage(int i){
-		if(i<this.arrPath.size()){
+		if(i<this.originalarrPath.size()){
 			UploadPhoto photoup = new UploadPhoto(i);
 			//upload photo consequence
 			HashMap<String,Object> map = new HashMap<String,Object>();
 	        map.put("token", JuhuoConfig.token);
-	        map.put("photo", this.arrPath.get(i));
+	        map.put("photo", this.originalarrPath.get(i));
 	        photoup.execute(map);
 		}else{
 			//如果此时还没有取消上传照片的操作
@@ -217,12 +243,7 @@ public class EditEventImage extends Fragment{
 				Log.i("result-"+index, result.toString());
 //				Tool.myToast(getActivity(), mResources.getString(R.string.upload_photo_success));
 				try {
-					if(index==0){
-						photoids+=String.valueOf(result.getInt("id"));
-					}else{
-						photoids+=","+String.valueOf(result.getInt("id"));
-					}
-					
+					photoarrid.add(result.getInt("id"));
 				} catch (JSONException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -235,11 +256,16 @@ public class EditEventImage extends Fragment{
     }
 	private class ImageAdapter extends BaseAdapter {
         private LayoutInflater mInflater;
+        private ArrayList<String> arrPath;
         
         public ImageAdapter(ArrayList<String> selectedarr) {
         	mInflater = (LayoutInflater) getActivity()
             		.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        	this.arrPath = selectedarr;
             
+        }
+        public void setArrPath(ArrayList<String> selectedarr){
+        	this.arrPath = selectedarr;
         }
  
         public int getCount() {
@@ -274,15 +300,20 @@ public class EditEventImage extends Fragment{
                 public void onClick(View v) {
                     // TODO Auto-generated method stub
                     int id = v.getId();
-                    Intent intent = new Intent();
-                    intent.setAction(Intent.ACTION_VIEW);
-                    intent.setDataAndType(Uri.parse("file://" + arrPath.get(id)), "image/*");
-                    startActivity(intent);
+//                    Intent intent = new Intent();
+//                    intent.setAction(Intent.ACTION_VIEW);
+//                    intent.setDataAndType(Uri.parse("file://" + arrPath.get(id)), "image/*");
+//                    startActivity(intent);
                 }
             });
-            holder.che.setChecked(isuploaded[position]==1?true:false);
-            imageLoader.displayImage("file://"+ arrPath.get(position), holder.imageview, options);
-//            holder.transview.setVisibility(isuploaded[position]==1?View.INVISIBLE:View.VISIBLE);
+            if(isuploaded!=null){
+            	holder.che.setChecked(isuploaded[position]==1?true:false);
+            }else{
+            	holder.che.setVisibility(View.INVISIBLE);
+            }
+            imageLoader.displayImage(createOrUpdate.equals("update")?arrPath.get(position):("file://"+ arrPath.get(position))
+            			, holder.imageview, options);
+            
             holder.id = position;
             return convertView;
         }

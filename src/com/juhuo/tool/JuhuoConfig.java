@@ -25,6 +25,7 @@ public class JuhuoConfig {
 	public static String PUBLIC_TOKEN="00000000000000000000";
 	public static String token = "";
 	public static Integer userId;
+	public static String userName="";
 	
 	public static String PRODUCTIONPREFIX = "http://115.28.211.238/v0/";
 //	public static String PRODUCTIONPREFIX="http://115.29.141.31/v0/";
@@ -38,6 +39,7 @@ public class JuhuoConfig {
 	public static String ACTIVE_ACCOUNT = PRODUCTIONPREFIX+"user/applyactivate/";
 	
 	public static String EVENT_CREATE = PRODUCTIONPREFIX+"event/create/";
+	public static String EVENT_UPDATE = PRODUCTIONPREFIX+"event/modify/";
 	public static String EVENT_LIST = PRODUCTIONPREFIX+"event/list/";
 	public static String EVENT_LIST_INCREMENTAL = PRODUCTIONPREFIX+"event/listincremental/";
 	public static String EVENT_DELETE = PRODUCTIONPREFIX+"event/delete/";
@@ -51,6 +53,8 @@ public class JuhuoConfig {
 	public static String EVENT_COMMENT = PRODUCTIONPREFIX+"event/comment/";
 	
 	public static String CONTACT_CREATE = PRODUCTIONPREFIX+"contact/create/";
+	public static String CONTACT_LIST =  PRODUCTIONPREFIX+"contact/list/";
+	public static String CONTACT_EVENT = PRODUCTIONPREFIX+"event/contactlist/";
 	
 	public static String COMMON_UPLOADPHOTO = PRODUCTIONPREFIX+"common/uploadphoto/";
 

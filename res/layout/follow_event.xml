@@ -1,0 +1,101 @@
+<RelativeLayout android:layout_width="wrap_content" 
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_height="wrap_content"
+    android:background="@color/white">
+    
+    <include android:id="@+id/titlebar"
+        layout="@layout/title_bar"
+        android:layout_alignParentTop="true"/>
+    
+    <LinearLayout android:id="@+id/filterbar"
+        android:layout_width="match_parent"
+        android:layout_height="45dp"
+        android:layout_below="@+id/titlebar"
+        android:orientation="horizontal"
+        >
+        <Button android:id="@+id/follow_me_btn"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:text="@string/follow_me_txt"
+            android:textColor="@color/mgray"
+            android:textSize="15sp"
+            android:textStyle="bold"
+            android:background="@color/filtergray"
+            android:layout_weight="1.0"
+           >
+        </Button>
+        <View android:layout_width="1dp"
+            android:layout_height="match_parent"
+            android:background="@drawable/divider_event_filter"
+            android:id="@+id/divider2"
+            />
+        <Button android:id="@+id/my_follow_btn"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:text="@string/my_follow_txt"
+            android:textColor="@color/mgray"
+            android:textSize="15sp"
+            android:textStyle="bold"
+            android:background="@color/filtergray"
+            android:layout_weight="1.0"
+            />
+        <View android:layout_width="1dp"
+            android:layout_height="match_parent"
+            android:background="@drawable/divider_event_filter"
+            android:id="@+id/divider3"
+            />
+        <Button android:id="@+id/follow_event_btn"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:text="@string/follow_event_txt"
+            android:textColor="@color/mgray"
+            android:textSize="15sp"
+            android:textStyle="bold"
+            android:background="@color/filtergray"
+            android:layout_weight="1.0"
+            />
+    </LinearLayout>
+   	<TextView android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/filterbar"
+        android:textColor="@color/mgreen"
+        android:textSize="15sp"
+        android:textStyle="bold"
+        android:padding="35dp"
+        android:gravity="center"
+        android:id="@+id/no_events_found"/>
+    
+    <com.juhuo.refreshview.XListView
+        android:id="@+id/followevents_listview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/filterbar"
+        android:divider="@null"
+        android:listSelector="#0000"
+        android:visibility="gone"
+         />
+    <com.juhuo.refreshview.XListView
+        android:id="@+id/followperson_listview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/filterbar"
+        android:divider="@null"
+        android:listSelector="#0000"
+        
+         />
+    
+    <View android:id="@+id/transview"
+        android:layout_height="match_parent"
+        android:layout_width="match_parent"
+        android:background="@color/blacktrans"
+        android:visibility="invisible"/>
+    <View android:id="@+id/transview2"
+        android:layout_below="@+id/filterbar"
+        android:layout_height="match_parent"
+        android:layout_width="match_parent"
+        android:background="@color/transblack"
+        android:visibility="invisible"/>
+</RelativeLayout>

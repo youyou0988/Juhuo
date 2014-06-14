@@ -10,6 +10,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
@@ -31,6 +32,7 @@ import com.juhuo.tool.JuhuoConfig;
 import com.juhuo.tool.JuhuoInfo;
 import com.juhuo.tool.Tool;
 import com.juhuo.welcome.HomeActivity;
+import com.juhuo.welcome.LoginActivity;
 import com.juhuo.welcome.R;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
@@ -44,6 +46,7 @@ public class LeftMenuFragment extends Fragment{
 	private String TAG="LeftMenuFragment";
 	private Resources mResources;
 	private ListView naviList;
+	private RelativeLayout naviTitle;
 	private LeftMenuAdapter leftMenuAdapter;
 	public static ImageView userImage;
 	private TextView userText,userName;
@@ -82,6 +85,7 @@ public class LeftMenuFragment extends Fragment{
 		RelativeLayout parent = (RelativeLayout) inflater.inflate(
 				R.layout.left_menu, null);
 		naviList = (ListView)parent.findViewById(R.id.navi_list);
+		naviTitle = (RelativeLayout)parent.findViewById(R.id.navi_title);
 		leftMenuAdapter = new LeftMenuAdapter(getActivity(),mData);
 		leftMenuAdapter.setInflater(
 				(LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE),
@@ -114,6 +118,17 @@ public class LeftMenuFragment extends Fragment{
 					e.printStackTrace();
 				}
 			}
+		}else{
+			naviTitle.setOnClickListener(new View.OnClickListener() {
+				
+				@Override
+				public void onClick(View arg0) {
+					// TODO Auto-generated method stub
+					Intent intent = new Intent(getActivity(),LoginActivity.class);
+					startActivity(intent);
+					getActivity().finish();
+				}
+			});
 		}
 		
 		initListener();

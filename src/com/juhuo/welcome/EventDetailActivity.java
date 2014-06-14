@@ -41,6 +41,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -134,10 +135,12 @@ public class EventDetailActivity extends Activity {
 	private Calendar startcal,endcal;
 	private Bitmap thumb;
 	private IWXAPI wxApi;
+	private View transView;
 	private SimpleDateFormat df = new SimpleDateFormat(Tool.ISO8601DATEFORMAT, Locale.getDefault());
-	
+	private final int UPDATE_EVENT = 0;
 	protected void onCreate(Bundle savedInstanceState){
 		super.onCreate(savedInstanceState);
+		requestWindowFeature(Window.FEATURE_NO_TITLE);//去掉标题栏
 		this.event_id = getIntent().getExtras().getString("eventId");
 		initViews(savedInstanceState);
 		Tool.initImageLoader(this);
@@ -172,6 +175,7 @@ public class EventDetailActivity extends Activity {
 		imagePageViews = new ArrayList<View>();
 		LayoutInflater inflater = getLayoutInflater();  
 		main = (ViewGroup)inflater.inflate(R.layout.detail_event, null);
+		
 		viewPager = (ViewPager) main.findViewById(R.id.image_slide_page);
 		RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(
 				RelativeLayout.LayoutParams.WRAP_CONTENT,
@@ -193,6 +197,7 @@ public class EventDetailActivity extends Activity {
 		
 		setContentView(main);
 		
+		transView = (View)findViewById(R.id.transview3);
 		actionTitleImg = (ImageView)findViewById(R.id.action_title_img);
 		actionTitleImg2 = (ImageView)findViewById(R.id.action_title_img2);
 		actionTitle = (TextView)findViewById(R.id.action_title);
@@ -213,6 +218,7 @@ public class EventDetailActivity extends Activity {
 					openOptionsMenu();
 					break;
 				case R.id.wechat:
+					Log.i(TAG, "wechat");
 					wechatShare(0);
 					break;
 				case R.id.timeline:
@@ -319,6 +325,7 @@ public class EventDetailActivity extends Activity {
 				break;
 			case R.id.cancel_btn:
 				shareLay.setVisibility(View.GONE);
+				transView.setVisibility(View.GONE);
 				break;
 			}
 		}
@@ -354,12 +361,18 @@ public class EventDetailActivity extends Activity {
 			description = result.getString("description");
 			shareLink = result.getString("share_link");
 			eventTitle.setText(title);
-			String tb = result.getString("time_begin").substring(0,19).replace('T', ' ');
-			String te = result.getString("time_end").substring(0,19).replace('T', ' ');
+			String tb="",te="";
+			if(!result.getString("time_begin").equals("null")){
+				tb = result.getString("time_begin").substring(0,19).replace('T', ' ');
+				eventBeginTime.setText(tb);
+			}
+			if(!result.getString("time_end").equals("null")){
+				te = result.getString("time_end").substring(0,19).replace('T', ' ');
+				eventEndTime.setText(te);
+			}
+			
 			startcal = Tool.getCalendarFromISO(result.getString("time_begin"));
 			endcal = Tool.getCalendarFromISO(result.getString("time_end"));
-			eventBeginTime.setText(tb);
-			eventEndTime.setText(te);
 			eventTime.setText(Tool.getCalendarByInintData(tb, te));
 			if(eventTime.getText().equals("正在进行!")){
 	        	eventTime.setBackgroundColor(mResources.getColor(R.color.lightgreen));
@@ -588,9 +601,10 @@ public class EventDetailActivity extends Activity {
 		msg.title = "组织者:"+organizer;
 		msg.description = "活动邀请:"+title;
 		//这里替换一张自己工程里的图片资源
-//		Log.i(TAG, String.valueOf(thumb.getByteCount()));
-		if(!sharepicurl.equals("")){
-			msg.setThumbImage(thumb);
+		
+		if(!sharepicurl.equals("")&&thumb!=null){
+			Log.i(TAG, String.valueOf(thumb.getByteCount()));
+//			msg.setThumbImage(thumb);
 		}
 		
 		SendMessageToWX.Req req = new SendMessageToWX.Req();
@@ -814,13 +828,11 @@ public class EventDetailActivity extends Activity {
 			Intent intentup = new Intent(EventDetailActivity.this,CreateEvent.class);
 			intentup.putExtra("event_id", event_id);
 			intentup.putExtra("type", "update");
-			startActivity(intentup);
+			startActivityForResult(intentup,UPDATE_EVENT);
 			break;
 		case R.id.share_event:
-			//在需要分享的地方添加代码：
 			shareLay.setVisibility(View.VISIBLE);
-//			wechatShare(0);//分享到微信好友
-//			wechatShare(1);//分享到微信朋友圈
+			transView.setVisibility(View.VISIBLE);
 			break;
 		case R.id.send_remind:
 			HashMap<String,Object> map = new HashMap<String,Object>();
@@ -831,6 +843,22 @@ public class EventDetailActivity extends Activity {
 		}
 		return super.onOptionsItemSelected(item);
 	}
+	@Override  
+    public void onActivityResult(int requestCode, int resultCode, Intent data)  
+    {  
+		if(data!=null){
+			switch (requestCode)  
+	        {  
+		        case UPDATE_EVENT:  
+//		        	Log.i(TAG, "should update");
+		        	mRefreshableView.onRefreshing();
+		    		LoadEventInfo loadEventInfo = new LoadEventInfo();
+		    		loadEventInfo.execute(mapPara);
+		            break;  
+		        
+	        }  
+		}	
+    }
 	private class SendRemind extends AsyncTask<HashMap<String,Object>,String,JSONObject>{
 		@Override
 	    protected void onPreExecute() {
@@ -846,6 +874,7 @@ public class EventDetailActivity extends Activity {
 		}
 		@Override
 		protected void onPostExecute(JSONObject result) {
+			mPgDialog.dismiss();
 			if(result == null){
 				Log.i(TAG,"cannot get any");//we have reveived 500 error page
 				Tool.myToast(EventDetailActivity.this, mResources.getString(R.string.error_network));
@@ -911,6 +940,7 @@ public class EventDetailActivity extends Activity {
 		}
 		@Override
 		protected void onPostExecute(JSONObject result){
+			mPgDialog.dismiss();
 			if(result == null){
 				Log.i(TAG,"cannot get any");//we have reveived 500 error page
 				Tool.myToast(EventDetailActivity.this, mResources.getString(R.string.error_network));
@@ -947,7 +977,7 @@ public class EventDetailActivity extends Activity {
 		protected void onPostExecute(JSONObject result) {
 			if(result == null){
 				Log.i(TAG,"cannot get any");//we have reveived 500 error page
-				
+				Tool.myToast(EventDetailActivity.this, mResources.getString(R.string.error_network));
 			}else if(result.has("wrong_data")){
 				//sth is wrong
 				Tool.dialog(EventDetailActivity.this);

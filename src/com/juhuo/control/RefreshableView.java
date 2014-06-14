@@ -111,21 +111,21 @@ public class RefreshableView extends LinearLayout {
      */
     @Override
     public boolean onInterceptTouchEvent(MotionEvent ev) {
-        Log.i(TAG, "onInterceptTouchEvent");
+//        Log.i(TAG, "onInterceptTouchEvent");
         printMotionEvent(ev);
         if (ev.getAction() == MotionEvent.ACTION_DOWN) {
             preY = (int) ev.getY();
         }
         if (ev.getAction() == MotionEvent.ACTION_MOVE) {
 
-        	Log.i(TAG, "isElastic:" + isElastic + " canScroll:"+ canScroll() + " ev.getY() - preY:"+(ev.getY() - preY));
+//        	Log.i(TAG, "isElastic:" + isElastic + " canScroll:"+ canScroll() + " ev.getY() - preY:"+(ev.getY() - preY));
             if (!isElastic && canScroll()
                     && (int) ev.getY() - preY >= headContentHeight / (3*RATIO)
                     && refreshListener != null && mElastic != null) {
 
                 isElastic = true;
                 startY = (int) ev.getY();
-                Log.i(TAG, "在move时候记录下位置startY:" + startY);
+//                Log.i(TAG, "在move时候记录下位置startY:" + startY);
                 return true;
             }
 
@@ -314,13 +314,13 @@ public class RefreshableView extends LinearLayout {
      */
     public void finishRefresh(String text) {
         if (mElastic == null) {
-            Log.i(TAG, "finishRefresh mElastic:" + mElastic);
+//            Log.i(TAG, "finishRefresh mElastic:" + mElastic);
             return;
         }
         state = IPullDownElastic.DONE;
         mElastic.setLastUpdateText(text);
         changeHeaderViewByState(state,false);
-        Log.i(TAG, "执行了=====finishRefresh");
+//        Log.i(TAG, "执行了=====finishRefresh");
 
         mElastic.showArrow(View.VISIBLE);
         mElastic.showLastUpdate(View.VISIBLE);
@@ -366,7 +366,7 @@ public class RefreshableView extends LinearLayout {
     private void printMotionEvent(MotionEvent event) {
         switch (event.getAction()) {
         case MotionEvent.ACTION_DOWN:
-            Log.i(TAG, "down");
+//            Log.i(TAG, "down");
             break;
         case MotionEvent.ACTION_MOVE:
 //            Log.i(TAG, "move");

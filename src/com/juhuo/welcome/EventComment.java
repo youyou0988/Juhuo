@@ -132,9 +132,13 @@ public class EventComment extends Activity{
 				// TODO Auto-generated method stub
 				HashMap<String,Object> mapPara = new HashMap<String,Object>();
 				mapPara.put("token", JuhuoConfig.token);
+				mapPara.put("commenter_name", JuhuoConfig.userName);
 				mapPara.put("id", event_id);
 				mapPara.put("content", message.getEditableText().toString());
 				mapPara.put("time", df.format(new Date()));
+				mData.add(mapPara);
+				mAdapter.notifyDataSetChanged();
+				noCommentText.setText("");
 				SendCommentClass task = new SendCommentClass();
 				task.execute(mapPara);
 			}
@@ -194,6 +198,7 @@ public class EventComment extends Activity{
 	        super.onPreExecute();
 	        mPgDialog.setMessage(mResources.getString(R.string.commenting));
 	        mPgDialog.show();
+	        message.setText("");
 	    }
 		@Override
 		protected JSONObject doInBackground(HashMap<String, Object>... arg0) {
@@ -203,6 +208,7 @@ public class EventComment extends Activity{
 		}
 		@Override
 		protected void onPostExecute(JSONObject result){
+			mPgDialog.dismiss();
 			if(result == null){
 				Log.i(TAG,"cannot get any");//we have reveived 500 error page
 				Tool.myToast(EventComment.this, mResources.getString(R.string.error_network));

@@ -8,11 +8,8 @@
      <ImageView android:layout_width="wrap_content"
          android:layout_height="wrap_content"
          android:background="@drawable/icon_back"
-         android:layout_marginTop="8dp"
-         android:layout_marginBottom="6dp"
-         android:layout_marginLeft="9dp"
          android:layout_alignParentLeft="true"
-         android:layout_marginRight="9dp"
+         android:layout_centerVertical="true"
          android:id="@+id/action_title_img"/>
      <TextView android:id="@+id/action_title"
          android:layout_width="wrap_content"
@@ -26,9 +23,9 @@
      <ImageView android:layout_width="wrap_content"
          android:layout_height="wrap_content"
          android:background="@drawable/icon_dismiss"
-         android:visibility="invisible"
-         android:layout_margin="@dimen/pic_margin"
+         android:layout_centerVertical="true"
          android:id="@+id/action_title_img2"
          android:layout_alignParentRight="true"
+         android:visibility="invisible"
          />
 </RelativeLayout>

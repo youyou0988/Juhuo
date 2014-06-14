@@ -135,7 +135,7 @@ public class HotEventsAdapter extends BaseAdapter {
 	public void setListView(ListView lv){
 		this.listView = lv;
 		this.listView.setOnItemClickListener(evlistOnClickListener);
-		if(type!="HOT"){
+		if(type.equals("MYorganizer")||type.equals("MYrelated")){
 			this.listView.setOnItemLongClickListener(evlistLoneClickListener);
 		}
 		
@@ -175,7 +175,7 @@ public class HotEventsAdapter extends BaseAdapter {
 		if (convertView == null) {
 			holder = new HotEventsHandler();
 			convertView = mInflater.inflate(R.layout.hot_events_item, null);
-			holder.eventTitle=(TextView)convertView.findViewById(R.id.event_title);
+			holder.eventTitle=(TextView)convertView.findViewById(R.id.item_title);
 			holder.eventLocation=(TextView)convertView.findViewById(R.id.event_location);
 			holder.eventTime=(TextView)convertView.findViewById(R.id.event_time);
 			holder.eventImg=(ImageView)convertView.findViewById(R.id.event_pic);

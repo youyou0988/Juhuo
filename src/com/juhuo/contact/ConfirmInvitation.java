@@ -2,9 +2,11 @@ package com.juhuo.contact;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.app.ProgressDialog;
 import android.content.res.Resources;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -23,6 +25,7 @@ import android.widget.TextView;
 import com.juhuo.tool.JuhuoConfig;
 import com.juhuo.tool.JuhuoInfo;
 import com.juhuo.tool.Tool;
+import com.juhuo.welcome.EventDetailActivity;
 import com.juhuo.welcome.R;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
@@ -33,6 +36,7 @@ public class ConfirmInvitation  extends Fragment{
 	private Resources mResources;
 	private String TAG = "ConfirmInvitation";
 	private RelativeLayout parent;
+	private ProgressDialog mPgDialog;
 	private ImageView actionTitleImg;
 	private TextView actionTitle,eventTitle,beginTime,endTime;
 	private Button sendBtn;
@@ -59,6 +63,7 @@ public class ConfirmInvitation  extends Fragment{
 		super.onCreate(savedInstanceState);
 		Log.d(TAG, "onCreate");
 		mResources = getResources();
+		mPgDialog = new ProgressDialog(getActivity());
 		event_id = getActivity().getIntent().getExtras().getString("event_id");
 	}
 	@Override
@@ -91,19 +96,24 @@ public class ConfirmInvitation  extends Fragment{
 			@Override
 			public void onClick(View arg0) {
 				// TODO Auto-generated method stub
-				HashMap<String,Object> mapPara = new HashMap<String,Object>();
-				mapPara.put("id",event_id);
-				mapPara.put("token", JuhuoConfig.token);
-				ArrayList<HashMap<String,String>> paraslist = new ArrayList<HashMap<String,String>>();
-				for(int i=0;i<contactList.size();i++){
-					HashMap<String,String> map = new HashMap<String,String>();
-					map.put("name", contactList.get(i).getName());
-					map.put("cell", contactList.get(i).getCell());
-					paraslist.add(map);
+				JSONObject json = new JSONObject();
+				try {
+					json.put("token", JuhuoConfig.token);
+					json.put("id",event_id);
+					JSONArray ja = new JSONArray();
+					for(int i=0;i<contactList.size();i++){
+						JSONObject tm = new JSONObject();
+						tm.put("name", contactList.get(i).getName());
+						tm.put("cell", contactList.get(i).getCell());
+						ja.put(tm);
+					}
+					json.put("contacts", ja);
+				} catch (JSONException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
 				}
-				mapPara.put("contacts", paraslist);
 				SendInvitation sendInvi = new SendInvitation();
-				sendInvi.execute(mapPara);
+				sendInvi.execute(json);
 			}
 		});
 		JSONObject jo = new JSONObject();
@@ -115,19 +125,25 @@ public class ConfirmInvitation  extends Fragment{
 		}
 		return parent;
 	}
-	private class SendInvitation extends AsyncTask<HashMap<String,Object>,String,JSONObject>{
-
+	private class SendInvitation extends AsyncTask<JSONObject,String,JSONObject>{
 		@Override
-		protected JSONObject doInBackground(HashMap<String, Object>... map) {
+	    protected void onPreExecute() {
+	        super.onPreExecute();
+	        mPgDialog.setMessage(mResources.getString(R.string.reminding));
+	        mPgDialog.show();
+	    }
+		@Override
+		protected JSONObject doInBackground(JSONObject... map) {
 			// TODO Auto-generated method stub
-			HashMap<String,Object> mapped = map[0];
-			return new JuhuoInfo().callPostPlain(mapped,JuhuoConfig.EVENT_INVITE);
+			JSONObject mapped = map[0];
+			return new JuhuoInfo().callPostPlainNest(mapped,JuhuoConfig.EVENT_INVITE);
 		}
 		@Override
 		protected void onPostExecute(JSONObject result) {
+			mPgDialog.dismiss();
 			if(result == null){
 				Log.i(TAG,"cannot get any");//we have reveived 500 error page
-				
+				Tool.myToast(getActivity(), mResources.getString(R.string.error_network));
 			}else if(result.has("wrong_data")){
 				//sth is wrong
 				Tool.dialog(getActivity());

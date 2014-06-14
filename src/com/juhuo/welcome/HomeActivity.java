@@ -1,6 +1,5 @@
 package com.juhuo.welcome;
 
-import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Point;
 import android.os.Bundle;
@@ -8,14 +7,15 @@ import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.Display;
-import android.view.KeyEvent;
 import android.view.View;
+import android.view.Window;
 import android.widget.ImageView;
 
 import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
 import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu.OnCloseListener;
 import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu.OnOpenListener;
 import com.jeremyfeinstein.slidingmenu.lib.app.SlidingFragmentActivity;
+import com.juhuo.fragment.FollowFragment;
 import com.juhuo.fragment.HotEventsFragment;
 import com.juhuo.fragment.LeftMenuFragment;
 import com.juhuo.fragment.MyEventFragment;
@@ -27,9 +27,12 @@ public class HomeActivity extends SlidingFragmentActivity {
 	private Fragment mContent;
 	private ImageView actionTitleImg;
 	private Resources mResources;
+	private int backTimes = 0;
+	private final String TAG = "HomeActivity";
 	@Override
 	public void onCreate(Bundle savedInstanceState){
 		super.onCreate(savedInstanceState);
+		requestWindowFeature(Window.FEATURE_NO_TITLE);//去掉标题栏
 		setContentView(R.layout.home_frame);
 		mResources = getResources();
 		getSize();
@@ -94,6 +97,8 @@ public class HomeActivity extends SlidingFragmentActivity {
 	        		((MyEventFragment) mContent).setTrans();
 	        	}else if(mContent instanceof UserSettingFragment){
 	        		((UserSettingFragment) mContent).setTrans();
+	        	}else if(mContent instanceof FollowFragment){
+	        		((FollowFragment) mContent).setTrans();
 	        	}
 	        	
 	        }
@@ -108,6 +113,8 @@ public class HomeActivity extends SlidingFragmentActivity {
 	        		((MyEventFragment) mContent).setTransBack();
 	        	}else if(mContent instanceof UserSettingFragment){
 	        		((UserSettingFragment) mContent).setTransBack();
+	        	}else if(mContent instanceof FollowFragment){
+	        		((FollowFragment) mContent).setTransBack();
 	        	}
 			}
 		});
@@ -130,10 +137,19 @@ public class HomeActivity extends SlidingFragmentActivity {
 	public void onBackPressed() { 
 	    //实现Home键效果 
 	    //super.onBackPressed();这句话一定要注掉,不然又去调用默认的back处理方式了 
-	    Intent i= new Intent(Intent.ACTION_MAIN); 
-	    i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK); 
-	    i.addCategory(Intent.CATEGORY_HOME); 
-	    startActivity(i);  
+//	    Intent i= new Intent(Intent.ACTION_MAIN); 
+//	    i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK); 
+//	    i.addCategory(Intent.CATEGORY_HOME); 
+//	    startActivity(i);  
+		Log.i(TAG, String.valueOf(backTimes));
+		if(backTimes==0){
+			toggle();
+			backTimes++;
+			Tool.myToast(HomeActivity.this, mResources.getString(R.string.backhint));
+		}else{
+			finish();
+		}
+		
 	}
 	
 }

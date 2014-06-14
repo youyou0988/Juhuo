@@ -206,4 +206,41 @@ public class JuhuoInfo {
         }
 		return null;
 	}
+	public JSONObject callPostPlainNest(JSONObject para,String preUrl){
+		DefaultHttpClient httpclient = new DefaultHttpClient();
+		try {
+			HttpPost httpPost = new HttpPost(preUrl);
+			httpPost.setHeader("content-type","application/json");
+			Log.i(TAG, para.toString());
+			httpPost.setEntity(new StringEntity(para.toString(), "UTF8"));  
+	        HttpResponse response = httpclient.execute(httpPost);  
+			HttpEntity responseEntity = response.getEntity();
+			if (responseEntity != null) {
+				String entityStr = EntityUtils.toString(responseEntity);
+				String resultCode = getCode(entityStr);
+				if(resultCode.equals(SUCCESS_STATUS)){
+					return getData(entityStr);
+				}else if(resultCode.equals(INVALID_TOKEN)){
+					HashMap<String, String> map = new HashMap<String, String>();
+					map.put("wrong_data", INVALID_TOKEN);
+					JSONObject json = new JSONObject(map);
+					return json;
+				}else{
+					return null;
+				}
+			}
+		} catch (ClientProtocolException e) {
+			
+			e.printStackTrace();
+		} catch(HttpHostConnectException e){
+			Log.i(TAG, "connection timeout");
+			return null;
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (Exception e) {
+            e.printStackTrace();
+
+        }
+		return null;
+	}
 }

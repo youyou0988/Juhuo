@@ -4,8 +4,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
 import android.view.Window;
-
-import com.juhuo.fragment.EditEventImage;
 import com.juhuo.welcome.R;
 
 public class SelectContactActivity extends FragmentActivity {

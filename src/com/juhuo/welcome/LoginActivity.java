@@ -9,17 +9,14 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.res.Resources;
-import android.graphics.Point;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Display;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -67,7 +64,6 @@ public class LoginActivity extends Activity {
 				// TODO Auto-generated method stub
 				Intent intent = new Intent(LoginActivity.this,RegisterActivity.class);
 				startActivity(intent);
-				LoginActivity.this.finish();
 			}
 		});
 		mPgDialog = new ProgressDialog(this);
@@ -82,6 +78,7 @@ public class LoginActivity extends Activity {
 			@Override
 			public void onFocusChange(View arg0, boolean hasFocus) {
 				// TODO Auto-generated method stub
+				
 				if(hasFocus){
 					mUserName.setText(PRECELL);
 					mUserName.setSelection(PRECELL.length());
@@ -154,6 +151,7 @@ public class LoginActivity extends Activity {
 				try {
 					JuhuoConfig.token = result.getString("token");
 					JuhuoConfig.userId = result.getInt("id");
+					JuhuoConfig.userName = result.getString("name");
 				} catch (JSONException e) {
 					e.printStackTrace();
 				}

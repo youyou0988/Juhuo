@@ -32,10 +32,10 @@ public class RegisterActivity extends Activity {
 	private EditText mUserName;
 	private EditText mPassword,mPassword2;
 	private Button loginBtn;
-	private TextView registerFree;
+	private TextView registerFree,actionTitle;
 	private Resources mResources;
 	private ProgressDialog mPgDialog;
-	private RelativeLayout titleBar,loginInput;
+	private RelativeLayout titleBar,loginInput,cellLay;
 	private String TAG = "LoginActivity";
 	private String PRECELL = "+86";
 	
@@ -49,13 +49,26 @@ public class RegisterActivity extends Activity {
 	}
 	private void initComponents(){
 		mResources = getResources();
+		cellLay = (RelativeLayout)findViewById(R.id.cell_lay);
 		loginInput = (RelativeLayout)findViewById(R.id.login_input);
 		titleBar = (RelativeLayout)findViewById(R.id.titlebar);
 		RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(
 				RelativeLayout.LayoutParams.MATCH_PARENT, JuhuoConfig.HEIGHT/7);
+		layoutParams.setMargins(0, JuhuoConfig.HEIGHT/32, 0, 0);
+		layoutParams.addRule(RelativeLayout.BELOW,cellLay.getId());
 		loginInput.setLayoutParams(layoutParams);
 		
 		action_title_img = (ImageView)findViewById(R.id.action_title_img);
+		action_title_img.setOnClickListener(new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View arg0) {
+				// TODO Auto-generated method stub
+				finish();
+			}
+		});
+		actionTitle = (TextView)findViewById(R.id.action_title);
+		actionTitle.setText(mResources.getString(R.string.register));
 		mUserName = (EditText)findViewById(R.id.user_name);
 		mPassword = (EditText)findViewById(R.id.user_password);
 		mPassword2 = (EditText)findViewById(R.id.user_password2);

@@ -3,6 +3,7 @@ package com.juhuo.welcome;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -13,6 +14,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.Window;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -50,6 +52,7 @@ public class ApplyDetailTwo extends Activity {
 	protected ImageLoader imageLoader = ImageLoader.getInstance();
 	protected void onCreate(Bundle savedInstanceState){
 		super.onCreate(savedInstanceState);
+		requestWindowFeature(Window.FEATURE_NO_TITLE);//去掉标题栏
 		setContentView(R.layout.apply_detail_two);
 		mResources = getResources();
 		mPgDialog = new ProgressDialog(this);
@@ -72,16 +75,21 @@ public class ApplyDetailTwo extends Activity {
 				// TODO Auto-generated method stub
 				TextView tv = (TextView)arg0;
 				if(tv.getText().equals("关注")){
+					JSONObject json = new JSONObject();
+					try {
+						json.put("token", JuhuoConfig.token);
+						JSONArray ja = new JSONArray();
+						JSONObject tm = new JSONObject();
+						tm.put("name", getIntent().getExtras().getString("name"));
+						tm.put("cell", getIntent().getExtras().getString("cell"));
+						ja.put(tm);
+						json.put("contacts", ja);
+					} catch (JSONException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
 					CreateFollowClass task = new CreateFollowClass();
-					HashMap<String,Object> params = new HashMap<String,Object>();
-					params.put("token", JuhuoConfig.token);
-					ArrayList<HashMap<String,String>> paraslist = new ArrayList<HashMap<String,String>>();
-					HashMap<String,String> map = new HashMap<String,String>();
-					map.put("name", getIntent().getExtras().getString("name"));
-					map.put("cell", getIntent().getExtras().getString("cell"));
-					paraslist.add(map);
-					params.put("contacts", paraslist);
-					task.execute(params);
+					task.execute(json);
 				}else{
 					
 				}
@@ -109,7 +117,7 @@ public class ApplyDetailTwo extends Activity {
 		image.getLayoutParams().width = JuhuoConfig.WIDTH*150/320;
 		imageLoader.displayImage(getIntent().getExtras().getString("url"),image, options);
 	}
-	private class CreateFollowClass extends AsyncTask<HashMap<String,Object>,String,JSONObject>{
+	private class CreateFollowClass extends AsyncTask<JSONObject,String,JSONObject>{
 		@Override
 	    protected void onPreExecute() {
 	        super.onPreExecute();
@@ -117,13 +125,14 @@ public class ApplyDetailTwo extends Activity {
 	        mPgDialog.show();
 	    }
 		@Override
-		protected JSONObject doInBackground(HashMap<String, Object>... arg0) {
+		protected JSONObject doInBackground(JSONObject... arg0) {
 			// TODO Auto-generated method stub
-			HashMap<String,Object> mapped = arg0[0];
-			return new JuhuoInfo().callPostPlain(mapped,JuhuoConfig.CONTACT_CREATE);
+			JSONObject mapped = arg0[0];
+			return new JuhuoInfo().callPostPlainNest(mapped,JuhuoConfig.CONTACT_CREATE);
 		}
 		@Override
 		protected void onPostExecute(JSONObject result){
+			mPgDialog.dismiss();
 			if(result == null){
 				Log.i(TAG,"cannot get any");//we have reveived 500 error page
 				Tool.myToast(ApplyDetailTwo.this, mResources.getString(R.string.error_network));

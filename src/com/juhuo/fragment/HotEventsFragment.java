@@ -7,6 +7,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
@@ -43,6 +44,7 @@ import com.juhuo.welcome.SearchEvent;
 
 public class HotEventsFragment extends Fragment{
 	private Resources mResources;
+	private ProgressDialog mPgDialog;
 	private String TAG = "HotEventsFragment";
 	private ImageView actionTitleImg;
 	private ImageView actionTitleImg2;
@@ -74,6 +76,7 @@ public class HotEventsFragment extends Fragment{
 		super.onCreate(savedInstanceState);
 		Log.d(TAG, "onCreate");
 		mResources = getResources();
+		mPgDialog = new ProgressDialog(getActivity());
 		mapPara = new HashMap<String,Object>();
 		mapPara.put("token", JuhuoConfig.token);
 		mapPara.put("incremental", "true");
@@ -269,7 +272,12 @@ public class HotEventsFragment extends Fragment{
 		loadEventList.execute(map);
 	}
 	private class LoadMoreEvents extends AsyncTask<HashMap<String,Object>,String,JSONObject>{
-
+		@Override
+	    protected void onPreExecute() {
+	        super.onPreExecute();
+	        mPgDialog.setMessage(mResources.getString(R.string.pulling_eventlist));
+	        mPgDialog.show();
+	    }
 		@Override
 		protected JSONObject doInBackground(HashMap<String, Object>... arg0) {
 			// TODO Auto-generated method stub
@@ -278,6 +286,7 @@ public class HotEventsFragment extends Fragment{
 		}
 		@Override
 		protected void onPostExecute(JSONObject result){
+			mPgDialog.dismiss();
 			if(getActivity()==null){
 				return;
 			}
@@ -310,7 +319,12 @@ public class HotEventsFragment extends Fragment{
 		}
 	}
 	private class LoadEventList extends AsyncTask<HashMap<String,Object>,String,JSONObject>{
-
+		@Override
+	    protected void onPreExecute() {
+	        super.onPreExecute();
+	        mPgDialog.setMessage(mResources.getString(R.string.pulling_eventlist));
+	        mPgDialog.show();
+	    }
 		@Override
 		protected JSONObject doInBackground(HashMap<String,Object>... map) {
 			// TODO Auto-generated method stub
@@ -320,6 +334,7 @@ public class HotEventsFragment extends Fragment{
 		}
 		@Override
 		protected void onPostExecute(JSONObject result) {
+			mPgDialog.dismiss();
 			if(getActivity()==null){
 				return;
 			}

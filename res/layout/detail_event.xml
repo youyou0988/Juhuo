@@ -2,6 +2,7 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:background="@color/white" >
+    
 
     <include
         android:id="@+id/titlebar"
@@ -688,46 +689,13 @@
         </RelativeLayout>
     </com.juhuo.control.ScrollViewExtend>
 	</com.juhuo.control.RefreshableView>
-	<RelativeLayout android:layout_height="wrap_content"
-	    android:layout_width="fill_parent"
-	    android:padding="10dp"
-	    android:layout_alignParentBottom="true"
-	    android:id="@+id/share_layout"
-	    android:visibility="gone"
-	    android:background="@color/white">
-	    <RelativeLayout android:layout_width="fill_parent"
-	        android:layout_height="wrap_content"
-	        android:layout_alignParentTop="true"
-	        android:id="@+id/sharelay">
-	        <ImageView android:layout_width="wrap_content"
-	            android:layout_height="wrap_content"
-	            android:background="@drawable/share_wechat_session"
-	            android:layout_alignParentLeft="true"
-	            android:id="@+id/wechat"/>
-	        <ImageView android:layout_width="wrap_content"
-	            android:layout_height="wrap_content"
-	            android:background="@drawable/share_wechat_timeline"
-	            android:id="@+id/timeline"
-	            android:layout_toRightOf="@+id/wechat"/>
-	        <ImageView android:layout_width="wrap_content"
-	            android:layout_height="wrap_content"
-	            android:background="@drawable/share_weibo"
-	            android:id="@+id/weibo"
-	            android:layout_toRightOf="@+id/timeline"/>
-	        
-	    </RelativeLayout>
-	    <Button
-            android:id="@+id/cancel_btn"
-            android:layout_width="fill_parent"
-            android:layout_height="40dp"
-            android:layout_marginTop="10dp"
-            android:background="@drawable/click_btn"
-            android:gravity="center"
-            android:text="@string/cancel"
-            android:textColor="@color/white"
-            android:textSize="20sp"
-            android:layout_below="@+id/sharelay" />
-	</RelativeLayout>
+	<View android:id="@+id/transview3"
+        android:layout_height="match_parent"
+        android:layout_width="match_parent"
+        android:background="@color/blacktrans"
+        android:visibility="gone"
+        />
+	
 	<Button android:layout_width="fill_parent"
 	    android:layout_height="wrap_content"
 	    android:layout_alignParentBottom="true"
@@ -739,6 +707,7 @@
 	    android:background="@drawable/bg_event_filter"
 	    android:layout_alignTop="@+id/statusbar"
 	    android:visibility="gone"/>
+	
 	<RelativeLayout android:id="@+id/statusbar"
         android:layout_width="match_parent"
         android:layout_height="45dp"
@@ -792,4 +761,44 @@
             >
         </Button>
     </RelativeLayout>
+    <RelativeLayout android:layout_height="wrap_content"
+	    android:layout_width="fill_parent"
+	    android:padding="10dp"
+	    android:layout_alignParentBottom="true"
+	    android:id="@+id/share_layout"
+	    android:visibility="gone"
+	    android:background="@color/white">
+	    <RelativeLayout android:layout_width="fill_parent"
+	        android:layout_height="wrap_content"
+	        android:layout_alignParentTop="true"
+	        android:id="@+id/sharelay">
+	        <ImageView android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:background="@drawable/share_wechat_session"
+	            android:layout_alignParentLeft="true"
+	            android:id="@+id/wechat"/>
+	        <ImageView android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:background="@drawable/share_wechat_timeline"
+	            android:id="@+id/timeline"
+	            android:layout_toRightOf="@+id/wechat"/>
+	        <ImageView android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:background="@drawable/share_weibo"
+	            android:id="@+id/weibo"
+	            android:layout_toRightOf="@+id/timeline"/>
+	        
+	    </RelativeLayout>
+	    <Button
+            android:id="@+id/cancel_btn"
+            android:layout_width="fill_parent"
+            android:layout_height="40dp"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/click_btn"
+            android:gravity="center"
+            android:text="@string/cancel"
+            android:textColor="@color/white"
+            android:textSize="20sp"
+            android:layout_below="@+id/sharelay" />
+	</RelativeLayout>
 </RelativeLayout>

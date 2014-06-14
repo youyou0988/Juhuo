@@ -39,7 +39,7 @@ public class SelectContact extends Fragment{
 	private ImageView actionTitleImg,actionTitleImg2;
 	private TextView actionTitle;
 	private Button confirmInvi;
-	private List<Pair<String, List<Contact>>> all;
+	private List<Pair<String, List<Contact>>> all = new ArrayList<Pair<String, List<Contact>>>();
 	private static CharacterParser characterParser;
 	private ArrayList<Boolean> mCheckedStates = null; 
 	private ArrayList<Contact> contactList;
@@ -70,34 +70,8 @@ public class SelectContact extends Fragment{
 		protected void onPostExecute(final List<Pair<String, List<Contact>>> all){
 			mDialog.dismiss();
 			lsContact.setPinnedHeaderView(LayoutInflater.from(getActivity()).inflate(R.layout.item_composer_header, lsContact, false));
-			lsContact.setAdapter(adapter = new SectionContactAdapter());
-			confirmInvi.setOnClickListener(new View.OnClickListener() {
-				
-				@Override
-				public void onClick(View arg0) {
-					// TODO Auto-generated method stub
-					Fragment confirm = new ConfirmInvitation();
-					//set confirm contact list
-					int res = 0;
-					for (int i = 0; i < all.size(); i++) {
-						res += all.get(i).second.size();
-					}
-					for (int i = 0; i < res; ++i) {
-				    	if(mCheckedStates.get(i)==true){
-				    		contactList.add(adapter.getItem(i));
-				    	}
-				  	}
-				    ((ConfirmInvitation)confirm).setData(contactList);
-					FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
-
-					transaction.setCustomAnimations(R.anim.enter, R.anim.exit, R.anim.pop_enter, R.anim.pop_exit)
-						.replace(R.id.content_frame, confirm,"ConfirmInvitation");
-					transaction.addToBackStack(null);
-
-					// Commit the transaction
-					transaction.commit();
-				}
-			});
+			lsContact.setAdapter(adapter);
+			
 		}
 	}
 	@Override
@@ -133,7 +107,35 @@ public class SelectContact extends Fragment{
 		});
 		actionTitle.setText(mResources.getString(R.string.invited));
 		lsContact = (AmazingListView) parent.findViewById(R.id.lsComposer);
-		
+		adapter = new SectionContactAdapter();
+		lsContact.setAdapter(adapter);
+		confirmInvi.setOnClickListener(new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View arg0) {
+				// TODO Auto-generated method stub
+				Fragment confirm = new ConfirmInvitation();
+				//set confirm contact list
+				int res = 0;
+				for (int i = 0; i < all.size(); i++) {
+					res += all.get(i).second.size();
+				}
+				for (int i = 0; i < res; ++i) {
+			    	if(mCheckedStates.get(i)==true){
+			    		contactList.add(adapter.getItem(i));
+			    	}
+			  	}
+			    ((ConfirmInvitation)confirm).setData(contactList);
+				FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
+
+				transaction.setCustomAnimations(R.anim.enter, R.anim.exit, R.anim.pop_enter, R.anim.pop_exit)
+					.replace(R.id.content_frame, confirm,"ConfirmInvitation");
+				transaction.addToBackStack(null);
+
+				// Commit the transaction
+				transaction.commit();
+			}
+		});
 		return parent;
 	}
 	class SectionContactAdapter extends AmazingAdapter {

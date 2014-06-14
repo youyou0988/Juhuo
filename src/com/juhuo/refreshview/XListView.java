@@ -10,6 +10,7 @@ package com.juhuo.refreshview;
 
 import android.content.Context;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewTreeObserver.OnGlobalLayoutListener;
@@ -263,6 +264,7 @@ public class XListView extends ListView implements OnScrollListener {
 			mListViewListener.onLoadMore();
 		}
 	}
+
 
 	@Override
 	public boolean onTouchEvent(MotionEvent ev) {

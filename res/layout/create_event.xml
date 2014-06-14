@@ -38,9 +38,10 @@
 	         android:layout_centerVertical="true"
 	         />
 	</RelativeLayout>
-	<ScrollView android:layout_height="fill_parent"
+	<ScrollView android:layout_height="wrap_content"
 	    android:layout_width="fill_parent"
-	    android:layout_below="@+id/titlebar">
+	    android:layout_below="@+id/titlebar"
+	    android:layout_above="@+id/create_btn">
 	    
 		<RelativeLayout
 		    android:layout_width="match_parent"
@@ -495,17 +496,18 @@
 	                    
 	                </RelativeLayout>
 	        </RelativeLayout>
-		    <Button
-				            android:id="@+id/create_btn"
-				            android:layout_width="fill_parent"
-				            android:layout_height="wrap_content"
-				            android:layout_below="@+id/lay2"
-				            android:background="@drawable/click_btn"
-				            android:gravity="center"
-				            android:text="@string/create_event"
-				            android:textColor="@color/white"
-				            android:textSize="20sp" />
+		    
 		</RelativeLayout>
 	</ScrollView>
-	
+	<Button
+            android:id="@+id/create_btn"
+            android:layout_width="fill_parent"
+            android:layout_margin="10dp"
+            android:layout_height="wrap_content"
+            android:background="@drawable/click_btn"
+            android:gravity="center"
+            android:text="@string/create_event"
+            android:textColor="@color/white"
+            android:textSize="20sp"
+            android:layout_alignParentBottom="true" />
 </RelativeLayout>

@@ -71,7 +71,7 @@ public class MainActivity extends Activity {
 				// TODO Auto-generated method stub
 				Intent mainToLogin = new Intent(MainActivity.this,LoginActivity.class);
 				startActivity(mainToLogin);
-				finish();
+//				finish();
 			}
 		});
 		skipLogin.setOnClickListener(new View.OnClickListener() {

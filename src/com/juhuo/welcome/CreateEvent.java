@@ -1,5 +1,6 @@
 package com.juhuo.welcome;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -54,9 +55,9 @@ import com.nostra13.universalimageloader.core.display.SimpleBitmapDisplayer;
 public class CreateEvent extends Activity implements LocationSource,AMapLocationListener{
 	private final String TAG="CreateEvent";
 	private TextView actionTitleText,actionTitleText2,eventBeginTime,eventEndTime,eventType
-		,eventDetail,picNumber;
+		,eventDetail,picNumber,actionTitle;
 	private ImageView image;
-	private EditText eventPlace,eventTitle,eventCost;
+	private EditText eventPlace,eventTitle,eventCost,eventLink;
 	private Button createBtn;
 	private Resources mResources;
 	private MapView mapView;
@@ -65,7 +66,7 @@ public class CreateEvent extends Activity implements LocationSource,AMapLocation
 	private OnLocationChangedListener mListener;
 	private LocationManagerProxy mAMapLocationManager;
 	private AMapLocation currentLoc;
-	private String photo_ids,time_begin,time_end,event_type="0",description,addr,title;
+	private String photo_ids,time_begin,time_end,event_type="0",description,addr,title,event_id;
 	private double lat,lng;
 	private int privacy=0,need_approve_apply=0,allow_apns=0;
 	private CheckBox privacyche,need_approve_che,allow_apns_che;
@@ -74,7 +75,7 @@ public class CreateEvent extends Activity implements LocationSource,AMapLocation
 	private static final int SelectLocation = 0;
 	private static final int EditDetailEvent = 1;
 	private static final int EditImage = 2;
-	final String[] items = {"交友聚会", "读书看报", "音乐电影","体育锻炼","其他"};
+	final String[] items = {"所有活动","交友聚会", "读书看报", "音乐电影","体育锻炼","其他"};
 	private String[] eventTypeStr={"所有活动","交友聚会","读书看报","音乐电影","体育锻炼","其他"};
 	DisplayImageOptions options = new DisplayImageOptions.Builder()
 	.imageScaleType(ImageScaleType.EXACTLY)
@@ -87,7 +88,8 @@ public class CreateEvent extends Activity implements LocationSource,AMapLocation
 	.displayer(new SimpleBitmapDisplayer())
 	.build();
 	protected ImageLoader imageLoader = ImageLoader.getInstance();
-	
+	private ArrayList<String> arrPath = new ArrayList<String>();
+	private ArrayList<Integer> arrPathid = new ArrayList<Integer>();
 	protected void onCreate(Bundle savedInstanceState){
 		super.onCreate(savedInstanceState);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);//去掉标题栏
@@ -95,11 +97,13 @@ public class CreateEvent extends Activity implements LocationSource,AMapLocation
 		mResources = getResources();
 		actionTitleText = (TextView)findViewById(R.id.action_title_text);
 		actionTitleText2 = (TextView)findViewById(R.id.action_title_text2);
+		actionTitle = (TextView)findViewById(R.id.action_title);
 		eventBeginTime = (TextView)findViewById(R.id.event_begin_time);
 		eventEndTime = (TextView)findViewById(R.id.event_end_time);
 		eventPlace = (EditText)findViewById(R.id.event_place);
 		eventType = (TextView)findViewById(R.id.event_type);
 		eventDetail = (TextView)findViewById(R.id.event_detail_txt);
+		eventLink = (EditText)findViewById(R.id.event_link);
 		picNumber = (TextView)findViewById(R.id.t2);
 		eventTitle = (EditText)findViewById(R.id.event_title);
 		eventCost = (EditText)findViewById(R.id.event_cost);
@@ -127,6 +131,7 @@ public class CreateEvent extends Activity implements LocationSource,AMapLocation
 		init();
 		if(getIntent().getExtras().getString("type").equals("update")){
 			createBtn.setText(mResources.getString(R.string.update_event));
+			actionTitle.setText(mResources.getString(R.string.update_event));
 			JSONObject jo = new JSONObject();
 			jo = Tool.loadJsonFromFile(JuhuoConfig.EVENTINFO+getIntent().getExtras().getString("event_id"), this);
 			if(jo!=null){
@@ -134,6 +139,7 @@ public class CreateEvent extends Activity implements LocationSource,AMapLocation
 				setViewsContent(jo);
 			}
 		}else{
+			
 			time_begin = df.format(new Date());
 			time_begin_cal = Calendar.getInstance();
 			Calendar calendar = Calendar.getInstance();
@@ -144,6 +150,7 @@ public class CreateEvent extends Activity implements LocationSource,AMapLocation
 			time_end = df.format(tasktime.getTime());
 			
 		}
+		
 		createBtn.setOnClickListener(new View.OnClickListener() {
 			
 			@Override
@@ -159,19 +166,24 @@ public class CreateEvent extends Activity implements LocationSource,AMapLocation
 				map.put("time_begin", time_begin);
 				map.put("time_end", time_end);
 				map.put("description", description);
-				map.put("cost", eventCost.getText().toString().equals("")?"0":
+				map.put("cost", (eventCost.getText().toString().equals("")
+						||eventCost.getText().toString().equals("免费"))?"0":
 						eventCost.getText().toString());
+				map.put("url", eventLink.getText().toString());
 				map.put("event_type", event_type);
 				map.put("need_approve_apply", String.valueOf(need_approve_apply));
-				map.put("photo_ids", photo_ids);
+				if(!photo_ids.equals("")){
+					map.put("photo_ids", photo_ids);
+				}
 				map.put("privacy", String.valueOf(privacy));
 				map.put("allow_apns", String.valueOf(allow_apns));
 				map.put("lat", String.valueOf(lat));
 				map.put("lng", String.valueOf(lng));
-				map.put("addr", String.valueOf(addr));
-				CreateEventWord task = new CreateEventWord();
+				map.put("addr",eventPlace.getText().toString());
+				CreateEventWord task = new CreateEventWord(getIntent().getExtras().getString("type"));
 				Log.i(TAG, map.toString());
 				task.execute(map);
+				
 			}
 		});
 		
@@ -182,30 +194,42 @@ public class CreateEvent extends Activity implements LocationSource,AMapLocation
 				JSONArray ja = result.getJSONArray("suc_photos");
 				picNumber.setText(ja.length()+"张");
 	            imageLoader.displayImage( ja.getJSONObject(0).getString("url"), image,options);
+	            for(int i=0;i<ja.length();i++){
+	            	arrPath.add(ja.getJSONObject(i).getString("url"));
+	            	arrPathid.add(ja.getJSONObject(i).getInt("id"));
+	            }
 			}
-			eventTitle.setText(title);
-			String tb = result.getString("time_begin").substring(0,19).replace('T', ' ');
-			String te = result.getString("time_end").substring(0,19).replace('T', ' ');
-			eventBeginTime.setText(tb);
-			eventEndTime.setText(te);
-			eventPlace.setText(result.getString("addr").equals("null")?"":result.getString("addr"));
-			double lat = result.getDouble("lat");
-			double lng = result.getDouble("lng");
+			event_id = result.getString("id");
+			eventTitle.setText(result.getString("title"));
+			time_begin = result.getString("time_begin");
+			time_end = result.getString("time_end");
+			time_begin_cal = Tool.getCalendarFromISO(time_begin);
+			time_end_cal = Tool.getCalendarFromISO(time_end);
+			if(!time_begin.equals("null")){
+				String tb = time_begin.substring(0,19).replace('T', ' ');
+				eventBeginTime.setText(tb);
+			}
+			if(!time_end.equals("null")){
+				String te = time_end.substring(0,19).replace('T', ' ');
+				eventEndTime.setText(te);
+			}
+			addr = result.getString("addr");
+			eventPlace.setText(addr.equals("null")?"":result.getString("addr"));
+			eventLink.setText(result.getString("url"));
+			lat = result.getDouble("lat");
+			lng = result.getDouble("lng");
 			LatLng marker1 = new LatLng(lat, lng);                
 	        //设置中心点和缩放比例  
 	        aMap.moveCamera(CameraUpdateFactory.newCameraPosition(new CameraPosition(marker1,8,8,8)));  
 	        aMap.moveCamera(CameraUpdateFactory.zoomTo(13));
 			int et = Integer.parseInt(result.getString("event_type").equals("")?"1":
 				result.getString("event_type"));
-			eventType.setText(eventTypeStr[et]);
+			Log.i(TAG+"eventtype", String.valueOf(et));
+			eventType.setText(items[et]);
 			privacyche.setChecked(result.getInt("privacy")==0?true:false);
 			eventCost.setText(result.getInt("cost")!=0?String.valueOf(result.getInt("cost")):"免费");
-			if(!result.getString("description").equals("")){
-				eventDetail.setText(result.getString("description"));
-				findViewById(R.id.detailgone).setOnClickListener(typeClick);
-			}else{
-				findViewById(R.id.detailgone).setVisibility(View.GONE);
-			}
+			eventDetail.setText(result.getString("description"));
+			photo_ids = result.getString("photo_ids");
 		} catch (JSONException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -217,6 +241,9 @@ public class CreateEvent extends Activity implements LocationSource,AMapLocation
 		public void onClick(View v) {
 			// TODO Auto-generated method stub
 			Intent intent = new Intent(CreateEvent.this,EditImages.class);
+			intent.putExtra("createOrUpdate", getIntent().getExtras().getString("type"));
+			intent.putExtra("arrPathid", arrPathid);
+			intent.putExtra("arrPath", arrPath);
 			startActivityForResult(intent,EditImage);
 		}
 	};
@@ -291,26 +318,43 @@ public class CreateEvent extends Activity implements LocationSource,AMapLocation
 		dialog.show();
 	}
 	private class CreateEventWord extends AsyncTask<HashMap<String,Object>,String,JSONObject>{
-
+		private String createOrUpdate;
+		public CreateEventWord(String ty){
+			createOrUpdate = ty;
+		}
 		@Override
 		protected JSONObject doInBackground(HashMap<String, Object>... map) {
 			// TODO Auto-generated method stub
 			HashMap<String,Object> mapped = map[0];
-			return new JuhuoInfo().callPostPlain(mapped,JuhuoConfig.EVENT_CREATE);
+			if(createOrUpdate.equals("update")){
+				mapped.put("id", event_id);
+				return new JuhuoInfo().callPostPlain(mapped,JuhuoConfig.EVENT_UPDATE);
+			}else{
+				return new JuhuoInfo().callPostPlain(mapped,JuhuoConfig.EVENT_CREATE);
+			}
+			
 		}
 		@Override
 		protected void onPostExecute(JSONObject result) {
 			if(result == null){
 				Log.i(TAG,"cannot get any");//we have reveived 500 error page
-				
+				Tool.myToast(CreateEvent.this, mResources.getString(R.string.error_network));
 			}else if(result.has("wrong_data")){
 				//sth is wrong
 				Tool.dialog(CreateEvent.this);
 			}else{
-				Tool.myToast(CreateEvent.this, mResources.getString(R.string.create_event_success));
-				Intent intent = new Intent(CreateEvent.this,HomeActivity.class);
-				intent.putExtra("create_event", "success");
-				setResult(RESULT_OK, intent);
+				if(createOrUpdate.equals("update")){
+					Tool.myToast(CreateEvent.this, mResources.getString(R.string.update_event_success));
+					Intent intent = new Intent(CreateEvent.this,EventDetailActivity.class);
+					intent.putExtra("update_event", "success");
+					setResult(RESULT_OK, intent);
+					
+				}else{
+					Tool.myToast(CreateEvent.this, mResources.getString(R.string.create_event_success));
+					Intent intent = new Intent(CreateEvent.this,HomeActivity.class);
+					intent.putExtra("create_event", "success");
+					setResult(RESULT_OK, intent);
+				}
 				finish();
 			}	
 		}
@@ -326,7 +370,10 @@ public class CreateEvent extends Activity implements LocationSource,AMapLocation
 			mUiSettings.setZoomControlsEnabled(false);  
 			mUiSettings.setZoomGesturesEnabled(false); 
 			mUiSettings.setScrollGesturesEnabled(false);  
-			setUpMap();
+			if(!getIntent().getExtras().getString("type").equals("update")){
+				setUpMap();
+			}
+			
 			aMap.setOnMapClickListener(new AMap.OnMapClickListener() {
 				
 				@Override
@@ -364,7 +411,7 @@ public class CreateEvent extends Activity implements LocationSource,AMapLocation
 		            break;
 		        case EditImage:
 		        	Bundle photobuddle = data.getExtras();  
-		            photo_ids = "["+photobuddle.getString("photo_ids")+"]";
+		            photo_ids = photobuddle.getString("photo_ids");
 		            picNumber.setText(photobuddle.getInt("photo_num")+"张");
 		            imageLoader.displayImage(photobuddle.getString("imageurl"), image,options);
 		        	break;
