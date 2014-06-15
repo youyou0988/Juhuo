@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 
 import org.json.JSONArray;
@@ -44,6 +45,7 @@ import com.amap.api.maps2d.model.LatLng;
 import com.amap.api.maps2d.model.MyLocationStyle;
 import com.juhuo.control.DateTimePickerDialog;
 import com.juhuo.control.DateTimePickerDialog.OnDateTimeSetListener;
+import com.juhuo.tool.CheckStopAsyncTask;
 import com.juhuo.tool.JuhuoConfig;
 import com.juhuo.tool.JuhuoInfo;
 import com.juhuo.tool.Tool;
@@ -90,6 +92,8 @@ public class CreateEvent extends Activity implements LocationSource,AMapLocation
 	protected ImageLoader imageLoader = ImageLoader.getInstance();
 	private ArrayList<String> arrPath = new ArrayList<String>();
 	private ArrayList<Integer> arrPathid = new ArrayList<Integer>();
+	private List<CheckStopAsyncTask> mAsyncTask = new ArrayList<CheckStopAsyncTask>();
+	
 	protected void onCreate(Bundle savedInstanceState){
 		super.onCreate(savedInstanceState);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);//»•µÙ±ÍÃ‚¿∏
@@ -317,7 +321,7 @@ public class CreateEvent extends Activity implements LocationSource,AMapLocation
 		});
 		dialog.show();
 	}
-	private class CreateEventWord extends AsyncTask<HashMap<String,Object>,String,JSONObject>{
+	private class CreateEventWord extends CheckStopAsyncTask<HashMap<String,Object>,String,JSONObject>{
 		private String createOrUpdate;
 		public CreateEventWord(String ty){
 			createOrUpdate = ty;
@@ -336,6 +340,7 @@ public class CreateEvent extends Activity implements LocationSource,AMapLocation
 		}
 		@Override
 		protected void onPostExecute(JSONObject result) {
+			if(getStop()) return;
 			if(result == null){
 				Log.i(TAG,"cannot get any");//we have reveived 500 error page
 				Tool.myToast(CreateEvent.this, mResources.getString(R.string.error_network));
@@ -549,5 +554,15 @@ public class CreateEvent extends Activity implements LocationSource,AMapLocation
 		}
 		mAMapLocationManager = null;
 	}
+	@Override
+    protected void onStop()
+    {
+        for(int index = 0;index < mAsyncTask.size();index ++)
+        {
+            if(!(mAsyncTask.get(index).getStatus() == AsyncTask.Status.FINISHED) )
+                mAsyncTask.get(index).setStop();
+        }
+        super.onStop();
+    }
 
 }

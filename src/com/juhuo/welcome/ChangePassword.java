@@ -1,17 +1,13 @@
 package com.juhuo.welcome;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
-import org.json.JSONException;
 import org.json.JSONObject;
-
-import com.juhuo.tool.JuhuoConfig;
-import com.juhuo.tool.JuhuoInfo;
-import com.juhuo.tool.Tool;
 
 import android.app.Activity;
 import android.content.res.Resources;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -20,12 +16,19 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.juhuo.tool.CheckStopAsyncTask;
+import com.juhuo.tool.JuhuoConfig;
+import com.juhuo.tool.JuhuoInfo;
+import com.juhuo.tool.Tool;
+
 public class ChangePassword extends Activity {
 	private final String TAG = "ChangePassword";
 	private ImageView actionTitleImg,actionTitleImg2;
 	private TextView actionTitle;
 	private Resources mResources;
 	private EditText password1,password2;
+	private List<CheckStopAsyncTask> mAsyncTask = new ArrayList<CheckStopAsyncTask>();
+	
 	protected void onCreate(Bundle savedInstanceState){
 		super.onCreate(savedInstanceState);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);//»•µÙ±ÍÃ‚¿∏
@@ -66,9 +69,10 @@ public class ChangePassword extends Activity {
 	}
 	public void getNetData(HashMap<String,Object> map){
 		ChangePass changePassword = new ChangePass();
+		mAsyncTask.add(changePassword);
 		changePassword.execute(map);
 	}
-	private class ChangePass extends AsyncTask<HashMap<String,Object>,String,JSONObject>{
+	private class ChangePass extends CheckStopAsyncTask<HashMap<String,Object>,String,JSONObject>{
 
 		@Override
 		protected JSONObject doInBackground(HashMap<String,Object>... map) {
@@ -79,6 +83,9 @@ public class ChangePassword extends Activity {
 		}
 		@Override
 		protected void onPostExecute(JSONObject result) {
+			if (getStop()) {
+                return;
+            }
 			if(result == null){
 				Log.i(TAG,"cannot get any");//we have reveived 500 error page
 				

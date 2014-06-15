@@ -12,11 +12,15 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -24,6 +28,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.BaseAdapter;
@@ -34,9 +39,10 @@ import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.juhuo.tool.CheckStopAsyncTask;
 import com.juhuo.tool.JuhuoConfig;
-import com.juhuo.tool.JuhuoInfo;
 import com.juhuo.tool.JuhuoConfig.Status;
+import com.juhuo.tool.JuhuoInfo;
 import com.juhuo.tool.Tool;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
@@ -82,8 +88,12 @@ public class ApplyDetailOne extends Activity {
 	private String type="HOT";
 	private Status st;
 	private String event_id;
+	private int organizer_status=7;
+	private List<CheckStopAsyncTask> mAsyncTask = new ArrayList<CheckStopAsyncTask>();
+	
 	protected void onCreate(Bundle savedInstanceState){
 		super.onCreate(savedInstanceState);
+		requestWindowFeature(Window.FEATURE_NO_TITLE);//去掉标题栏
 		setContentView(R.layout.apply_detail_one);
 		mResources = getResources();
 		mPgDialog = new ProgressDialog(this);
@@ -104,6 +114,7 @@ public class ApplyDetailOne extends Activity {
 		applyList = (ListView)findViewById(R.id.applylist);
 		st = (Status)getIntent().getExtras().get("TYPE");
 		event_id = getIntent().getExtras().getString("event_id");
+		organizer_status = getIntent().getExtras().getInt("ORGANIZER_STATUS");
 		String res="";
 		switch (st){
 		case PARTICIPANT:
@@ -142,7 +153,7 @@ public class ApplyDetailOne extends Activity {
 		applyList.setAdapter(mAdapter);
 		applyList.setOnItemClickListener(mListListener);
 	}
-	private class EventApproveClass extends AsyncTask<HashMap<String,Object>,String,JSONObject>{
+	private class EventApproveClass extends CheckStopAsyncTask<HashMap<String,Object>,String,JSONObject>{
     	public int pos;
 		public EventApproveClass(int pos){
     		this.pos = pos;
@@ -160,6 +171,9 @@ public class ApplyDetailOne extends Activity {
 		}
 		@Override
 		protected void onPostExecute(JSONObject result) {
+			if (getStop()) {
+                return;
+            }
 			if(result == null){
 				Log.i(TAG,"cannot get any");//we have reveived 500 error page
 			}else if(result.has("wrong_data")){
@@ -208,6 +222,7 @@ public class ApplyDetailOne extends Activity {
 							break;
 						}
 						EventApproveClass task = new EventApproveClass(position);
+						mAsyncTask.add(task);
 						task.execute(params);
 					}
 				};
@@ -271,10 +286,42 @@ public class ApplyDetailOne extends Activity {
 			} else {
 				holder = (ApplyHandler) convertView.getTag();
 			}
-			if(type.equals("HOT")){
+			final int pos = position;
+			if(organizer_status!=5){
 				holder.dailImg.setVisibility(View.INVISIBLE);
+				holder.cell.setVisibility(View.INVISIBLE);
 			}else{
 				holder.dailImg.setVisibility(View.VISIBLE);
+				holder.cell.setVisibility(View.VISIBLE);
+				holder.dailImg.setOnClickListener(new View.OnClickListener() {
+					
+					@Override
+					public void onClick(View arg0) {
+						// TODO Auto-generated method stub
+						Dialog alertDialog = new AlertDialog.Builder(ApplyDetailOne.this). 
+				                setMessage((String)mData.get(pos).get("cell")). 
+				                setPositiveButton("确定", new DialogInterface.OnClickListener() { 
+				                     
+				                    @Override 
+				                    public void onClick(DialogInterface dialog, int which) { 
+				                        // TODO Auto-generated method stub  
+				                    	Intent intent = new Intent();
+				                        intent.setAction(Intent.ACTION_CALL);
+				                        intent.setData(Uri.parse("tel:"+(String)mData.get(pos).get("cell")));
+				                        startActivity(intent);
+				                    } 
+				                }). 
+				                setNegativeButton("取消", new DialogInterface.OnClickListener() { 
+				                     
+				                    @Override 
+				                    public void onClick(DialogInterface dialog, int which) { 
+				                        // TODO Auto-generated method stub  
+				                    } 
+				                }).
+				                create(); 
+				        alertDialog.show(); 
+					}
+				});
 			}
 			holder.name.setText((String)mData.get(position).get("name"));
 			holder.cell.setText((String)mData.get(position).get("cell"));
@@ -285,6 +332,7 @@ public class ApplyDetailOne extends Activity {
 		}
 		
 	}
+
 	private class AnimateFirstDisplayListener extends SimpleImageLoadingListener {
 
 		final List<String> displayedImages = Collections.synchronizedList(new LinkedList<String>());
@@ -302,4 +350,14 @@ public class ApplyDetailOne extends Activity {
 			}
 		}
 	}
+	@Override
+    protected void onStop()
+    {
+        for(int index = 0;index < mAsyncTask.size();index ++)
+        {
+            if(!(mAsyncTask.get(index).getStatus() == AsyncTask.Status.FINISHED) )
+                mAsyncTask.get(index).setStop();
+        }
+        super.onStop();
+    }
 }

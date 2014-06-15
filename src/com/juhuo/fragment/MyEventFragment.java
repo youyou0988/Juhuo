@@ -39,10 +39,9 @@ public class MyEventFragment extends Fragment{
 	private Resources mResources;
 	private ProgressDialog mPgDialog;
 	private String TAG = "MyEventFragment";
-	private ImageView actionTitleImg;
-	private ImageView actionTitleImg2;
+	private ImageView actionTitleImg,actionTitleImg2;
 	private TextView actionTitle,noEventsText;
-	private RelativeLayout parent,filterlistlayout;
+	private RelativeLayout parent,filterlistlayout,actionTitleLay,actionTitleLay2;
 	private XListView hotEventsList;
 	private Button filterAllEvent,filterDefaultEvent;
 	private View transView,transView2;
@@ -126,6 +125,8 @@ public class MyEventFragment extends Fragment{
 		
 		actionTitleImg = (ImageView)parent.findViewById(R.id.action_title_img);
 		actionTitleImg2 = (ImageView)parent.findViewById(R.id.action_title_img2);
+		actionTitleLay = (RelativeLayout)parent.findViewById(R.id.action_title_lay);
+		actionTitleLay2 = (RelativeLayout)parent.findViewById(R.id.action_title_lay2);
 		actionTitle = (TextView)parent.findViewById(R.id.action_title);
 		noEventsText = (TextView)parent.findViewById(R.id.no_events_found);
 		actionTitleImg.setBackgroundDrawable(mResources.getDrawable(R.drawable.icon_navi));
@@ -134,14 +135,14 @@ public class MyEventFragment extends Fragment{
 		actionTitle.setText(mResources.getString(R.string.my_event));
 		
 		//open the sliding menu
-		actionTitleImg.setOnClickListener(new View.OnClickListener() {
+		actionTitleLay.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
 				((SlidingFragmentActivity)getActivity()).toggle();
 			}
 		});
-		actionTitleImg2.setOnClickListener(new View.OnClickListener() {
+		actionTitleLay2.setOnClickListener(new View.OnClickListener() {
 			
 			@Override
 			public void onClick(View arg0) {
@@ -153,9 +154,9 @@ public class MyEventFragment extends Fragment{
 		});
 		filterAllEvent = (Button)parent.findViewById(R.id.filter_all_events);
 		filterDefaultEvent = (Button)parent.findViewById(R.id.filter_default_event);
-		filterAllEvent.setText(mResources.getString(R.string.my_organize));
-		filterDefaultEvent.setText(mResources.getString(R.string.my_participant));
-		filterAllEvent.setTextColor(mResources.getColor(R.color.mgreen));
+		filterAllEvent.setText(mResources.getString(R.string.my_participant));
+		filterDefaultEvent.setText(mResources.getString(R.string.my_organize));
+		filterDefaultEvent.setTextColor(mResources.getColor(R.color.mgreen));
 		filterAllEvent.setOnClickListener(onClickListener);
 		filterDefaultEvent.setOnClickListener(onClickListener);
 
@@ -194,16 +195,16 @@ public class MyEventFragment extends Fragment{
 			mapPara.put("incremental", "true");
 			switch(v.getId()){
 			case R.id.filter_all_events:
-				filterDefaultEvent.setTextColor(mResources.getColor(R.color.mgray));
-				filter = 0;
-				mapPara.put("organizer", String.valueOf(JuhuoConfig.userId));
-				getNetData(mapPara,"organizer");
-				break;
-			case R.id.filter_default_event:
 				filterAllEvent.setTextColor(mResources.getColor(R.color.mgray));
 				filter = 1;
 				mapPara.put("related", String.valueOf(JuhuoConfig.userId));
 				getNetData(mapPara,"related");
+				break;
+			case R.id.filter_default_event:
+				filterDefaultEvent.setTextColor(mResources.getColor(R.color.mgray));
+				filter = 0;
+				mapPara.put("organizer", String.valueOf(JuhuoConfig.userId));
+				getNetData(mapPara,"organizer");
 				break;
 			}
 		}

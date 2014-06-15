@@ -1,6 +1,7 @@
 package com.juhuo.fragment;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -27,6 +28,8 @@ import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+
+import com.juhuo.tool.CheckStopAsyncTask;
 import com.juhuo.tool.JuhuoConfig;
 import com.juhuo.tool.JuhuoInfo;
 import com.juhuo.tool.Tool;
@@ -53,6 +56,7 @@ public class EditEventImage extends Fragment{
     protected ImageLoader imageLoader = ImageLoader.getInstance();
     private String createOrUpdate;
     private ArrayList<Integer> photoarrid = new ArrayList<Integer>();
+    private List<CheckStopAsyncTask> mAsyncTask = new ArrayList<CheckStopAsyncTask>();
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -200,6 +204,7 @@ public class EditEventImage extends Fragment{
 			HashMap<String,Object> map = new HashMap<String,Object>();
 	        map.put("token", JuhuoConfig.token);
 	        map.put("photo", this.originalarrPath.get(i));
+	        mAsyncTask.add(photoup);
 	        photoup.execute(map);
 		}else{
 			//如果此时还没有取消上传照片的操作
@@ -210,7 +215,7 @@ public class EditEventImage extends Fragment{
 			
 		}
 	}
-	private class UploadPhoto extends AsyncTask<HashMap<String,Object>,Integer,JSONObject>{
+	private class UploadPhoto extends CheckStopAsyncTask<HashMap<String,Object>,Integer,JSONObject>{
 		int index;
 		protected UploadPhoto(int i){
 			this.index = i;
@@ -233,6 +238,7 @@ public class EditEventImage extends Fragment{
 		@Override
 		protected void onPostExecute(JSONObject result) {
 //			mPgDialog.dismiss();
+			if(getStop()) return;
 			if(result == null){
 				Log.i(TAG,"cannot get any");//we have reveived 500 error page
 				Tool.myToast(getActivity(), mResources.getString(R.string.error_network));
@@ -323,6 +329,16 @@ public class EditEventImage extends Fragment{
 //        ImageView transview;
         CheckBox che;
         int id;
+    }
+	@Override
+    public void onDestroyView()
+    {
+        for(int index = 0;index < mAsyncTask.size();index ++)
+        {
+            if(!(mAsyncTask.get(index).getStatus() == AsyncTask.Status.FINISHED) )
+                mAsyncTask.get(index).setStop();
+        }
+        super.onDestroyView();
     }
 
 }

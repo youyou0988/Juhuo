@@ -1,6 +1,8 @@
 package com.juhuo.fragment;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import org.json.JSONObject;
 
@@ -18,6 +20,7 @@ import android.widget.RadioButton;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.juhuo.tool.CheckStopAsyncTask;
 import com.juhuo.tool.JuhuoConfig;
 import com.juhuo.tool.JuhuoInfo;
 import com.juhuo.tool.Tool;
@@ -31,6 +34,7 @@ public class SetName extends Fragment {
 	private Resources mResource;
 	private ImageView titleimg,titleimg2;
 	private RadioButton btn,btn2;
+	private List<CheckStopAsyncTask> mAsyncTask = new ArrayList<CheckStopAsyncTask>();
 	public void setContent(String ct,String type){
 		this.content = ct;
 		this.type = type;
@@ -102,6 +106,7 @@ public class SetName extends Fragment {
 					mapPara.put("description", des.getText().toString());
 				}
 				ChangeUserInfo changeUserInfo = new ChangeUserInfo();
+				mAsyncTask.add(changeUserInfo);
 				changeUserInfo.execute(mapPara);
 				
 			}
@@ -109,7 +114,7 @@ public class SetName extends Fragment {
 		
 		return parent;
 	}
-	private class ChangeUserInfo extends AsyncTask<HashMap<String,Object>,String,JSONObject>{
+	private class ChangeUserInfo extends CheckStopAsyncTask<HashMap<String,Object>,String,JSONObject>{
 
 		@Override
 		protected JSONObject doInBackground(HashMap<String, Object>... map) {
@@ -119,6 +124,7 @@ public class SetName extends Fragment {
 		}
 		@Override
 		protected void onPostExecute(JSONObject result) {
+			if(getStop()) return;
 			if(result == null){
 				Log.i(TAG,"cannot get any");//we have reveived 500 error page
 				
@@ -135,5 +141,15 @@ public class SetName extends Fragment {
 		}
 		
 	}
+	@Override
+    public void onDestroyView()
+    {
+        for(int index = 0;index < mAsyncTask.size();index ++)
+        {
+            if(!(mAsyncTask.get(index).getStatus() == AsyncTask.Status.FINISHED) )
+                mAsyncTask.get(index).setStop();
+        }
+        super.onDestroyView();
+    }
 
 }

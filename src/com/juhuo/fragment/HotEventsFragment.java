@@ -1,8 +1,12 @@
 package com.juhuo.fragment;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -33,8 +37,6 @@ import android.widget.TextView;
 import com.jeremyfeinstein.slidingmenu.lib.app.SlidingFragmentActivity;
 import com.juhuo.adapter.FilterEventAdapter;
 import com.juhuo.adapter.HotEventsAdapter;
-import com.juhuo.control.MyListView.OnLoadListener;
-import com.juhuo.control.MyListView.OnRefreshListener;
 import com.juhuo.refreshview.XListView;
 import com.juhuo.tool.JuhuoConfig;
 import com.juhuo.tool.JuhuoInfo;
@@ -46,10 +48,9 @@ public class HotEventsFragment extends Fragment{
 	private Resources mResources;
 	private ProgressDialog mPgDialog;
 	private String TAG = "HotEventsFragment";
-	private ImageView actionTitleImg;
-	private ImageView actionTitleImg2;
+	private ImageView actionTitleImg,actionTitleImg2;
 	private TextView actionTitle,noEventsText;
-	private RelativeLayout parent,filterlistlayout;
+	private RelativeLayout parent,filterlistlayout,actionTitleLay,actionTitleLay2;
 	private XListView hotEventsList;
 	private ListView subFilterView01,subFilterView02;
 	private Button filterAllEvent,filterDefaultEvent;
@@ -61,15 +62,17 @@ public class HotEventsFragment extends Fragment{
 			new ArrayList<AsyncTask<String,String,Object>>();
 	private JSONArray mData;
 	private HashMap<String,Object> mapPara;
-	private String[] eventType={"所有活动","交友聚会","读书看报","音乐电影","体育锻炼","其他"};
-	private String[] eventType2={"默认排序","参加人数从多到少","活动距离从近到远","活动费用从多到少","活动费用从少到多"};
+	private String[] eventType={"所有活动类型","交友聚会","读书看报","音乐电影","体育锻炼","其他"};
+	private String[] eventType2={"活跃活动","所有活动时间"};
+//	private String[] eventType2={"默认排序","参加人数从多到少","活动距离从近到远","活动费用从多到少","活动费用从少到多"};
 	private String[] eventPara = {"","participant_count","distance","cost","cost"};
 	private int[] focus={1,0,0,0,0,0};
-	private int[] focus2={1,0,0,0,0};
+	private int[] focus2={1,0};
 	private List<HashMap<String,String>> cacheList= new ArrayList<HashMap<String,String>>();
     private String handle;
     private final int COUNT=20;
     private int offset=20;
+    private SimpleDateFormat df = new SimpleDateFormat(Tool.ISO8601DATEFORMAT, Locale.getDefault());
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -80,6 +83,7 @@ public class HotEventsFragment extends Fragment{
 		mapPara = new HashMap<String,Object>();
 		mapPara.put("token", JuhuoConfig.token);
 		mapPara.put("incremental", "true");
+		mapPara.put("time_end", df.format(new Date()));
 	}
 
 	@Override
@@ -125,6 +129,8 @@ public class HotEventsFragment extends Fragment{
 		
 		actionTitleImg = (ImageView)parent.findViewById(R.id.action_title_img);
 		actionTitleImg2 = (ImageView)parent.findViewById(R.id.action_title_img2);
+		actionTitleLay = (RelativeLayout)parent.findViewById(R.id.action_title_lay);
+		actionTitleLay2 = (RelativeLayout)parent.findViewById(R.id.action_title_lay2);
 		actionTitle = (TextView)parent.findViewById(R.id.action_title);
 		noEventsText = (TextView)parent.findViewById(R.id.no_events_found);
 		actionTitleImg.setBackgroundDrawable(mResources.getDrawable(R.drawable.icon_navi));
@@ -140,14 +146,14 @@ public class HotEventsFragment extends Fragment{
 		subFilterView01 = (ListView)parent.findViewById(R.id.subfiltertitle);
 		subFilterView01.setOnItemClickListener(listOnClickListener);
 		//open the sliding menu
-		actionTitleImg.setOnClickListener(new View.OnClickListener() {
+		actionTitleLay.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
 				((SlidingFragmentActivity)getActivity()).toggle();
 			}
 		});
-		actionTitleImg2.setOnClickListener(new View.OnClickListener() {
+		actionTitleLay2.setOnClickListener(new View.OnClickListener() {
 			
 			@Override
 			public void onClick(View v) {
@@ -234,6 +240,7 @@ public class HotEventsFragment extends Fragment{
 			mapPara = new HashMap<String,Object>();
 			mapPara.put("token", JuhuoConfig.token);
 			mapPara.put("incremental", "true");
+			mapPara.put("time_end", df.format(new Date()));
 			int po=0;
 			for(po=0;po<6;po++){
 				if(focus[po]==1) break;
@@ -241,21 +248,24 @@ public class HotEventsFragment extends Fragment{
 			filterAllEvent.setText(eventType[po]);
 			if(po!=0) mapPara.put("event_type", String.valueOf(po));
 			int po2=0;
-			for(po2=0;po2<5;po2++){
+			for(po2=0;po2<2;po2++){
 				if(focus2[po2]==1) break;
 			}
 			filterDefaultEvent.setText(eventType2[po2]);
-			if(po2!=0) mapPara.put("sort_param", eventPara[po2]);
+//			if(po2!=0) mapPara.put("sort_param", eventPara[po2]);
+//			if(po2==1){
+//				mapPara.put("sort_order", "DESC");
+//			}else if(po2==2){
+//				mapPara.put("lat", "138.006");
+//				mapPara.put("lng", "214.391");
+//			}else if(po2==3){
+//				mapPara.put("sort_order", "DESC");
+//			}else if(po2==4){
+//				mapPara.put("sort_order", "ASC");
+//			}	
 			if(po2==1){
-				mapPara.put("sort_order", "DESC");
-			}else if(po2==2){
-				mapPara.put("lat", "138.006");
-				mapPara.put("lng", "214.391");
-			}else if(po2==3){
-				mapPara.put("sort_order", "DESC");
-			}else if(po2==4){
-				mapPara.put("sort_order", "ASC");
-			}	
+				mapPara.remove("time_end");
+			}
 			filterEventAdapter.notifyDataSetChanged();
 			
 			getNetData(mapPara);

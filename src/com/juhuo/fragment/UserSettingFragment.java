@@ -4,8 +4,10 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -37,6 +39,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.jeremyfeinstein.slidingmenu.lib.app.SlidingFragmentActivity;
+import com.juhuo.tool.CheckStopAsyncTask;
 import com.juhuo.tool.JuhuoConfig;
 import com.juhuo.tool.JuhuoInfo;
 import com.juhuo.tool.Tool;
@@ -91,7 +94,7 @@ public class UserSettingFragment extends Fragment{
     private static final int PHOTO_REQUEST_CUT = 3;// 结果
     // 创建一个以当前时间为名称的文件
     File tempFile = new File(Environment.getExternalStorageDirectory(),getPhotoFileName());
-
+    private List<CheckStopAsyncTask> mAsyncTask = new ArrayList<CheckStopAsyncTask>();
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -138,6 +141,7 @@ public class UserSettingFragment extends Fragment{
 				LogOut logOut = new LogOut();
 				HashMap<String,Object> map= new HashMap<String,Object>();
 				map.put("token", JuhuoConfig.token);
+				mAsyncTask.add(logOut);
 				logOut.execute(map);
 			}
 		});
@@ -147,6 +151,7 @@ public class UserSettingFragment extends Fragment{
 			HashMap<String,Object> mapPara = new HashMap<String,Object>();
 			mapPara.put("token", JuhuoConfig.token);
 			LoadUserInfo loadUserInfo = new LoadUserInfo();
+			mAsyncTask.add(loadUserInfo);
 			loadUserInfo.execute(mapPara);
 		}else{
 			//initial components contents
@@ -209,7 +214,7 @@ public class UserSettingFragment extends Fragment{
 			
 		}
 	};
-	private class LogOut extends AsyncTask<HashMap<String,Object>,String,JSONObject>{
+	private class LogOut extends CheckStopAsyncTask<HashMap<String,Object>,String,JSONObject>{
 		@Override
 		protected JSONObject doInBackground(HashMap<String,Object>... map) {
 			// TODO Auto-generated method stub
@@ -219,6 +224,7 @@ public class UserSettingFragment extends Fragment{
 		}
 		@Override
 		protected void onPostExecute(JSONObject result) {
+			if(getStop()) return;
 			if(result == null){
 				Log.i(TAG,"cannot get any");//we have reveived 500 error page
 				
@@ -233,7 +239,7 @@ public class UserSettingFragment extends Fragment{
 		}
 	}
 	
-	private class ActiveAccount extends AsyncTask<HashMap<String,Object>,String,JSONObject>{
+	private class ActiveAccount extends CheckStopAsyncTask<HashMap<String,Object>,String,JSONObject>{
 
 		@Override
 		protected JSONObject doInBackground(HashMap<String,Object>... map) {
@@ -244,6 +250,7 @@ public class UserSettingFragment extends Fragment{
 		}
 		@Override
 		protected void onPostExecute(JSONObject result) {
+			if(getStop()) return ;
 			if(result == null){
 				Log.i(TAG,"cannot get any");//we have reveived 500 error page
 				
@@ -256,7 +263,7 @@ public class UserSettingFragment extends Fragment{
 			
 		}
 	}
-    private class UploadPhoto extends AsyncTask<HashMap<String,Object>,String,JSONObject>{
+    private class UploadPhoto extends CheckStopAsyncTask<HashMap<String,Object>,String,JSONObject>{
     	@Override
 		protected JSONObject doInBackground(HashMap<String,Object>... map) {
 			// TODO Auto-generated method stub
@@ -266,6 +273,7 @@ public class UserSettingFragment extends Fragment{
 		}
 		@Override
 		protected void onPostExecute(JSONObject result) {
+			if(getStop()) return ;
 			if(result == null){
 				Log.i(TAG,"cannot get any");//we have reveived 500 error page
 				
@@ -279,6 +287,7 @@ public class UserSettingFragment extends Fragment{
 					map.put("token", JuhuoConfig.token);
 					map.put("photo_ids", "["+String.valueOf(result.getInt("id"))+"]");
 					ChangeUserIcon changeIcon = new ChangeUserIcon();
+					mAsyncTask.add(changeIcon);
 					changeIcon.execute(map);
 					
 				} catch (JSONException e) {
@@ -289,7 +298,7 @@ public class UserSettingFragment extends Fragment{
 			}	
 		}
     }
-    private class ChangeUserIcon extends AsyncTask<HashMap<String,Object>,String,JSONObject>{
+    private class ChangeUserIcon extends CheckStopAsyncTask<HashMap<String,Object>,String,JSONObject>{
     	@Override
 		protected JSONObject doInBackground(HashMap<String,Object>... map) {
 			// TODO Auto-generated method stub
@@ -299,6 +308,7 @@ public class UserSettingFragment extends Fragment{
 		}
 		@Override
 		protected void onPostExecute(JSONObject result) {
+			if(getStop()) return ;
 			if(result == null){
 				Log.i(TAG,"cannot get any");//we have reveived 500 error page
 				
@@ -312,6 +322,7 @@ public class UserSettingFragment extends Fragment{
 					HashMap<String,Object> mapPara = new HashMap<String,Object>();
 					mapPara.put("token", JuhuoConfig.token);
 					LoadUserInfo loadUserInfo = new LoadUserInfo();
+					mAsyncTask.add(loadUserInfo);
 					loadUserInfo.execute(mapPara);
 				} catch (JSONException e) {
 					// TODO Auto-generated catch block
@@ -321,7 +332,7 @@ public class UserSettingFragment extends Fragment{
 			}	
 		}
     }
-    private class LoadUserInfo extends AsyncTask<HashMap<String,Object>,String,JSONObject>{
+    private class LoadUserInfo extends CheckStopAsyncTask<HashMap<String,Object>,String,JSONObject>{
 
 		@Override
 		protected JSONObject doInBackground(HashMap<String,Object>... map) {
@@ -420,6 +431,7 @@ public class UserSettingFragment extends Fragment{
 			ActiveAccount ac = new ActiveAccount();
 			HashMap<String,Object> mapPara = new HashMap<String,Object>();
 			mapPara.put("token", JuhuoConfig.token);
+			mAsyncTask.add(ac);
 			ac.execute(mapPara);
 			break;
 		case R.id.take_pic:
@@ -491,6 +503,7 @@ public class UserSettingFragment extends Fragment{
             HashMap<String,Object> map = new HashMap<String,Object>();
             map.put("token", JuhuoConfig.token);
             map.put("photo", Tool.Bitmap2File(photo));
+            mAsyncTask.add(upload);
             upload.execute(map);
             mPgDialog = new ProgressDialog(getActivity());
             mPgDialog.setMessage(mResources.getString(R.string.uploading_photo));
@@ -505,6 +518,16 @@ public class UserSettingFragment extends Fragment{
         Date date = new Date(System.currentTimeMillis());
         SimpleDateFormat dateFormat = new SimpleDateFormat("'IMG'_yyyyMMdd_HHmmss");
         return dateFormat.format(date) + ".jpg";
+    }
+    @Override
+    public void onDestroyView()
+    {
+        for(int index = 0;index < mAsyncTask.size();index ++)
+        {
+            if(!(mAsyncTask.get(index).getStatus() == AsyncTask.Status.FINISHED) )
+                mAsyncTask.get(index).setStop();
+        }
+        super.onDestroyView();
     }
 	
 }

@@ -1,6 +1,7 @@
 package com.juhuo.welcome;
 
-import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
@@ -10,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
 
@@ -41,9 +43,9 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.Window;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout.LayoutParams;
@@ -63,6 +65,7 @@ import com.juhuo.control.PullDownElasticImp;
 import com.juhuo.control.RefreshableView;
 import com.juhuo.control.RefreshableView.RefreshListener;
 import com.juhuo.control.SlideImageLayout;
+import com.juhuo.tool.CheckStopAsyncTask;
 import com.juhuo.tool.JuhuoConfig;
 import com.juhuo.tool.JuhuoConfig.Status;
 import com.juhuo.tool.JuhuoInfo;
@@ -89,7 +92,7 @@ public class EventDetailActivity extends Activity {
 	private ViewGroup main = null;
 	private ViewPager viewPager = null;
 	private Button applyEventBtn,status1,status2,status3,cancelBtn;
-	private RelativeLayout statusbarLay,applyLay,shareLay;
+	private RelativeLayout statusbarLay,applyLay,shareLay,actionTitleLay,actionTitleLay2;
 	// 当前ViewPager索引
 	private int pageIndex = 0; 
 	// event_id to work as cache index
@@ -138,6 +141,8 @@ public class EventDetailActivity extends Activity {
 	private View transView;
 	private SimpleDateFormat df = new SimpleDateFormat(Tool.ISO8601DATEFORMAT, Locale.getDefault());
 	private final int UPDATE_EVENT = 0;
+	private List<CheckStopAsyncTask> mAsyncTask = new ArrayList<CheckStopAsyncTask>();
+	
 	protected void onCreate(Bundle savedInstanceState){
 		super.onCreate(savedInstanceState);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);//去掉标题栏
@@ -155,6 +160,7 @@ public class EventDetailActivity extends Activity {
 		}
 		mRefreshableView.onRefreshing();
 		LoadEventInfo loadEventInfo = new LoadEventInfo();
+		mAsyncTask.add(loadEventInfo);
 		loadEventInfo.execute(mapPara);
 		mPgDialog = new ProgressDialog(this);
         
@@ -199,35 +205,15 @@ public class EventDetailActivity extends Activity {
 		
 		transView = (View)findViewById(R.id.transview3);
 		actionTitleImg = (ImageView)findViewById(R.id.action_title_img);
+		actionTitleLay = (RelativeLayout)findViewById(R.id.action_title_lay);
+		actionTitleLay2 = (RelativeLayout)findViewById(R.id.action_title_lay2);
 		actionTitleImg2 = (ImageView)findViewById(R.id.action_title_img2);
 		actionTitle = (TextView)findViewById(R.id.action_title);
 		actionTitleImg.setBackgroundDrawable(mResources.getDrawable(R.drawable.icon_back));
 		actionTitleImg2.setBackgroundDrawable(mResources.getDrawable(R.drawable.plus));
 		actionTitleImg2.setVisibility(View.VISIBLE);
 		actionTitle.setText(mResources.getString(R.string.detail_event));
-		OnClickListener clickListener = new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				// TODO Auto-generated method stub
-				ImageView vi = (ImageView)v;
-				switch(vi.getId()){
-				case R.id.action_title_img:
-					finish();
-					break;
-				case R.id.action_title_img2:
-					openOptionsMenu();
-					break;
-				case R.id.wechat:
-					Log.i(TAG, "wechat");
-					wechatShare(0);
-					break;
-				case R.id.timeline:
-					wechatShare(1);
-					break;
-				}
-				
-			}
-		};
+		
 		actionTitleImg.setOnClickListener(clickListener);
 		actionTitleImg2.setOnClickListener(clickListener);
 		
@@ -245,6 +231,8 @@ public class EventDetailActivity extends Activity {
 		applyEventBtn = (Button)findViewById(R.id.apply_event_btn);
 		RelativeLayout eventComment = (RelativeLayout)findViewById(R.id.commentlay);
 		eventComment.setOnClickListener(InviListener);
+		actionTitleLay.setOnClickListener(InviListener);
+		actionTitleLay2.setOnClickListener(InviListener);
 		
 		mapView = (MapView) findViewById(R.id.map);
 		mapView.onCreate(savedInstanceState);// 必须要写
@@ -288,6 +276,95 @@ public class EventDetailActivity extends Activity {
 		mRefreshableView.setRefreshListener(mRefreshListener);    
 		mRefreshableView.setPullDownElastic(new PullDownElasticImp(this)); 
 	}
+	OnClickListener InviListener = new OnClickListener(){
+		@Override
+		public void onClick(View view) {
+			// TODO Auto-generated method stub
+			RelativeLayout v = (RelativeLayout)view;
+			switch (v.getId()){
+			case R.id.participantwid:
+				Intent parintent = new Intent(EventDetailActivity.this,ApplyDetailOne.class);
+				parintent.putExtra("APPLY_DETAIL", applyList.get(JuhuoConfig.INVI_ORGANIZER).toString());
+				parintent.putExtra("APPLY_URLS", map.get(JuhuoConfig.INVI_ORGANIZER));
+				parintent.putExtra("TYPE", Status.PARTICIPANT);
+				parintent.putExtra("ORGANIZER_STATUS", organizer_status);
+				parintent.putExtra("PAGE", type);
+				startActivity(parintent);
+				break;
+			case R.id.invitedwid:
+				Intent invintent = new Intent(EventDetailActivity.this,ApplyDetailOne.class);
+				invintent.putExtra("INVITED_DETAIL", applyList.get(JuhuoConfig.INVI_NULL).toString());
+				invintent.putExtra("INVITED_URLS", map.get(JuhuoConfig.INVI_NULL));
+				invintent.putExtra("TYPE", Status.INVITED);
+				invintent.putExtra("ORGANIZER_STATUS", organizer_status);
+				invintent.putExtra("PAGE", type);
+				startActivity(invintent);
+				break;
+			case R.id.absentwid:
+				Intent absenttent = new Intent(EventDetailActivity.this,ApplyDetailOne.class);
+				absenttent.putExtra("ABSENT_DETAIL", applyList.get(JuhuoConfig.INVI_NO).toString());
+				absenttent.putExtra("ABSENT_URLS", map.get(JuhuoConfig.INVI_NO));
+				absenttent.putExtra("TYPE", Status.NO);
+				absenttent.putExtra("ORGANIZER_STATUS", organizer_status);
+				absenttent.putExtra("PAGE", type);
+				startActivity(absenttent);
+				break;
+			case R.id.commentlay:
+				Intent comintent = new Intent(EventDetailActivity.this,EventComment.class);
+				comintent.putExtra("id", event_id);
+				comintent.putExtra("PAGE", type);
+				comintent.putExtra("organizer_status",organizer_status);
+				startActivity(comintent);
+				break;
+			case R.id.applywid:
+				Intent applytent = new Intent(EventDetailActivity.this,ApplyDetailOne.class);
+				applytent.putExtra("APPLY_DETAIL", applyList.get(JuhuoConfig.INVI_APPLY).toString());
+				applytent.putExtra("APPLY_URLS", map.get(JuhuoConfig.INVI_APPLY));
+				applytent.putExtra("TYPE", Status.APPLY);
+				applytent.putExtra("PAGE", type);
+				applytent.putExtra("event_id", event_id);
+				startActivity(applytent);
+				break;
+			case R.id.action_title_lay:
+				finish();
+				break;
+			case R.id.action_title_lay2:
+				openOptionsMenu();
+				break;
+			}
+		}
+	};
+	OnClickListener clickListener = new View.OnClickListener() {
+		@Override
+		public void onClick(View v) {
+			// TODO Auto-generated method stub
+			ImageView vi = (ImageView)v;
+			switch(vi.getId()){
+			case R.id.action_title_img:
+				finish();
+				break;
+			case R.id.action_title_img2:
+				openOptionsMenu();
+				break;
+			case R.id.wechat:
+				Log.i(TAG, "wechat");
+				shareLay.setVisibility(View.GONE);
+				transView.setVisibility(View.GONE);
+				wechatShare(0);
+				break;
+			case R.id.timeline:
+				shareLay.setVisibility(View.GONE);
+				transView.setVisibility(View.GONE);
+				wechatShare(1);
+				break;
+			case R.id.weibo:
+				shareLay.setVisibility(View.GONE);
+				transView.setVisibility(View.GONE);
+				break;
+			}
+			
+		}
+	};
 	OnClickListener btnClickListener = new View.OnClickListener() {
 		
 		@Override
@@ -302,24 +379,28 @@ public class EventDetailActivity extends Activity {
 				
 				params.put("time", df.format(new Date()));
 				ApplyEventClass task = new ApplyEventClass();
+				mAsyncTask.add(task);
 				task.execute(params);
 				vb.setText(mResources.getString(R.string.apply_eventing));
 				break;
 			case R.id.status1:
 				params.put("status", String.valueOf(1));
 				ConfirmEventClass task2 = new ConfirmEventClass(1);
+				mAsyncTask.add(task2);
 				task2.execute(params);
 				vb.setTextColor(mResources.getColor(R.color.mgreen));
 				break;
 			case R.id.status2:
 				params.put("status", String.valueOf(2));
 				ConfirmEventClass task3 = new ConfirmEventClass(2);
+				mAsyncTask.add(task3);
 				task3.execute(params);
 				vb.setTextColor(mResources.getColor(R.color.mgreen));
 				break;
 			case R.id.status3:
 				params.put("status", String.valueOf(3));
 				ConfirmEventClass task4 = new ConfirmEventClass(3);
+				mAsyncTask.add(task4);
 				task4.execute(params);
 				vb.setTextColor(mResources.getColor(R.color.mgreen));
 				break;
@@ -339,6 +420,7 @@ public class EventDetailActivity extends Activity {
 			Log.i(TAG, "on refresh");
 			mRefreshableView.onRefreshing();
 			LoadEventInfo loadEventInfo = new LoadEventInfo();
+			mAsyncTask.add(loadEventInfo);
 			loadEventInfo.execute(mapPara);
 		}
 		
@@ -436,32 +518,35 @@ public class EventDetailActivity extends Activity {
 			setChoicesTable(JuhuoConfig.INVI_NULL,map);
 			setChoicesTable(JuhuoConfig.INVI_NO,map);
 			setChoicesTable(JuhuoConfig.INVI_APPLY,map);
-			Log.i(TAG+"map", map.toString());
-			if(organizer_status==3||organizer_status==1||organizer_status==2||organizer_status==0){
-				applyLay.setVisibility(View.GONE);
-				applyEventBtn.setVisibility(View.GONE);
-				statusbarLay.setVisibility(View.VISIBLE);
-				status1.setTextColor(mResources.getColor(R.color.mgray));
-				status2.setTextColor(mResources.getColor(R.color.mgray));
-				status3.setTextColor(mResources.getColor(R.color.mgray));
-				if(organizer_status==1) status1.setTextColor(mResources.getColor(R.color.mgreen));
-				if(organizer_status==2) status2.setTextColor(mResources.getColor(R.color.mgreen));
-				if(organizer_status==3) status3.setTextColor(mResources.getColor(R.color.mgreen));
-			}else if(organizer_status==5){
-				applyLay.setVisibility(View.GONE);
-				applyEventBtn.setVisibility(View.GONE);
-				statusbarLay.setVisibility(View.GONE);
-			}else if(organizer_status==7){
-				applyLay.setVisibility(View.GONE);
-				applyEventBtn.setVisibility(View.VISIBLE);
-				statusbarLay.setVisibility(View.GONE);
-			}else if(organizer_status==4){
-				applyLay.setVisibility(View.GONE);
-				applyEventBtn.setVisibility(View.VISIBLE);
-				applyEventBtn.setText(mResources.getString(R.string.apply_eventing));
-				applyEventBtn.setClickable(false);
-				statusbarLay.setVisibility(View.GONE);
+			Log.i(TAG+"map", String.valueOf(organizer_status));
+			if(!type.equals("MYorganizer")&&!type.equals("MYrelated")){
+				if(organizer_status==3||organizer_status==1||organizer_status==2||organizer_status==0){
+					applyLay.setVisibility(View.GONE);
+					applyEventBtn.setVisibility(View.GONE);
+					statusbarLay.setVisibility(View.VISIBLE);
+					status1.setTextColor(mResources.getColor(R.color.mgray));
+					status2.setTextColor(mResources.getColor(R.color.mgray));
+					status3.setTextColor(mResources.getColor(R.color.mgray));
+					if(organizer_status==1) status1.setTextColor(mResources.getColor(R.color.mgreen));
+					if(organizer_status==2) status2.setTextColor(mResources.getColor(R.color.mgreen));
+					if(organizer_status==3) status3.setTextColor(mResources.getColor(R.color.mgreen));
+				}else if(organizer_status==5){
+					applyLay.setVisibility(View.GONE);
+					applyEventBtn.setVisibility(View.GONE);
+					statusbarLay.setVisibility(View.GONE);
+				}else if(organizer_status==7){
+					applyLay.setVisibility(View.GONE);
+					applyEventBtn.setVisibility(View.VISIBLE);
+					statusbarLay.setVisibility(View.INVISIBLE);
+				}else if(organizer_status==4){
+					applyLay.setVisibility(View.GONE);
+					applyEventBtn.setVisibility(View.VISIBLE);
+					applyEventBtn.setText(mResources.getString(R.string.apply_eventing));
+					applyEventBtn.setClickable(false);
+					statusbarLay.setVisibility(View.INVISIBLE);
+				}
 			}
+			
 		} catch (JSONException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -542,55 +627,7 @@ public class EventDetailActivity extends Activity {
         Uri uri = cr.insert(CalendarContract.Events.CONTENT_URI, values);
 	}
 	
-	OnClickListener InviListener = new OnClickListener(){
-		@Override
-		public void onClick(View view) {
-			// TODO Auto-generated method stub
-			RelativeLayout v = (RelativeLayout)view;
-			switch (v.getId()){
-			case R.id.participantwid:
-				Intent parintent = new Intent(EventDetailActivity.this,ApplyDetailOne.class);
-				parintent.putExtra("APPLY_DETAIL", applyList.get(JuhuoConfig.INVI_ORGANIZER).toString());
-				parintent.putExtra("APPLY_URLS", map.get(JuhuoConfig.INVI_ORGANIZER));
-				parintent.putExtra("TYPE", Status.PARTICIPANT);
-				parintent.putExtra("PAGE", type);
-				startActivity(parintent);
-				break;
-			case R.id.invitedwid:
-				Intent invintent = new Intent(EventDetailActivity.this,ApplyDetailOne.class);
-				invintent.putExtra("INVITED_DETAIL", applyList.get(JuhuoConfig.INVI_NULL).toString());
-				invintent.putExtra("INVITED_URLS", map.get(JuhuoConfig.INVI_NULL));
-				invintent.putExtra("TYPE", Status.INVITED);
-				invintent.putExtra("PAGE", type);
-				startActivity(invintent);
-				break;
-			case R.id.absentwid:
-				Intent absenttent = new Intent(EventDetailActivity.this,ApplyDetailOne.class);
-				absenttent.putExtra("ABSENT_DETAIL", applyList.get(JuhuoConfig.INVI_NO).toString());
-				absenttent.putExtra("ABSENT_URLS", map.get(JuhuoConfig.INVI_NO));
-				absenttent.putExtra("TYPE", Status.NO);
-				absenttent.putExtra("PAGE", type);
-				startActivity(absenttent);
-				break;
-			case R.id.commentlay:
-				Intent comintent = new Intent(EventDetailActivity.this,EventComment.class);
-				comintent.putExtra("id", event_id);
-				comintent.putExtra("PAGE", type);
-				comintent.putExtra("organizer_status",organizer_status);
-				startActivity(comintent);
-				break;
-			case R.id.applywid:
-				Intent applytent = new Intent(EventDetailActivity.this,ApplyDetailOne.class);
-				applytent.putExtra("APPLY_DETAIL", applyList.get(JuhuoConfig.INVI_APPLY).toString());
-				applytent.putExtra("APPLY_URLS", map.get(JuhuoConfig.INVI_APPLY));
-				applytent.putExtra("TYPE", Status.APPLY);
-				applytent.putExtra("PAGE", type);
-				applytent.putExtra("event_id", event_id);
-				startActivity(applytent);
-				break;
-			}
-		}
-	};
+	
 	
 	
 	private void wechatShare(int flag){
@@ -602,9 +639,8 @@ public class EventDetailActivity extends Activity {
 		msg.description = "活动邀请:"+title;
 		//这里替换一张自己工程里的图片资源
 		
-		if(!sharepicurl.equals("")&&thumb!=null){
-			Log.i(TAG, String.valueOf(thumb.getByteCount()));
-//			msg.setThumbImage(thumb);
+		if(!sharepicurl.equals("")&&thumb!=null&&thumb.getByteCount()<32000){
+			msg.setThumbImage(thumb);
 		}
 		
 		SendMessageToWX.Req req = new SendMessageToWX.Req();
@@ -616,30 +652,64 @@ public class EventDetailActivity extends Activity {
 	}
 	public Bitmap getBitmapFromURL(String src) {
 	    try {
-	        URL url = new URL(src);
-	        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-	        connection.setDoInput(true);
-	        connection.connect();
-	        InputStream input = connection.getInputStream();
+	        InputStream sourceStream;
+	        File cachedImage = ImageLoader.getInstance().getDiscCache().get(src);
+	        if (cachedImage.exists()) { // if image was cached by UIL
+	            sourceStream = new FileInputStream(cachedImage);
+	        } else { // otherwise - download image
+	        	URL url = new URL(src);
+		        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+		        connection.setDoInput(true);
+		        connection.connect();
+		        sourceStream = connection.getInputStream();
+	        }
 	        final BitmapFactory.Options options = new BitmapFactory.Options();
-
-            BufferedInputStream bis = new BufferedInputStream(input, 4*1024);
-//            ByteArrayBuffer baf = new ByteArrayBuffer(50);
-//            int current = 0;
-//            while ((current = bis.read()) != -1) {
-//                baf.append((byte)current);
-//            }
-//            byte[] imageData = baf.toByteArray();
-//            options.inJustDecodeBounds = true;
-//            BitmapFactory.decodeStream(input, new Rect(), options);
-            options.inSampleSize = 4;
-            options.inJustDecodeBounds = false;
-            Bitmap bitmap = BitmapFactory.decodeStream(input, new Rect(), options);
-            return bitmap;
+	        options.inJustDecodeBounds = true;
+	        BitmapFactory.decodeStream(sourceStream,new Rect(),options);
+	        sourceStream.close();
+	        options.inSampleSize = calculateInSampleSize(options, 35, 35);
+	        
+	        // Decode bitmap with inSampleSize set
+	        options.inJustDecodeBounds = false;
+//	        if(cachedImage.exists()){
+//	        	Log.i(TAG, cachedImage.getAbsolutePath());
+//	        	Bitmap compressedImage = BitmapFactory.decodeStream(new FileInputStream(ImageLoader.getInstance().getDiscCache().get(src)),null,options);
+//		        Log.i(TAG,String.valueOf(compressedImage==null));
+//		        return compressedImage;
+//	        }else{
+	        	URL url = new URL(src);
+		        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+		        connection.setDoInput(true);
+		        connection.connect();
+		        Bitmap compressedImage = BitmapFactory.decodeStream(connection.getInputStream(),null,options);
+		        Log.i(TAG,String.valueOf(compressedImage==null));
+		        return compressedImage;
+//	        }
 	    } catch (IOException e) {
 	        e.printStackTrace();
 	        return null;
 	    }
+	}
+	/**
+	 * Calcuate how much to compress the image
+	 * @param options
+	 * @param reqWidth
+	 * @param reqHeight
+	 * @return
+	 */
+	public int calculateInSampleSize(BitmapFactory.Options options,int reqWidth, int reqHeight) {
+
+	    final int height = options.outHeight;
+	    final int width = options.outWidth;
+	    int inSampleSize = 1; // default to not zoom image
+
+	    if (height > reqHeight || width > reqWidth) {
+	             final int heightRatio = Math.round((float) height/ (float) reqHeight);
+	             final int widthRatio = Math.round((float) width / (float) reqWidth);
+	             inSampleSize = heightRatio < widthRatio ? heightRatio : widthRatio;
+	    }
+	    Log.i(TAG+"samplesize=", String.valueOf(inSampleSize));
+	    return inSampleSize;
 	}
     
 	
@@ -839,6 +909,7 @@ public class EventDetailActivity extends Activity {
 			map.put("token", JuhuoConfig.token);
 			map.put("id", event_id);
 			SendRemind task = new SendRemind();
+			mAsyncTask.add(task);
 			task.execute(map);
 		}
 		return super.onOptionsItemSelected(item);
@@ -853,13 +924,24 @@ public class EventDetailActivity extends Activity {
 //		        	Log.i(TAG, "should update");
 		        	mRefreshableView.onRefreshing();
 		    		LoadEventInfo loadEventInfo = new LoadEventInfo();
+		    		mAsyncTask.add(loadEventInfo);
 		    		loadEventInfo.execute(mapPara);
 		            break;  
 		        
 	        }  
 		}	
     }
-	private class SendRemind extends AsyncTask<HashMap<String,Object>,String,JSONObject>{
+	@Override
+    protected void onStop()
+    {
+        for(int index = 0;index < mAsyncTask.size();index ++)
+        {
+            if(!(mAsyncTask.get(index).getStatus() == AsyncTask.Status.FINISHED) )
+                mAsyncTask.get(index).setStop();
+        }
+        super.onStop();
+    }
+	private class SendRemind extends CheckStopAsyncTask<HashMap<String,Object>,String,JSONObject>{
 		@Override
 	    protected void onPreExecute() {
 	        super.onPreExecute();
@@ -874,6 +956,9 @@ public class EventDetailActivity extends Activity {
 		}
 		@Override
 		protected void onPostExecute(JSONObject result) {
+			if (getStop()) {
+                return;
+            }
 			mPgDialog.dismiss();
 			if(result == null){
 				Log.i(TAG,"cannot get any");//we have reveived 500 error page
@@ -888,7 +973,7 @@ public class EventDetailActivity extends Activity {
 			
 		}
 	}
-	private class ConfirmEventClass extends AsyncTask<HashMap<String,Object>,String,JSONObject>{
+	private class ConfirmEventClass extends CheckStopAsyncTask<HashMap<String,Object>,String,JSONObject>{
 		public int status;
 		public ConfirmEventClass(int st){
 			this.status = st;
@@ -907,6 +992,9 @@ public class EventDetailActivity extends Activity {
 		}
 		@Override
 		protected void onPostExecute(JSONObject result){
+			if (getStop()) {
+                return;
+            }
 			mPgDialog.dismiss();
 			if(result == null){
 				Log.i(TAG,"cannot get any");//we have reveived 500 error page
@@ -925,7 +1013,7 @@ public class EventDetailActivity extends Activity {
 			}
 		}
 	}
-	private class ApplyEventClass extends AsyncTask<HashMap<String,Object>,String,JSONObject>{
+	private class ApplyEventClass extends CheckStopAsyncTask<HashMap<String,Object>,String,JSONObject>{
 		@Override
 	    protected void onPreExecute() {
 	        super.onPreExecute();
@@ -940,6 +1028,9 @@ public class EventDetailActivity extends Activity {
 		}
 		@Override
 		protected void onPostExecute(JSONObject result){
+			if (getStop()) {
+                return;
+            }
 			mPgDialog.dismiss();
 			if(result == null){
 				Log.i(TAG,"cannot get any");//we have reveived 500 error page
@@ -952,7 +1043,7 @@ public class EventDetailActivity extends Activity {
 			}
 		}
 	}
-	private class GetBitMapClass extends AsyncTask<String,String,Bitmap>{
+	private class GetBitMapClass extends CheckStopAsyncTask<String,String,Bitmap>{
 
 		@Override
 		protected Bitmap doInBackground(String... map) {
@@ -961,11 +1052,14 @@ public class EventDetailActivity extends Activity {
 		}
 		@Override
 		protected void onPostExecute(Bitmap result) {
+			if (getStop()) {
+                return;
+            }
 			thumb = result;
 		}
 		
 	}
-	private class LoadEventInfo extends AsyncTask<HashMap<String,Object>,String,JSONObject>{
+	private class LoadEventInfo extends CheckStopAsyncTask<HashMap<String,Object>,String,JSONObject>{
 
 		@Override
 		protected JSONObject doInBackground(HashMap<String, Object>... map) {
@@ -975,6 +1069,9 @@ public class EventDetailActivity extends Activity {
 		}
 		@Override
 		protected void onPostExecute(JSONObject result) {
+			if (getStop()) {
+                return;
+            }
 			if(result == null){
 				Log.i(TAG,"cannot get any");//we have reveived 500 error page
 				Tool.myToast(EventDetailActivity.this, mResources.getString(R.string.error_network));
@@ -987,7 +1084,10 @@ public class EventDetailActivity extends Activity {
 			}
 			mRefreshableView.finishRefresh("最近更新:" + new Date().toLocaleString()); 
 			GetBitMapClass task = new GetBitMapClass();
-			if(!sharepicurl.equals("")) task.execute(sharepicurl);
+			if(!sharepicurl.equals("")) {
+				mAsyncTask.add(task);
+				task.execute(sharepicurl);
+			}
 		}
 		
 	}

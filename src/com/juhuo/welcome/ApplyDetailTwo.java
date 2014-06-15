@@ -2,6 +2,7 @@ package com.juhuo.welcome;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -18,6 +19,7 @@ import android.view.Window;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.juhuo.tool.CheckStopAsyncTask;
 import com.juhuo.tool.JuhuoConfig;
 import com.juhuo.tool.JuhuoInfo;
 import com.juhuo.tool.Tool;
@@ -50,6 +52,8 @@ public class ApplyDetailTwo extends Activity {
 	.displayer(new SimpleBitmapDisplayer())
 	.build();
 	protected ImageLoader imageLoader = ImageLoader.getInstance();
+	private List<CheckStopAsyncTask> mAsyncTask = new ArrayList<CheckStopAsyncTask>();
+	
 	protected void onCreate(Bundle savedInstanceState){
 		super.onCreate(savedInstanceState);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);//去掉标题栏
@@ -74,7 +78,7 @@ public class ApplyDetailTwo extends Activity {
 			public void onClick(View arg0) {
 				// TODO Auto-generated method stub
 				TextView tv = (TextView)arg0;
-				if(tv.getText().equals("关注")){
+				if(tv.getText().equals("关注")){//加关注
 					JSONObject json = new JSONObject();
 					try {
 						json.put("token", JuhuoConfig.token);
@@ -89,8 +93,9 @@ public class ApplyDetailTwo extends Activity {
 						e.printStackTrace();
 					}
 					CreateFollowClass task = new CreateFollowClass();
+					mAsyncTask.add(task);
 					task.execute(json);
-				}else{
+				}else{//取消关注
 					
 				}
 				
@@ -117,7 +122,7 @@ public class ApplyDetailTwo extends Activity {
 		image.getLayoutParams().width = JuhuoConfig.WIDTH*150/320;
 		imageLoader.displayImage(getIntent().getExtras().getString("url"),image, options);
 	}
-	private class CreateFollowClass extends AsyncTask<JSONObject,String,JSONObject>{
+	private class CreateFollowClass extends CheckStopAsyncTask<JSONObject,String,JSONObject>{
 		@Override
 	    protected void onPreExecute() {
 	        super.onPreExecute();
@@ -132,6 +137,9 @@ public class ApplyDetailTwo extends Activity {
 		}
 		@Override
 		protected void onPostExecute(JSONObject result){
+			if (getStop()) {
+                return;
+            }
 			mPgDialog.dismiss();
 			if(result == null){
 				Log.i(TAG,"cannot get any");//we have reveived 500 error page
@@ -151,5 +159,15 @@ public class ApplyDetailTwo extends Activity {
 			}
 		}
 	}
+	@Override
+    protected void onStop()
+    {
+        for(int index = 0;index < mAsyncTask.size();index ++)
+        {
+            if(!(mAsyncTask.get(index).getStatus() == AsyncTask.Status.FINISHED) )
+                mAsyncTask.get(index).setStop();
+        }
+        super.onStop();
+    }
 
 }

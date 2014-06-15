@@ -16,7 +16,7 @@
     <RelativeLayout android:layout_height="35dp"
         android:layout_width="fill_parent"
         android:padding="5dp"
-        android:background="@color/mgray"
+        android:background="@color/searchgray"
         android:layout_below="@+id/titlebar"
         android:id="@+id/lay1">
         <RelativeLayout android:layout_height="wrap_content"
@@ -30,7 +30,7 @@
                 android:background="@drawable/ic_menu_search"
                 android:id="@+id/searchimg"/>
             <EditText android:layout_height="wrap_content"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_toRightOf="@+id/searchimg"
                 android:background="@null"
                 android:hint="@string/please_enter_keyword"

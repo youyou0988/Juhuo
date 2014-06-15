@@ -80,6 +80,7 @@ public class MainActivity extends Activity {
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
 				JuhuoConfig.token = JuhuoConfig.PUBLIC_TOKEN;
+				JuhuoConfig.userId = 0;
 				Intent mainToLogin = new Intent(MainActivity.this,HomeActivity.class);
 				startActivity(mainToLogin);
 				finish();

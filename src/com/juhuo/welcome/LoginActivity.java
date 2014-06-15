@@ -32,7 +32,7 @@ public class LoginActivity extends Activity {
 	private TextView registerFree;
 	private Resources mResources;
 	private ProgressDialog mPgDialog;
-	private RelativeLayout titleBar,loginInput;
+	private RelativeLayout titleBar,loginInput,actionTitleLay;
 	private String TAG = "LoginActivity";
 	private String PRECELL = "+86";
 	
@@ -53,6 +53,7 @@ public class LoginActivity extends Activity {
 		loginInput.setLayoutParams(layoutParams);
 		
 		action_title_img = (ImageView)findViewById(R.id.action_title_img);
+		actionTitleLay = (RelativeLayout)findViewById(R.id.action_title_lay);
 		mUserName = (EditText)findViewById(R.id.user_name);
 		mPassword = (EditText)findViewById(R.id.user_password);
 		loginBtn = (Button)findViewById(R.id.login_btn);
@@ -86,7 +87,7 @@ public class LoginActivity extends Activity {
 				
 			}
 		});
-		action_title_img.setOnClickListener(new View.OnClickListener() {
+		actionTitleLay.setOnClickListener(new View.OnClickListener() {
 			
 			@Override
 			public void onClick(View arg0) {
@@ -142,7 +143,7 @@ public class LoginActivity extends Activity {
 		protected void onPostExecute(JSONObject result) {
 			if(result == null){
 				Log.i(TAG,"i am not in");
-				Tool.myToast(LoginActivity.this,mResources.getString(R.string.login_failed_username_password));
+				Tool.myToast(LoginActivity.this,mResources.getString(R.string.error_network));
 			}else if(result.has("no_data")){
 				Tool.myToast(LoginActivity.this,mResources.getString(R.string.current_net_invalide));
 			}else{

@@ -7,6 +7,7 @@ import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.Display;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.Window;
 import android.widget.ImageView;
@@ -134,22 +135,43 @@ public class HomeActivity extends SlidingFragmentActivity {
 		}, 50);
 	}
 	@Override
-	public void onBackPressed() { 
-	    //实现Home键效果 
-	    //super.onBackPressed();这句话一定要注掉,不然又去调用默认的back处理方式了 
-//	    Intent i= new Intent(Intent.ACTION_MAIN); 
-//	    i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK); 
-//	    i.addCategory(Intent.CATEGORY_HOME); 
-//	    startActivity(i);  
-		Log.i(TAG, String.valueOf(backTimes));
-		if(backTimes==0){
-			toggle();
-			backTimes++;
-			Tool.myToast(HomeActivity.this, mResources.getString(R.string.backhint));
-		}else{
-			finish();
-		}
-		
+	public boolean onKeyUp(int keyCode, KeyEvent event)
+	{
+		Log.i(TAG, "i am here");
+	    if(keyCode == KeyEvent.KEYCODE_BACK)
+	    {
+	        SlidingMenu sm = getSlidingMenu();
+	        Log.i(TAG, String.valueOf(sm.isMenuShowing()));
+	        if(backTimes!=0)
+	        {
+	            finish();
+	            return true;
+	        }else{
+	        	toggle();
+	        	backTimes++;
+	        	Tool.myToast(HomeActivity.this, mResources.getString(R.string.backhint));
+	        }
+	    }
+	    return super.onKeyUp(keyCode, event);
 	}
+//	@Override
+//	public void onBackPressed() { 
+//	    //实现Home键效果 
+//	    //super.onBackPressed();这句话一定要注掉,不然又去调用默认的back处理方式了 
+////	    Intent i= new Intent(Intent.ACTION_MAIN); 
+////	    i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK); 
+////	    i.addCategory(Intent.CATEGORY_HOME); 
+////	    startActivity(i);  
+//		Log.i(TAG, String.valueOf(backTimes));
+//		if(backTimes==0){
+//			toggle();
+//			backTimes++;
+//			Tool.myToast(HomeActivity.this, mResources.getString(R.string.backhint));
+//		}else{
+//			finish();
+//		}
+//		
+//	}
+
 	
 }

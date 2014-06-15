@@ -24,7 +24,7 @@ public class JuhuoConfig {
 	
 	public static String PUBLIC_TOKEN="00000000000000000000";
 	public static String token = "";
-	public static Integer userId;
+	public static Integer userId=0;
 	public static String userName="";
 	
 	public static String PRODUCTIONPREFIX = "http://115.28.211.238/v0/";

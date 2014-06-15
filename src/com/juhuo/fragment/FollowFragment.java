@@ -29,6 +29,7 @@ import com.jeremyfeinstein.slidingmenu.lib.app.SlidingFragmentActivity;
 import com.juhuo.adapter.HotEventsAdapter;
 import com.juhuo.adapter.HotEventsAdapter.AnimateFirstDisplayListener;
 import com.juhuo.refreshview.XListView;
+import com.juhuo.tool.CheckStopAsyncTask;
 import com.juhuo.tool.JuhuoConfig;
 import com.juhuo.tool.JuhuoInfo;
 import com.juhuo.tool.Tool;
@@ -50,8 +51,6 @@ public class FollowFragment extends Fragment{
 	private View transView,transView2;
 	private FollowPersonAdapter followAdapter;
 	private HotEventsAdapter hotEventsAdapter;
-	private List<AsyncTask<String,String,Object>> mAsyncTask = 
-			new ArrayList<AsyncTask<String,String,Object>>();
 	private JSONArray mData;
 	private HashMap<String,Object> mapPara;
 	private int currentListType = 0;//0 关注我的人 1 我关注的人 2 我关注的活动列表
@@ -73,7 +72,7 @@ public class FollowFragment extends Fragment{
 	protected ImageLoader imageLoader = ImageLoader.getInstance();
 	private ImageLoadingListener animateFirstListener = new AnimateFirstDisplayListener();
 	private List<HashMap<String,String>> followData = new ArrayList<HashMap<String,String>>(); 
-	
+	private List<CheckStopAsyncTask> mAsyncTask = new ArrayList<CheckStopAsyncTask>();
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -128,6 +127,7 @@ public class FollowFragment extends Fragment{
 		HashMap<String,Object> mapPara = new HashMap<String,Object>();
 		mapPara.put("token", JuhuoConfig.token);
 		LoadContactList task = new LoadContactList("person");
+		mAsyncTask.add(task);
 		task.execute(mapPara);		
 		return parent;
 	}
@@ -205,6 +205,7 @@ public class FollowFragment extends Fragment{
 				currentListType = 0;
 				followEventsList.setVisibility(View.GONE);
 				followpersonList.setVisibility(View.VISIBLE);
+				noEventsText.setText("");
 				break;
 			case R.id.my_follow_btn:
 				LoadContactList task1 = new LoadContactList("person");
@@ -212,6 +213,7 @@ public class FollowFragment extends Fragment{
 				currentListType = 1;
 				followEventsList.setVisibility(View.GONE);
 				followpersonList.setVisibility(View.VISIBLE);
+				noEventsText.setText("");
 				break;
 			case R.id.follow_event_btn:
 				mapPara.put("incremental",String.valueOf(true));
@@ -226,7 +228,7 @@ public class FollowFragment extends Fragment{
 		}
 	};
 	
-	private class LoadContactList extends AsyncTask<HashMap<String,Object>,String,JSONObject>{
+	private class LoadContactList extends CheckStopAsyncTask<HashMap<String,Object>,String,JSONObject>{
 		private String personOrEvent;
 		public LoadContactList(String type){
 			this.personOrEvent = type;
@@ -252,6 +254,7 @@ public class FollowFragment extends Fragment{
 		}
 		@Override
 		protected void onPostExecute(JSONObject result) {
+			if(getStop()) return;
 			mPgDialog.dismiss();
 			if(result == null){
 				Log.i(TAG,"cannot get any");//we have reveived 500 error page
@@ -380,6 +383,16 @@ public class FollowFragment extends Fragment{
 		ImageView icon;
 		TextView name;
 	}
+	@Override
+    public void onDestroyView()
+    {
+        for(int index = 0;index < mAsyncTask.size();index ++)
+        {
+            if(!(mAsyncTask.get(index).getStatus() == AsyncTask.Status.FINISHED) )
+                mAsyncTask.get(index).setStop();
+        }
+        super.onDestroyView();
+    }
 
 }
 

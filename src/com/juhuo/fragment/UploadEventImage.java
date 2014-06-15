@@ -59,6 +59,7 @@ public class UploadEventImage extends Fragment{
     private DisplayImageOptions options;
     protected ImageLoader imageLoader = ImageLoader.getInstance();
     
+    
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);

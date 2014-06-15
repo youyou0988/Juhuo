@@ -5,12 +5,18 @@
      android:id="@+id/titlebar"
      android:padding="@dimen/titlebar_padding"
      >
-     <ImageView android:layout_width="wrap_content"
-         android:layout_height="wrap_content"
-         android:background="@drawable/icon_back"
+     <RelativeLayout android:layout_height="match_parent"
+         android:layout_width="40dp"
          android:layout_alignParentLeft="true"
-         android:layout_centerVertical="true"
-         android:id="@+id/action_title_img"/>
+         android:id="@+id/action_title_lay"
+         >
+         <ImageView android:layout_width="wrap_content"
+	         android:layout_height="wrap_content"
+	         android:background="@drawable/icon_back"
+	         android:layout_centerVertical="true"
+	         android:id="@+id/action_title_img"/>
+     </RelativeLayout>
+     
      <TextView android:id="@+id/action_title"
          android:layout_width="wrap_content"
          android:layout_height="wrap_content"
@@ -20,12 +26,19 @@
          android:textStyle="bold"
          android:layout_centerInParent="true"
          android:textSize="22sp"/>
-     <ImageView android:layout_width="wrap_content"
-         android:layout_height="wrap_content"
-         android:background="@drawable/icon_dismiss"
-         android:layout_centerVertical="true"
-         android:id="@+id/action_title_img2"
+     <RelativeLayout android:layout_height="match_parent"
+         android:layout_width="40dp"
          android:layout_alignParentRight="true"
-         android:visibility="invisible"
-         />
+         android:id="@+id/action_title_lay2"
+         >
+         <ImageView android:layout_width="wrap_content"
+	         android:layout_height="wrap_content"
+	         android:background="@drawable/icon_dismiss"
+	         android:layout_centerVertical="true"
+	         android:id="@+id/action_title_img2"
+	         android:layout_alignParentRight="true"
+	         android:visibility="invisible"
+	         />
+     </RelativeLayout>
+     
 </RelativeLayout>

@@ -1,6 +1,8 @@
 package com.juhuo.welcome;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -27,6 +29,7 @@ import android.widget.TextView;
 
 import com.juhuo.adapter.HotEventsAdapter;
 import com.juhuo.control.MyListView;
+import com.juhuo.tool.CheckStopAsyncTask;
 import com.juhuo.tool.JuhuoConfig;
 import com.juhuo.tool.JuhuoInfo;
 import com.juhuo.tool.Tool;
@@ -43,6 +46,8 @@ public class SearchEvent extends Activity {
 	private HotEventsAdapter hotEventsAdapter;
 	private JSONArray mData;
 	private String handle;
+	private List<CheckStopAsyncTask> mAsyncTask = new ArrayList<CheckStopAsyncTask>();
+	
 	protected void onCreate(Bundle savedInstanceState){
 		super.onCreate(savedInstanceState);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);//»•µÙ±ÍÃ‚¿∏
@@ -106,9 +111,10 @@ public class SearchEvent extends Activity {
 		noEventsText.setText("");
 		listview.onRefreshing();
 		LoadEventList loadEventList = new LoadEventList();
+		mAsyncTask.add(loadEventList);
 		loadEventList.execute(map);
 	}
-	private class LoadEventList extends AsyncTask<HashMap<String,Object>,String,JSONObject>{
+	private class LoadEventList extends CheckStopAsyncTask<HashMap<String,Object>,String,JSONObject>{
 
 		@Override
 		protected JSONObject doInBackground(HashMap<String,Object>... map) {
@@ -119,6 +125,7 @@ public class SearchEvent extends Activity {
 		}
 		@Override
 		protected void onPostExecute(JSONObject result) {
+			if(getStop()) return;
 			if(result == null){
 				Log.i(TAG,"cannot get any");//we have reveived 500 error page
 				listview.onRefreshComplete();

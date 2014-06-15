@@ -4,6 +4,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 
 import org.json.JSONArray;
@@ -28,6 +29,7 @@ import android.widget.TextView;
 
 import com.juhuo.control.MyListView;
 import com.juhuo.control.MyListView.OnRefreshListener;
+import com.juhuo.tool.CheckStopAsyncTask;
 import com.juhuo.tool.JuhuoConfig;
 import com.juhuo.tool.JuhuoInfo;
 import com.juhuo.tool.Tool;
@@ -54,6 +56,8 @@ public class EventComment extends Activity{
 	private ImageView send;
 	private TextView noCommentText;
 	private SimpleDateFormat df = new SimpleDateFormat(Tool.ISO8601DATEFORMAT, Locale.getDefault());
+	private List<CheckStopAsyncTask> mAsyncTask = new ArrayList<CheckStopAsyncTask>();
+	
 	protected void onCreate(Bundle savedInstanceState){
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.comment);
@@ -122,6 +126,7 @@ public class EventComment extends Activity{
 				// TODO Auto-generated method stub
 				Log.i("pull", "refresh");
 				LoadEventComment loadEventComment = new LoadEventComment();
+				mAsyncTask.add(loadEventComment);
 				loadEventComment.execute(mapPara);
 			}
 		});
@@ -140,6 +145,7 @@ public class EventComment extends Activity{
 				mAdapter.notifyDataSetChanged();
 				noCommentText.setText("");
 				SendCommentClass task = new SendCommentClass();
+				mAsyncTask.add(task);
 				task.execute(mapPara);
 			}
 		});
@@ -192,7 +198,7 @@ public class EventComment extends Activity{
 		
 	}
 
-	private class SendCommentClass extends AsyncTask<HashMap<String,Object>,String,JSONObject>{
+	private class SendCommentClass extends CheckStopAsyncTask<HashMap<String,Object>,String,JSONObject>{
 		@Override
 	    protected void onPreExecute() {
 	        super.onPreExecute();
@@ -208,6 +214,7 @@ public class EventComment extends Activity{
 		}
 		@Override
 		protected void onPostExecute(JSONObject result){
+			if(getStop()) return;
 			mPgDialog.dismiss();
 			if(result == null){
 				Log.i(TAG,"cannot get any");//we have reveived 500 error page
@@ -220,7 +227,7 @@ public class EventComment extends Activity{
 			}
 		}
 	}
-	private class LoadEventComment extends AsyncTask<HashMap<String,Object>,String,JSONObject>{
+	private class LoadEventComment extends CheckStopAsyncTask<HashMap<String,Object>,String,JSONObject>{
 		@Override
 	    protected void onPreExecute() {
 	        super.onPreExecute();
@@ -234,6 +241,7 @@ public class EventComment extends Activity{
 		}
 		@Override
 		protected void onPostExecute(JSONObject result) {
+			if(getStop()) return;
 			if(result == null){
 				Log.i(TAG,"cannot get any");//we have reveived 500 error page
 				
@@ -259,6 +267,16 @@ public class EventComment extends Activity{
 		}
 		
 	}
+	@Override
+    protected void onStop()
+    {
+        for(int index = 0;index < mAsyncTask.size();index ++)
+        {
+            if(!(mAsyncTask.get(index).getStatus() == AsyncTask.Status.FINISHED) )
+                mAsyncTask.get(index).setStop();
+        }
+        super.onStop();
+    }
 	
 	
 

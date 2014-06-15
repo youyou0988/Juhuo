@@ -8,6 +8,7 @@
     <color name="titlegray">#DEDEDE</color><!-- 联系人A，B的背景色 -->
     <color name="filtergray">#EBE7E7</color>
     <color name="dialoggray">#E4E4E4</color><!-- 对话框的背景色 -->
+    <color name="searchgray">#C9C9CE</color><!-- 搜索框的背景色 -->
     <color name="divider">#EDEDED</color><!-- 浅灰色 -->
     <color name="mgreen">#3CBEB0</color><!-- 绿色 -->
     <color name="black">#000000</color><!--黑色 -->
