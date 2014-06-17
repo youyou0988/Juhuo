@@ -28,6 +28,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.juhuo.adapter.LeftMenuAdapter;
+import com.juhuo.tool.CheckStopAsyncTask;
 import com.juhuo.tool.JuhuoConfig;
 import com.juhuo.tool.JuhuoInfo;
 import com.juhuo.tool.Tool;
@@ -54,6 +55,7 @@ public class LeftMenuFragment extends Fragment{
 	private HashMap<String,Object> tmpmap;
 	private List<Integer> focus;
 	private HashMap<String,Object> mapParams = new HashMap<String,Object>();
+	private List<CheckStopAsyncTask> mAsyncTask = new ArrayList<CheckStopAsyncTask>();
 	DisplayImageOptions options = new DisplayImageOptions.Builder()
 	.imageScaleType(ImageScaleType.EXACTLY_STRETCHED)
 	.showImageOnLoading(R.drawable.bg_ju_icon)
@@ -101,6 +103,7 @@ public class LeftMenuFragment extends Fragment{
 			if(jsonCache==null){
 				mapParams.put("token", JuhuoConfig.token);
 				LoadUserInfo loadUserInfo = new LoadUserInfo();
+				mAsyncTask.add(loadUserInfo);
 				loadUserInfo.execute(mapParams);
 			}else{
 				//initial components contents
@@ -134,7 +137,7 @@ public class LeftMenuFragment extends Fragment{
 		initListener();
 		return parent;
 	}
-	private class LoadUserInfo extends AsyncTask<HashMap<String,Object>,String,JSONObject>{
+	private class LoadUserInfo extends CheckStopAsyncTask<HashMap<String,Object>,String,JSONObject>{
 
 		@Override
 		protected JSONObject doInBackground(HashMap<String,Object>... map) {
@@ -145,6 +148,7 @@ public class LeftMenuFragment extends Fragment{
 		}
 		@Override
 		protected void onPostExecute(JSONObject result) {
+			if(getStop()) return;
 			if(result == null){
 				Log.i(TAG,"cannot get any");//we have reveived 500 error page
 			}else if(result.has("wrong_data")){
@@ -188,7 +192,8 @@ public class LeftMenuFragment extends Fragment{
 				HomeActivity activity = (HomeActivity)getActivity();
 				if(mData.size()==2){ // guest user
 					if(position==1){
-						
+						Fragment setting = new SettingFragment();
+						activity.switchContent(setting);
 					}else if(position==0){
 						Fragment myEvent = new HotEventsFragment();
 						activity.switchContent(myEvent);
@@ -206,6 +211,9 @@ public class LeftMenuFragment extends Fragment{
 					}else if(position==3){
 						Fragment userSetting = new UserSettingFragment();
 						activity.switchContent(userSetting);
+					}else if(position==4){
+						Fragment setting = new SettingFragment();
+						activity.switchContent(setting);
 					}
 				}
 				

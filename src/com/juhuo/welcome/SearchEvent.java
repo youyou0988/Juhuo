@@ -145,7 +145,7 @@ public class SearchEvent extends Activity {
 						hotEventsAdapter.setInflater(
 								(LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE),
 								SearchEvent.this);
-						hotEventsAdapter.setJSONData(mData,"HOT");
+						hotEventsAdapter.setJSONData(mData,"HOT",mAsyncTask);
 						hotEventsAdapter.notifyDataSetChanged();
 						hotEventsAdapter.setListView(listview);
 						listview.setAdapter(hotEventsAdapter);

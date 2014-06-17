@@ -152,6 +152,7 @@
     <string name="follow">关注</string>
     <string name="cancel_follow">取消关注</string>
     <string name="add_follow_success">添加关注成功</string>
+    <string name="cancel_follow_success">取消关注成功</string>
     <string name="decline">拒绝</string>
     <string name="approve">同意</string>
     <string name="approve_success">审批成功</string>
@@ -167,4 +168,6 @@
     <string name="follow_event_txt">我关注的活动</string>
     
     <string name="backhint">再按一次退出程序</string>
+    <string name="setting">系统设置</string>
+    <string name="receive_notice">接受新消息通知</string>
 </resources>

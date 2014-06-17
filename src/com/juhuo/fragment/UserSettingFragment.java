@@ -66,7 +66,7 @@ public class UserSettingFragment extends Fragment{
 	private RelativeLayout parent;
 	private View transView;
 	private Button logout;
-	private String menuType = "title";
+	private int menuType = 1;//0 for picture;1 for plus;2 for logout
 	private ProgressDialog mPgDialog;
 	DisplayImageOptions options = new DisplayImageOptions.Builder()
 	.imageScaleType(ImageScaleType.IN_SAMPLE_INT)
@@ -138,11 +138,9 @@ public class UserSettingFragment extends Fragment{
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
-				LogOut logOut = new LogOut();
-				HashMap<String,Object> map= new HashMap<String,Object>();
-				map.put("token", JuhuoConfig.token);
-				mAsyncTask.add(logOut);
-				logOut.execute(map);
+				menuType = 2;
+				getActivity().openOptionsMenu();
+				
 			}
 		});
 		JSONObject jsonCache = new JSONObject();
@@ -203,11 +201,11 @@ public class UserSettingFragment extends Fragment{
 				((SlidingFragmentActivity)getActivity()).toggle();
 				break;
 			case R.id.action_title_img2:
-				menuType = "title";
+				menuType = 1;
 				getActivity().openOptionsMenu();
 				break;
 			case R.id.image:
-				menuType = "image";
+				menuType = 0;
 				getActivity().openOptionsMenu();
 				break;
 			}
@@ -343,6 +341,7 @@ public class UserSettingFragment extends Fragment{
 		}
 		@Override
 		protected void onPostExecute(JSONObject result) {
+			if(getStop()) return;
 			if(result == null){
 				Log.i(TAG,"cannot get any");//we have reveived 500 error page
 				
@@ -412,11 +411,13 @@ public class UserSettingFragment extends Fragment{
 	public void onPrepareOptionsMenu(Menu menu){
 		MenuInflater inflater = getActivity().getMenuInflater();
 		menu.clear();
-		if(menuType.equals("image")){
+		if(menuType==0){
 			inflater.inflate(R.menu.pic, menu);
 			
-		}else{//click title
+		}else if(menuType==1){//click title
 			inflater.inflate(R.menu.setting, menu);
+		}else{
+			inflater.inflate(R.menu.logout, menu);
 		}
 		
 	}
@@ -446,6 +447,13 @@ public class UserSettingFragment extends Fragment{
 			Intent intentsel = new Intent(Intent.ACTION_PICK, null);
 			intentsel.setDataAndType(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,"image/*");
             startActivityForResult(intentsel, PHOTO_REQUEST_GALLERY);
+			break;
+		case R.id.log_out:
+			LogOut logOut = new LogOut();
+			HashMap<String,Object> map= new HashMap<String,Object>();
+			map.put("token", JuhuoConfig.token);
+			mAsyncTask.add(logOut);
+			logOut.execute(map);
 			break;
 		
 		}

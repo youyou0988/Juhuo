@@ -373,7 +373,7 @@
 
                     <TextView
                         android:id="@+id/event_link"
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="7dp"
                         android:layout_toRightOf="@+id/link"
@@ -381,7 +381,9 @@
                         android:paddingTop="4dp"
                         android:textColor="@color/mgreen"
                         android:textSize="15sp"
-                        android:textStyle="bold" />
+                        android:textStyle="bold"
+                        android:singleLine="true"
+                        android:ellipsize="end" />
 
                     <View
                         android:layout_width="match_parent"

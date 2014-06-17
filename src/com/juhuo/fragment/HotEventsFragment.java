@@ -38,6 +38,7 @@ import com.jeremyfeinstein.slidingmenu.lib.app.SlidingFragmentActivity;
 import com.juhuo.adapter.FilterEventAdapter;
 import com.juhuo.adapter.HotEventsAdapter;
 import com.juhuo.refreshview.XListView;
+import com.juhuo.tool.CheckStopAsyncTask;
 import com.juhuo.tool.JuhuoConfig;
 import com.juhuo.tool.JuhuoInfo;
 import com.juhuo.tool.Tool;
@@ -58,8 +59,10 @@ public class HotEventsFragment extends Fragment{
 	private HotEventsAdapter hotEventsAdapter;
 	private FilterEventAdapter filterEventAdapter;
 	Animation animationSlideDown;
-	private List<AsyncTask<String,String,Object>> mAsyncTask = 
-			new ArrayList<AsyncTask<String,String,Object>>();
+//	private List<AsyncTask<String,String,Object>> mAsyncTask = 
+//			new ArrayList<AsyncTask<String,String,Object>>();
+	private List<CheckStopAsyncTask> mAsyncTask = new ArrayList<CheckStopAsyncTask>();
+	
 	private JSONArray mData;
 	private HashMap<String,Object> mapPara;
 	private String[] eventType={"所有活动类型","交友聚会","读书看报","音乐电影","体育锻炼","其他"};
@@ -115,6 +118,7 @@ public class HotEventsFragment extends Fragment{
                     mapMore.put("offset", String.valueOf(offset));
                     offset = offset+COUNT;
                     LoadMoreEvents task = new LoadMoreEvents();
+                    mAsyncTask.add(task);
                     task.execute(mapMore);
                 }
 			}
@@ -174,7 +178,7 @@ public class HotEventsFragment extends Fragment{
 			noEventsText.setText(mResources.getString(R.string.no_events_found));	
 		}else{
 			try {
-				hotEventsAdapter.setJSONData(jsonCache.getJSONArray("events"),"HOT");
+				hotEventsAdapter.setJSONData(jsonCache.getJSONArray("events"),"HOT",mAsyncTask);
 			} catch (JSONException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -279,9 +283,10 @@ public class HotEventsFragment extends Fragment{
 
 	public void getNetData(HashMap<String,Object> map){
 		LoadEventList loadEventList = new LoadEventList();
+		mAsyncTask.add(loadEventList);
 		loadEventList.execute(map);
 	}
-	private class LoadMoreEvents extends AsyncTask<HashMap<String,Object>,String,JSONObject>{
+	private class LoadMoreEvents extends CheckStopAsyncTask<HashMap<String,Object>,String,JSONObject>{
 		@Override
 	    protected void onPreExecute() {
 	        super.onPreExecute();
@@ -296,6 +301,7 @@ public class HotEventsFragment extends Fragment{
 		}
 		@Override
 		protected void onPostExecute(JSONObject result){
+			if(getStop()) return;
 			mPgDialog.dismiss();
 			if(getActivity()==null){
 				return;
@@ -313,7 +319,7 @@ public class HotEventsFragment extends Fragment{
 						for(int i=0;i<ja.length();i++){
 							mData.put(ja.getJSONObject(i));
 						}
-						hotEventsAdapter.setJSONData(mData,"HOT");
+						hotEventsAdapter.setJSONData(mData,"HOT",mAsyncTask);
 						hotEventsAdapter.notifyDataSetChanged();
 						
 					}else{
@@ -328,7 +334,7 @@ public class HotEventsFragment extends Fragment{
 			}
 		}
 	}
-	private class LoadEventList extends AsyncTask<HashMap<String,Object>,String,JSONObject>{
+	private class LoadEventList extends CheckStopAsyncTask<HashMap<String,Object>,String,JSONObject>{
 		@Override
 	    protected void onPreExecute() {
 	        super.onPreExecute();
@@ -344,6 +350,7 @@ public class HotEventsFragment extends Fragment{
 		}
 		@Override
 		protected void onPostExecute(JSONObject result) {
+			if(getStop()) return;
 			mPgDialog.dismiss();
 			if(getActivity()==null){
 				return;
@@ -369,7 +376,7 @@ public class HotEventsFragment extends Fragment{
 						hotEventsAdapter.setInflater(
 								(LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE),
 								getActivity());
-						hotEventsAdapter.setJSONData(mData,"HOT");
+						hotEventsAdapter.setJSONData(mData,"HOT",mAsyncTask);
 						hotEventsAdapter.notifyDataSetChanged();
 						hotEventsAdapter.setListView(hotEventsList);
 						hotEventsList.setAdapter(hotEventsAdapter);
@@ -399,6 +406,16 @@ public class HotEventsFragment extends Fragment{
 		Log.i("sliding menu", transView.getBackground().toString());
 		transView.setVisibility(View.INVISIBLE);
 	}
+	@Override
+    public void onDestroyView()
+    {
+        for(int index = 0;index < mAsyncTask.size();index ++)
+        {
+            if(!(mAsyncTask.get(index).getStatus() == AsyncTask.Status.FINISHED) )
+                mAsyncTask.get(index).setStop();
+        }
+        super.onDestroyView();
+    }
 	AnimationListener animationSlideDownListener
 	= new AnimationListener(){
 

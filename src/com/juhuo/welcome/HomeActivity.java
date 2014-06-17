@@ -20,6 +20,7 @@ import com.juhuo.fragment.FollowFragment;
 import com.juhuo.fragment.HotEventsFragment;
 import com.juhuo.fragment.LeftMenuFragment;
 import com.juhuo.fragment.MyEventFragment;
+import com.juhuo.fragment.SettingFragment;
 import com.juhuo.fragment.UserSettingFragment;
 import com.juhuo.tool.Tool;
 
@@ -91,7 +92,7 @@ public class HomeActivity extends SlidingFragmentActivity {
 		sm.setOnOpenListener(new OnOpenListener() {
 	        @Override
 	        public void onOpen() {
-	        	Log.i("sliding menu", "open");
+	        	Log.i("sliding menu", "open"+(mContent instanceof HotEventsFragment));
 	        	if(mContent instanceof HotEventsFragment){
 	        		((HotEventsFragment) mContent).setTrans();
 	        	}else if(mContent instanceof MyEventFragment){
@@ -100,6 +101,8 @@ public class HomeActivity extends SlidingFragmentActivity {
 	        		((UserSettingFragment) mContent).setTrans();
 	        	}else if(mContent instanceof FollowFragment){
 	        		((FollowFragment) mContent).setTrans();
+	        	}else if(mContent instanceof SettingFragment){
+	        		((SettingFragment) mContent).setTrans();
 	        	}
 	        	
 	        }
@@ -116,6 +119,8 @@ public class HomeActivity extends SlidingFragmentActivity {
 	        		((UserSettingFragment) mContent).setTransBack();
 	        	}else if(mContent instanceof FollowFragment){
 	        		((FollowFragment) mContent).setTransBack();
+	        	}else if(mContent instanceof SettingFragment){
+	        		((SettingFragment) mContent).setTransBack();
 	        	}
 			}
 		});
@@ -137,22 +142,21 @@ public class HomeActivity extends SlidingFragmentActivity {
 	@Override
 	public boolean onKeyUp(int keyCode, KeyEvent event)
 	{
-		Log.i(TAG, "i am here");
-	    if(keyCode == KeyEvent.KEYCODE_BACK)
+		if(keyCode == KeyEvent.KEYCODE_BACK)
 	    {
 	        SlidingMenu sm = getSlidingMenu();
-	        Log.i(TAG, String.valueOf(sm.isMenuShowing()));
 	        if(backTimes!=0)
 	        {
 	            finish();
 	            return true;
 	        }else{
-	        	toggle();
+	        	sm.showMenu();
 	        	backTimes++;
 	        	Tool.myToast(HomeActivity.this, mResources.getString(R.string.backhint));
 	        }
 	    }
-	    return super.onKeyUp(keyCode, event);
+	    return false;
+//	    return super.onKeyUp(keyCode, event);
 	}
 //	@Override
 //	public void onBackPressed() { 

@@ -1,6 +1,7 @@
 package com.juhuo.contact;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -22,6 +23,7 @@ import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.juhuo.tool.CheckStopAsyncTask;
 import com.juhuo.tool.JuhuoConfig;
 import com.juhuo.tool.JuhuoInfo;
 import com.juhuo.tool.Tool;
@@ -58,6 +60,8 @@ public class ConfirmInvitation  extends Fragment{
 	public void setData(ArrayList<Contact> li){
 		this.contactList = li;
 	}
+	private List<CheckStopAsyncTask> mAsyncTask = new ArrayList<CheckStopAsyncTask>();
+	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -113,6 +117,7 @@ public class ConfirmInvitation  extends Fragment{
 					e.printStackTrace();
 				}
 				SendInvitation sendInvi = new SendInvitation();
+				mAsyncTask.add(sendInvi);
 				sendInvi.execute(json);
 			}
 		});
@@ -125,7 +130,7 @@ public class ConfirmInvitation  extends Fragment{
 		}
 		return parent;
 	}
-	private class SendInvitation extends AsyncTask<JSONObject,String,JSONObject>{
+	private class SendInvitation extends CheckStopAsyncTask<JSONObject,String,JSONObject>{
 		@Override
 	    protected void onPreExecute() {
 	        super.onPreExecute();
@@ -140,6 +145,7 @@ public class ConfirmInvitation  extends Fragment{
 		}
 		@Override
 		protected void onPostExecute(JSONObject result) {
+			if(getStop()) return;
 			mPgDialog.dismiss();
 			if(result == null){
 				Log.i(TAG,"cannot get any");//we have reveived 500 error page
@@ -206,5 +212,15 @@ public class ConfirmInvitation  extends Fragment{
 		}
 		
 	}
+	@Override
+    public void onDestroyView()
+    {
+        for(int index = 0;index < mAsyncTask.size();index ++)
+        {
+            if(!(mAsyncTask.get(index).getStatus() == AsyncTask.Status.FINISHED) )
+                mAsyncTask.get(index).setStop();
+        }
+        super.onDestroyView();
+    }
 
 }

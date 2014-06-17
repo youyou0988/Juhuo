@@ -146,6 +146,8 @@ public class LoginActivity extends Activity {
 				Tool.myToast(LoginActivity.this,mResources.getString(R.string.error_network));
 			}else if(result.has("no_data")){
 				Tool.myToast(LoginActivity.this,mResources.getString(R.string.current_net_invalide));
+			}else if(result.has("password_wrong")){
+				Tool.myToast(LoginActivity.this,mResources.getString(R.string.login_failed_username_password));
 			}else{
 //				Tool.myToast(LoginActivity.this,mResources.getString(R.string.login_success));
 				Intent intent2Home = new Intent(LoginActivity.this, HomeActivity.class);

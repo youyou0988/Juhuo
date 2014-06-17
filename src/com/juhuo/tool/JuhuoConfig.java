@@ -54,7 +54,9 @@ public class JuhuoConfig {
 	
 	public static String CONTACT_CREATE = PRODUCTIONPREFIX+"contact/create/";
 	public static String CONTACT_LIST =  PRODUCTIONPREFIX+"contact/list/";
+	public static String CONTACT_JUDGE = PRODUCTIONPREFIX+"contact/judge/";
 	public static String CONTACT_EVENT = PRODUCTIONPREFIX+"event/contactlist/";
+	public static String CONTACT_DELETE = PRODUCTIONPREFIX+"contact/delete/";
 	
 	public static String COMMON_UPLOADPHOTO = PRODUCTIONPREFIX+"common/uploadphoto/";
 

@@ -32,7 +32,9 @@ import android.util.Log;
 public class JuhuoInfo {
 	private String TAG="JuhuoInfo";
 	private String SUCCESS_STATUS = "200";
+	private String PASSWORD_WRONG = "401";
 	private String INVALID_TOKEN = "402";
+	private String NOT_FOUND_WRONG = "404";
 	
 	private String getCode(String tmp){
 		String res="";
@@ -107,6 +109,16 @@ public class JuhuoInfo {
 				}else if(resultCode.equals(INVALID_TOKEN)){
 					HashMap<String, String> map = new HashMap<String, String>();
 					map.put("wrong_data", INVALID_TOKEN);
+					JSONObject json = new JSONObject(map);
+					return json;
+				}else if(resultCode.equals(PASSWORD_WRONG)){
+					HashMap<String, String> map = new HashMap<String, String>();
+					map.put("password_wrong", PASSWORD_WRONG);
+					JSONObject json = new JSONObject(map);
+					return json;
+				}else if(resultCode.equals(NOT_FOUND_WRONG)){
+					HashMap<String, String> map = new HashMap<String, String>();
+					map.put("not_found_wrong", NOT_FOUND_WRONG);
 					JSONObject json = new JSONObject(map);
 					return json;
 				}else{
@@ -211,7 +223,7 @@ public class JuhuoInfo {
 		try {
 			HttpPost httpPost = new HttpPost(preUrl);
 			httpPost.setHeader("content-type","application/json");
-			Log.i(TAG, para.toString());
+			Log.i(TAG, preUrl+para.toString());
 			httpPost.setEntity(new StringEntity(para.toString(), "UTF8"));  
 	        HttpResponse response = httpclient.execute(httpPost);  
 			HttpEntity responseEntity = response.getEntity();

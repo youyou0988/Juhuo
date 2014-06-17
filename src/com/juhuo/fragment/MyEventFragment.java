@@ -29,6 +29,7 @@ import com.juhuo.adapter.HotEventsAdapter;
 import com.juhuo.control.MyListView.OnLoadListener;
 import com.juhuo.control.MyListView.OnRefreshListener;
 import com.juhuo.refreshview.XListView;
+import com.juhuo.tool.CheckStopAsyncTask;
 import com.juhuo.tool.JuhuoConfig;
 import com.juhuo.tool.JuhuoInfo;
 import com.juhuo.tool.Tool;
@@ -46,8 +47,8 @@ public class MyEventFragment extends Fragment{
 	private Button filterAllEvent,filterDefaultEvent;
 	private View transView,transView2;
 	private HotEventsAdapter hotEventsAdapter;
-	private List<AsyncTask<String,String,Object>> mAsyncTask = 
-			new ArrayList<AsyncTask<String,String,Object>>();
+//	private List<AsyncTask<String,String,Object>> mAsyncTask = 
+//			new ArrayList<AsyncTask<String,String,Object>>();
 	private JSONArray mData;
 	private HashMap<String,Object> mapPara;
 	private String handle;
@@ -55,7 +56,7 @@ public class MyEventFragment extends Fragment{
 	private final int CREATE_EVENT = 0;
 	private final int COUNT=20;
     private int offset=20;
-	
+    private List<CheckStopAsyncTask> mAsyncTask = new ArrayList<CheckStopAsyncTask>();
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -112,6 +113,7 @@ public class MyEventFragment extends Fragment{
     				}else{
     					task = new LoadMoreEvents("related");
     				}
+                    mAsyncTask.add(task);
                     task.execute(mapMore);
                 }
 			}
@@ -172,7 +174,7 @@ public class MyEventFragment extends Fragment{
 			noEventsText.setText(mResources.getString(R.string.no_events_found));
 		}else{
 			try {
-				hotEventsAdapter.setJSONData(jsonCache.getJSONArray("events"),"MY");
+				hotEventsAdapter.setJSONData(jsonCache.getJSONArray("events"),"MYorganizer",mAsyncTask);
 			} catch (JSONException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -209,7 +211,7 @@ public class MyEventFragment extends Fragment{
 			}
 		}
 	};
-	private class LoadMoreEvents extends AsyncTask<HashMap<String,Object>,String,JSONObject>{
+	private class LoadMoreEvents extends CheckStopAsyncTask<HashMap<String,Object>,String,JSONObject>{
 		String type;
 		public LoadMoreEvents(String type){
 			this.type = type;
@@ -228,6 +230,7 @@ public class MyEventFragment extends Fragment{
 		}
 		@Override
 		protected void onPostExecute(JSONObject result){
+			if(getStop()) return;
 			mPgDialog.dismiss();
 			if(getActivity()==null){
 				return;
@@ -246,7 +249,7 @@ public class MyEventFragment extends Fragment{
 						for(int i=0;i<ja.length();i++){
 							mData.put(ja.getJSONObject(i));
 						}
-						hotEventsAdapter.setJSONData(mData,"MY"+type);
+						hotEventsAdapter.setJSONData(mData,"MY"+type,mAsyncTask);
 						hotEventsAdapter.notifyDataSetChanged();
 						
 					}else{
@@ -263,9 +266,10 @@ public class MyEventFragment extends Fragment{
 	}
 	public void getNetData(HashMap<String,Object> map,String type){
 		LoadEventList loadEventList = new LoadEventList(type);
+		mAsyncTask.add(loadEventList);
 		loadEventList.execute(map);
 	}
-	private class LoadEventList extends AsyncTask<HashMap<String,Object>,String,JSONObject>{
+	private class LoadEventList extends CheckStopAsyncTask<HashMap<String,Object>,String,JSONObject>{
 		String type;
 		public LoadEventList(String type){
 			this.type = type;
@@ -285,6 +289,7 @@ public class MyEventFragment extends Fragment{
 		}
 		@Override
 		protected void onPostExecute(JSONObject result) {
+			if(getStop()) return;
 			mPgDialog.dismiss();
 			if(getActivity()==null){
 				return;
@@ -314,7 +319,7 @@ public class MyEventFragment extends Fragment{
 								(LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE),
 								getActivity());
 //						Log.i(TAG, mData.toString());
-						hotEventsAdapter.setJSONData(mData,"MY"+type);
+						hotEventsAdapter.setJSONData(mData,"MY"+type,mAsyncTask);
 						hotEventsAdapter.notifyDataSetChanged();
 						hotEventsAdapter.setListView(hotEventsList);
 						hotEventsList.setAdapter(hotEventsAdapter);
@@ -361,5 +366,15 @@ public class MyEventFragment extends Fragment{
 		hotEventsList.stopLoadMore();
 		hotEventsList.setRefreshTime("¸Õ¸Õ");
 	}
+	@Override
+    public void onDestroyView()
+    {
+        for(int index = 0;index < mAsyncTask.size();index ++)
+        {
+            if(!(mAsyncTask.get(index).getStatus() == AsyncTask.Status.FINISHED) )
+                mAsyncTask.get(index).setStop();
+        }
+        super.onDestroyView();
+    }
 
 }

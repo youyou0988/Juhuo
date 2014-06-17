@@ -34,6 +34,7 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.juhuo.tool.CheckStopAsyncTask;
 import com.juhuo.tool.JuhuoConfig;
 import com.juhuo.tool.JuhuoInfo;
 import com.juhuo.tool.Tool;
@@ -81,11 +82,13 @@ public class HotEventsAdapter extends BaseAdapter {
 	protected ImageLoader imageLoader = ImageLoader.getInstance();
 	private ImageLoadingListener animateFirstListener = new AnimateFirstDisplayListener();
 	private String type;
-    
+	private List<CheckStopAsyncTask> mAsyncTask = new ArrayList<CheckStopAsyncTask>();
+	
 	
 //	private final ImageDownloader imageDownloader = new ImageDownloader();
 	//for network New Data use
-	public void setJSONData(JSONArray ja,String type){
+	public void setJSONData(JSONArray ja,String type,List<CheckStopAsyncTask> tasklist){
+		this.mAsyncTask = tasklist;
 		this.type = type;
 		mData.clear();
 		this.jArr = ja;
@@ -280,6 +283,7 @@ public class HotEventsAdapter extends BaseAdapter {
 	            map.put("token", JuhuoConfig.token);
 	            map.put("id", mData.get(pos-1).get("eventId"));
 	            DeleteEvent deleteEvent = new DeleteEvent(pos-1);
+	            mAsyncTask.add(deleteEvent);
 	            deleteEvent.execute(map);
 				
 			}
@@ -294,7 +298,7 @@ public class HotEventsAdapter extends BaseAdapter {
 		});
 		dialog.show();
 	}
-    private class DeleteEvent extends AsyncTask<HashMap<String,Object>,String,JSONObject>{
+    private class DeleteEvent extends CheckStopAsyncTask<HashMap<String,Object>,String,JSONObject>{
     	private int pos;
     	protected DeleteEvent(int pos){
     		this.pos = pos;
@@ -308,6 +312,7 @@ public class HotEventsAdapter extends BaseAdapter {
 		}
 		@Override
 		protected void onPostExecute(JSONObject result) {
+			if(getStop()) return;
 			if(result == null){
 				Log.i(TAG,"cannot get any");//we have reveived 500 error page
 			}else if(result.has("wrong_data")){

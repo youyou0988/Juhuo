@@ -28,6 +28,7 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.amap.api.location.AMapLocation;
@@ -57,7 +58,7 @@ import com.nostra13.universalimageloader.core.display.SimpleBitmapDisplayer;
 public class CreateEvent extends Activity implements LocationSource,AMapLocationListener{
 	private final String TAG="CreateEvent";
 	private TextView actionTitleText,actionTitleText2,eventBeginTime,eventEndTime,eventType
-		,eventDetail,picNumber,actionTitle;
+		,picNumber,actionTitle,eventDetailText;
 	private ImageView image;
 	private EditText eventPlace,eventTitle,eventCost,eventLink;
 	private Button createBtn;
@@ -68,6 +69,7 @@ public class CreateEvent extends Activity implements LocationSource,AMapLocation
 	private OnLocationChangedListener mListener;
 	private LocationManagerProxy mAMapLocationManager;
 	private AMapLocation currentLoc;
+	private ScrollView eventDetail;
 	private String photo_ids,time_begin,time_end,event_type="0",description,addr,title,event_id;
 	private double lat,lng;
 	private int privacy=0,need_approve_apply=0,allow_apns=0;
@@ -106,7 +108,8 @@ public class CreateEvent extends Activity implements LocationSource,AMapLocation
 		eventEndTime = (TextView)findViewById(R.id.event_end_time);
 		eventPlace = (EditText)findViewById(R.id.event_place);
 		eventType = (TextView)findViewById(R.id.event_type);
-		eventDetail = (TextView)findViewById(R.id.event_detail_txt);
+		eventDetail = (ScrollView)findViewById(R.id.event_detail);
+		eventDetailText = (TextView)findViewById(R.id.event_detail_txt);
 		eventLink = (EditText)findViewById(R.id.event_link);
 		picNumber = (TextView)findViewById(R.id.t2);
 		eventTitle = (EditText)findViewById(R.id.event_title);
@@ -128,7 +131,7 @@ public class CreateEvent extends Activity implements LocationSource,AMapLocation
 		eventBeginTime.setOnClickListener(timeClick);
 		eventEndTime.setOnClickListener(timeClick);
 		eventType.setOnClickListener(typeClick);
-		eventDetail.setOnClickListener(typeClick);
+		eventDetail.setOnClickListener(relativeClick);
 		image.setOnClickListener(imageClick);
 		mapView = (MapView) findViewById(R.id.map);
 		mapView.onCreate(savedInstanceState);// ±ØÐëÒªÐ´
@@ -219,7 +222,7 @@ public class CreateEvent extends Activity implements LocationSource,AMapLocation
 			}
 			addr = result.getString("addr");
 			eventPlace.setText(addr.equals("null")?"":result.getString("addr"));
-			eventLink.setText(result.getString("url"));
+			eventLink.setText(result.getString("url").equals("null")?"":result.getString("url"));
 			lat = result.getDouble("lat");
 			lng = result.getDouble("lng");
 			LatLng marker1 = new LatLng(lat, lng);                
@@ -232,7 +235,7 @@ public class CreateEvent extends Activity implements LocationSource,AMapLocation
 			eventType.setText(items[et]);
 			privacyche.setChecked(result.getInt("privacy")==0?true:false);
 			eventCost.setText(result.getInt("cost")!=0?String.valueOf(result.getInt("cost")):"Ãâ·Ñ");
-			eventDetail.setText(result.getString("description"));
+			eventDetailText.setText(result.getString("description"));
 			photo_ids = result.getString("photo_ids");
 		} catch (JSONException e) {
 			// TODO Auto-generated catch block
@@ -268,6 +271,17 @@ public class CreateEvent extends Activity implements LocationSource,AMapLocation
 				break;
 			}
 			
+		}
+		
+	};
+	OnClickListener relativeClick = new View.OnClickListener(){
+
+		@Override
+		public void onClick(View v) {
+			// TODO Auto-generated method stub
+			Intent intent = new Intent(CreateEvent.this,EditEventDetail.class);
+			intent.putExtra("detail", eventDetailText.getText());
+			startActivityForResult(intent,EditDetailEvent);
 		}
 		
 	};
@@ -411,7 +425,7 @@ public class CreateEvent extends Activity implements LocationSource,AMapLocation
 		        case EditDetailEvent:
 		        	Bundle buddle = data.getExtras();  
 		            String message = buddle.getString("detail");
-		            eventDetail.setText(message);
+		            eventDetailText.setText(message);
 		            description = message;
 		            break;
 		        case EditImage:

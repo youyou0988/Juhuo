@@ -27,6 +27,7 @@ import android.widget.TextView;
 
 import com.foound.widget.AmazingAdapter;
 import com.foound.widget.AmazingListView;
+import com.juhuo.tool.CheckStopAsyncTask;
 import com.juhuo.tool.Tool;
 import com.juhuo.welcome.R;
 
@@ -44,6 +45,7 @@ public class SelectContact extends Fragment{
 	private ArrayList<Boolean> mCheckedStates = null; 
 	private ArrayList<Contact> contactList;
 	private ProgressDialog mDialog;
+	private List<CheckStopAsyncTask> mAsyncTask = new ArrayList<CheckStopAsyncTask>();
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -52,9 +54,10 @@ public class SelectContact extends Fragment{
 		mDialog = new ProgressDialog(getActivity());
 		mDialog.setMessage(mResources.getString(R.string.reading_contacts));
 		GetContactList task = new GetContactList();
+		mAsyncTask.add(task);
 		task.execute(getActivity());
 	}
-	private class GetContactList extends AsyncTask<Context,String,List<Pair<String, List<Contact>>>>{
+	private class GetContactList extends CheckStopAsyncTask<Context,String,List<Pair<String, List<Contact>>>>{
 		@Override
 		protected void onPreExecute(){
 			mDialog.show(); 
@@ -68,6 +71,7 @@ public class SelectContact extends Fragment{
 		}
 		@Override
 		protected void onPostExecute(final List<Pair<String, List<Contact>>> all){
+			if(getStop()) return;
 			mDialog.dismiss();
 			lsContact.setPinnedHeaderView(LayoutInflater.from(getActivity()).inflate(R.layout.item_composer_header, lsContact, false));
 			lsContact.setAdapter(adapter);
@@ -307,5 +311,15 @@ public class SelectContact extends Fragment{
 		}
 		return -1;
 	}
+	@Override
+    public void onDestroyView()
+    {
+        for(int index = 0;index < mAsyncTask.size();index ++)
+        {
+            if(!(mAsyncTask.get(index).getStatus() == AsyncTask.Status.FINISHED) )
+                mAsyncTask.get(index).setStop();
+        }
+        super.onDestroyView();
+    }
 
 }

@@ -77,7 +77,7 @@
         android:listSelector="#0000"
         android:visibility="gone"
          />
-    <com.juhuo.refreshview.XListView
+    <ListView
         android:id="@+id/followperson_listview"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

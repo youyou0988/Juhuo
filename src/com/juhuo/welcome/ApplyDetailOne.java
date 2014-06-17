@@ -125,7 +125,7 @@ public class ApplyDetailOne extends Activity {
 		case INVITED:
 			actionTitle.setText(mResources.getString(R.string.invited));
 			res = getIntent().getExtras().getString("INVITED_DETAIL");
-			Log.i(TAG, res);
+//			Log.i(TAG, res);
 			urls = getIntent().getExtras().getStringArrayList("INVITED_URLS");
 			break;
 		case NO:
@@ -234,6 +234,7 @@ public class ApplyDetailOne extends Activity {
 				intent.putExtra("age", (String)mData.get(position).get("birthday"));
 				intent.putExtra("gender", (String)mData.get(position).get("gender"));
 				intent.putExtra("cell", (String)mData.get(position).get("cell"));
+				intent.putExtra("id", (String)mData.get(position).get("id"));
 				intent.putExtra("description", (String)mData.get(position).get("description"));
 				intent.putExtra("url", urls.get(position));
 				startActivity(intent);
@@ -298,7 +299,8 @@ public class ApplyDetailOne extends Activity {
 					@Override
 					public void onClick(View arg0) {
 						// TODO Auto-generated method stub
-						Dialog alertDialog = new AlertDialog.Builder(ApplyDetailOne.this). 
+						Dialog alertDialog = new AlertDialog.Builder(ApplyDetailOne.this)
+								.setTitle("¼´½«ºô½Ð").
 				                setMessage((String)mData.get(pos).get("cell")). 
 				                setPositiveButton("È·¶¨", new DialogInterface.OnClickListener() { 
 				                     

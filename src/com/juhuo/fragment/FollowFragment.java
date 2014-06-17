@@ -18,12 +18,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.AdapterView.OnItemClickListener;
 
 import com.jeremyfeinstein.slidingmenu.lib.app.SlidingFragmentActivity;
 import com.juhuo.adapter.HotEventsAdapter;
@@ -46,7 +47,8 @@ public class FollowFragment extends Fragment{
 	private ImageView actionTitleImg;
 	private TextView actionTitle,noEventsText;
 	private RelativeLayout parent;
-	private XListView followEventsList,followpersonList;
+	private XListView followEventsList;
+	private ListView followpersonList;
 	private Button followMeBtn,myFollowBtn,followEventsBtn;
 	private View transView,transView2;
 	private FollowPersonAdapter followAdapter;
@@ -73,7 +75,7 @@ public class FollowFragment extends Fragment{
 	private ImageLoadingListener animateFirstListener = new AnimateFirstDisplayListener();
 	private List<HashMap<String,String>> followData = new ArrayList<HashMap<String,String>>(); 
 	private List<CheckStopAsyncTask> mAsyncTask = new ArrayList<CheckStopAsyncTask>();
-	
+	private String current_contact_id;
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -84,6 +86,7 @@ public class FollowFragment extends Fragment{
 		mapPara = new HashMap<String,Object>();
 		mapPara.put("organizer", String.valueOf(JuhuoConfig.userId));
 		mapPara.put("token", JuhuoConfig.token);
+		mapPara.put("followme", String.valueOf(true));
 		mapPara.put("incremental", "true");
 	}
 
@@ -93,8 +96,7 @@ public class FollowFragment extends Fragment{
 		parent = (RelativeLayout) inflater.inflate(
 				R.layout.follow_event, null);
 		followEventsList = (XListView)parent.findViewById(R.id.followevents_listview);
-		followpersonList = (XListView)parent.findViewById(R.id.followperson_listview);
-		followpersonList.setXListViewListener(refresh);
+		followpersonList = (ListView)parent.findViewById(R.id.followperson_listview);
 		followEventsList.setXListViewListener(refresh);
 		followpersonList.setOnItemClickListener(personItemListener);
 		transView = (View)parent.findViewById(R.id.transview);
@@ -140,12 +142,13 @@ public class FollowFragment extends Fragment{
 			HashMap<String,Object> map = new HashMap<String,Object>();
 			map.put("token", JuhuoConfig.token);
 			map.put("incremental", String.valueOf(true));
-			map.put("contact_id", (String)followData.get(position-1).get("contact_id"));
+			current_contact_id = (String)followData.get(position).get("contact_id");
+			map.put("contact_id", current_contact_id);
 			if(currentListType==0){
 				map.put("followme", String.valueOf(true));
 			}
-			currentListType = 2;
 			LoadContactList task = new LoadContactList("event");
+			mAsyncTask.add(task);
 			task.execute(map);
 		}
 		
@@ -157,17 +160,16 @@ public class FollowFragment extends Fragment{
 			// TODO Auto-generated method stub
 			Log.i("pull", "refresh");
 			//check refresh whom
-			if(currentListType==2){
-				HashMap<String,Object> mapPara = new HashMap<String,Object>();
-				mapPara.put("token", JuhuoConfig.token);
-				mapPara.put("incremental",String.valueOf(true));
-				LoadContactList task2 = new LoadContactList("event");
-				task2.execute(mapPara);
-			}else{
-				followpersonList.stopRefresh();
-				followpersonList.stopLoadMore();
-				followpersonList.setRefreshTime("먼먼");
+			HashMap<String,Object> mapPara = new HashMap<String,Object>();
+			mapPara.put("token", JuhuoConfig.token);
+			mapPara.put("incremental",String.valueOf(true));
+			mapPara.put("contact_id", current_contact_id);
+			if(currentListType==0){
+				mapPara.put("followme", String.valueOf(true));
 			}
+			LoadContactList task2 = new LoadContactList("event");
+			mAsyncTask.add(task2);
+			task2.execute(mapPara);
 			
 			
 		}
@@ -178,12 +180,7 @@ public class FollowFragment extends Fragment{
 			Log.e(TAG, "onLoad");
 			if(currentListType==2){
 				onLoaded();
-			}else{
-				followpersonList.stopRefresh();
-				followpersonList.stopLoadMore();
-				followpersonList.setRefreshTime("먼먼");
 			}
-			
 		}
 	};
 	View.OnClickListener onClickListener = new View.OnClickListener() {
@@ -298,7 +295,7 @@ public class FollowFragment extends Fragment{
 									(LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE),
 									getActivity());
 //							Log.i(TAG, mData.toString());
-							hotEventsAdapter.setJSONData(mData,"MY"+"follow");
+							hotEventsAdapter.setJSONData(mData,"MY"+"follow",mAsyncTask);
 							hotEventsAdapter.notifyDataSetChanged();
 							hotEventsAdapter.setListView(followEventsList);
 							followEventsList.setAdapter(hotEventsAdapter);

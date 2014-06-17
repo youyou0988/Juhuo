@@ -92,7 +92,8 @@ public class EventDetailActivity extends Activity {
 	private ViewGroup main = null;
 	private ViewPager viewPager = null;
 	private Button applyEventBtn,status1,status2,status3,cancelBtn;
-	private RelativeLayout statusbarLay,applyLay,shareLay,actionTitleLay,actionTitleLay2;
+	private RelativeLayout statusbarLay,applyLay,shareLay,actionTitleLay,actionTitleLay2
+			,eventLinkLay;
 	// 当前ViewPager索引
 	private int pageIndex = 0; 
 	// event_id to work as cache index
@@ -227,12 +228,14 @@ public class EventDetailActivity extends Activity {
 		eventIspublic = (TextView)findViewById(R.id.event_ispublic);
 		eventCost = (TextView)findViewById(R.id.event_cost);
 		eventLink = (TextView)findViewById(R.id.event_link);
+		eventLinkLay = (RelativeLayout)findViewById(R.id.linklay);
 		eventDetail = (TextView)findViewById(R.id.event_detail);
 		applyEventBtn = (Button)findViewById(R.id.apply_event_btn);
 		RelativeLayout eventComment = (RelativeLayout)findViewById(R.id.commentlay);
 		eventComment.setOnClickListener(InviListener);
 		actionTitleLay.setOnClickListener(InviListener);
 		actionTitleLay2.setOnClickListener(InviListener);
+		eventLinkLay.setOnClickListener(InviListener);
 		
 		mapView = (MapView) findViewById(R.id.map);
 		mapView.onCreate(savedInstanceState);// 必须要写
@@ -331,6 +334,15 @@ public class EventDetailActivity extends Activity {
 			case R.id.action_title_lay2:
 				openOptionsMenu();
 				break;
+			case R.id.linklay:
+				if(!eventLink.getText().toString().equals("")){
+					Uri uri = Uri.parse(eventLink.getText().toString());  
+	                Intent intent = new Intent(Intent.ACTION_VIEW, uri);  
+	                intent.setClassName("com.android.browser",
+							"com.android.browser.BrowserActivity");
+	                startActivity(intent); 
+				}
+                break;
 			}
 		}
 	};
@@ -492,6 +504,7 @@ public class EventDetailActivity extends Activity {
 				map.put(i, new ArrayList<String>());
 				applyList.put(i, new JSONArray());
 			}
+			Log.i(TAG+"juhuo id", String.valueOf(JuhuoConfig.userId));
 			for(int i=0;i<jaChoices.length();i++){
 				int status = jaChoices.getJSONObject(i).getInt("status");
 				int id = jaChoices.getJSONObject(i).getInt("id");
@@ -519,34 +532,35 @@ public class EventDetailActivity extends Activity {
 			setChoicesTable(JuhuoConfig.INVI_NO,map);
 			setChoicesTable(JuhuoConfig.INVI_APPLY,map);
 			Log.i(TAG+"map", String.valueOf(organizer_status));
-			if(!type.equals("MYorganizer")&&!type.equals("MYrelated")){
-				if(organizer_status==3||organizer_status==1||organizer_status==2||organizer_status==0){
-					applyLay.setVisibility(View.GONE);
-					applyEventBtn.setVisibility(View.GONE);
-					statusbarLay.setVisibility(View.VISIBLE);
-					status1.setTextColor(mResources.getColor(R.color.mgray));
-					status2.setTextColor(mResources.getColor(R.color.mgray));
-					status3.setTextColor(mResources.getColor(R.color.mgray));
-					if(organizer_status==1) status1.setTextColor(mResources.getColor(R.color.mgreen));
-					if(organizer_status==2) status2.setTextColor(mResources.getColor(R.color.mgreen));
-					if(organizer_status==3) status3.setTextColor(mResources.getColor(R.color.mgreen));
-				}else if(organizer_status==5){
-					applyLay.setVisibility(View.GONE);
-					applyEventBtn.setVisibility(View.GONE);
-					statusbarLay.setVisibility(View.GONE);
-				}else if(organizer_status==7){
-					applyLay.setVisibility(View.GONE);
-					applyEventBtn.setVisibility(View.VISIBLE);
-					statusbarLay.setVisibility(View.INVISIBLE);
-				}else if(organizer_status==4){
+			
+			if(organizer_status==3||organizer_status==1||organizer_status==2||organizer_status==0){
+				applyLay.setVisibility(View.GONE);
+				applyEventBtn.setVisibility(View.GONE);
+				statusbarLay.setVisibility(View.VISIBLE);
+				status1.setTextColor(mResources.getColor(R.color.mgray));
+				status2.setTextColor(mResources.getColor(R.color.mgray));
+				status3.setTextColor(mResources.getColor(R.color.mgray));
+				if(organizer_status==1) status1.setTextColor(mResources.getColor(R.color.mgreen));
+				if(organizer_status==2) status2.setTextColor(mResources.getColor(R.color.mgreen));
+				if(organizer_status==3) status3.setTextColor(mResources.getColor(R.color.mgreen));
+			}else if(organizer_status==5){
+				applyLay.setVisibility(View.GONE);
+				applyEventBtn.setVisibility(View.GONE);
+				statusbarLay.setVisibility(View.GONE);
+			}else if(organizer_status==7){
+				if(!type.equals("MYorganizer")&&!type.equals("MYrelated")
+						&&!JuhuoConfig.token.equals(JuhuoConfig.PUBLIC_TOKEN)){
 					applyLay.setVisibility(View.GONE);
 					applyEventBtn.setVisibility(View.VISIBLE);
-					applyEventBtn.setText(mResources.getString(R.string.apply_eventing));
-					applyEventBtn.setClickable(false);
 					statusbarLay.setVisibility(View.INVISIBLE);
 				}
+			}else if(organizer_status==4){
+				applyLay.setVisibility(View.GONE);
+				applyEventBtn.setVisibility(View.VISIBLE);
+				applyEventBtn.setText(mResources.getString(R.string.apply_eventing));
+				applyEventBtn.setClickable(false);
+				statusbarLay.setVisibility(View.INVISIBLE);
 			}
-			
 		} catch (JSONException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -639,7 +653,7 @@ public class EventDetailActivity extends Activity {
 		msg.description = "活动邀请:"+title;
 		//这里替换一张自己工程里的图片资源
 		
-		if(!sharepicurl.equals("")&&thumb!=null&&thumb.getByteCount()<32000){
+		if(!sharepicurl.equals("")&&thumb!=null&&thumb.getByteCount()<30000){
 			msg.setThumbImage(thumb);
 		}
 		
