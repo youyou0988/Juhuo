@@ -34,6 +34,7 @@ public class SettingFragment extends Fragment{
 		actionTitle = (TextView)parent.findViewById(R.id.action_title);
 		actionTitle.setText(mResources.getString(R.string.setting));
 		actionTitleImg = (ImageView)parent.findViewById(R.id.action_title_img);
+		actionTitleImg.setBackgroundDrawable(mResources.getDrawable(R.drawable.icon_navi));
 		transView = (View)parent.findViewById(R.id.transview);
 		actionTitleImg.setOnClickListener(new View.OnClickListener() {
 			

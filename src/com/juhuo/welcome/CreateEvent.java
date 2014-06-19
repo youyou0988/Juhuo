@@ -69,7 +69,6 @@ public class CreateEvent extends Activity implements LocationSource,AMapLocation
 	private OnLocationChangedListener mListener;
 	private LocationManagerProxy mAMapLocationManager;
 	private AMapLocation currentLoc;
-	private ScrollView eventDetail;
 	private String photo_ids,time_begin,time_end,event_type="0",description,addr,title,event_id;
 	private double lat,lng;
 	private int privacy=0,need_approve_apply=0,allow_apns=0;
@@ -108,7 +107,6 @@ public class CreateEvent extends Activity implements LocationSource,AMapLocation
 		eventEndTime = (TextView)findViewById(R.id.event_end_time);
 		eventPlace = (EditText)findViewById(R.id.event_place);
 		eventType = (TextView)findViewById(R.id.event_type);
-		eventDetail = (ScrollView)findViewById(R.id.event_detail);
 		eventDetailText = (TextView)findViewById(R.id.event_detail_txt);
 		eventLink = (EditText)findViewById(R.id.event_link);
 		picNumber = (TextView)findViewById(R.id.t2);
@@ -131,7 +129,7 @@ public class CreateEvent extends Activity implements LocationSource,AMapLocation
 		eventBeginTime.setOnClickListener(timeClick);
 		eventEndTime.setOnClickListener(timeClick);
 		eventType.setOnClickListener(typeClick);
-		eventDetail.setOnClickListener(relativeClick);
+		eventDetailText.setOnClickListener(typeClick);
 		image.setOnClickListener(imageClick);
 		mapView = (MapView) findViewById(R.id.map);
 		mapView.onCreate(savedInstanceState);// ±ØÐëÒªÐ´
@@ -265,6 +263,7 @@ public class CreateEvent extends Activity implements LocationSource,AMapLocation
 				showDialog2();
 				break;
 			case R.id.event_detail_txt:
+				Log.i(TAG, "clicked");
 				Intent intent = new Intent(CreateEvent.this,EditEventDetail.class);
 				intent.putExtra("detail", vt.getText());
 				startActivityForResult(intent,EditDetailEvent);
@@ -274,17 +273,7 @@ public class CreateEvent extends Activity implements LocationSource,AMapLocation
 		}
 		
 	};
-	OnClickListener relativeClick = new View.OnClickListener(){
 
-		@Override
-		public void onClick(View v) {
-			// TODO Auto-generated method stub
-			Intent intent = new Intent(CreateEvent.this,EditEventDetail.class);
-			intent.putExtra("detail", eventDetailText.getText());
-			startActivityForResult(intent,EditDetailEvent);
-		}
-		
-	};
 	OnClickListener timeClick = new View.OnClickListener() {
 		
 		@Override

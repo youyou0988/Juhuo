@@ -154,9 +154,10 @@ public class ApplyDetailOne extends Activity {
 		applyList.setOnItemClickListener(mListListener);
 	}
 	private class EventApproveClass extends CheckStopAsyncTask<HashMap<String,Object>,String,JSONObject>{
-    	public int pos;
-		public EventApproveClass(int pos){
+    	public int pos,decision;
+		public EventApproveClass(int pos,int decision){
     		this.pos = pos;
+    		this.decision = decision;
     	}
 		@Override
 	    protected void onPreExecute() {
@@ -174,6 +175,7 @@ public class ApplyDetailOne extends Activity {
 			if (getStop()) {
                 return;
             }
+			mPgDialog.dismiss();
 			if(result == null){
 				Log.i(TAG,"cannot get any");//we have reveived 500 error page
 			}else if(result.has("wrong_data")){
@@ -181,10 +183,13 @@ public class ApplyDetailOne extends Activity {
 				Tool.dialog(ApplyDetailOne.this);
 			}else{
 				Tool.myToast(ApplyDetailOne.this, mResources.getString(R.string.approve_success));
-				mData.remove(pos);
+				if(decision==0){//approve
+					mData.remove(pos);	
+				}else{//decline
+					mData.get(pos).put("status", "7");
+				}
 				mAdapter.notifyDataSetChanged();
 				approve.setVisibility(View.GONE);
-				mPgDialog.dismiss();
 			}
 		}
 	}
@@ -200,8 +205,8 @@ public class ApplyDetailOne extends Activity {
 				TextView approveTxt = (TextView)findViewById(R.id.approvetxt);
 				TextView declinedTxt = (TextView)findViewById(R.id.declinetxt);
 				TextView refereeTxt = (TextView)findViewById(R.id.referee);
-				String res = mData.get(position).get("referee_name")==null?"":(String)mData.get(position).get("referee_name");
-				refereeTxt.setText("推荐人："+res);
+				String res = (String)mData.get(position).get("referee_name");
+				refereeTxt.setText(res.equals("null")?"开始审批":"推荐人："+res);
 				OnClickListener txtClick = new View.OnClickListener() {
 					
 					@Override
@@ -213,15 +218,18 @@ public class ApplyDetailOne extends Activity {
 						params.put("id", event_id);
 						params.put("message", messageTxt.getEditableText().toString());
 						params.put("guest_id", (String)mData.get(position).get("id"));
+						int decision = 0;
 						switch(tv.getId()){
 						case R.id.approvetxt:
 							params.put("decision", 0);
+							decision = 0;
 							break;
 						case R.id.declinetxt:
 							params.put("decision", 1);
+							decision = 1;
 							break;
 						}
-						EventApproveClass task = new EventApproveClass(position);
+						EventApproveClass task = new EventApproveClass(position,decision);
 						mAsyncTask.add(task);
 						task.execute(params);
 					}

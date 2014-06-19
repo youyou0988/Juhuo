@@ -11,21 +11,28 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
         android:layout_below="@+id/titlebar"
-        android:background="@color/white">
+        android:background="@color/white"
+        android:padding="10dp">
         <TextView android:layout_height="wrap_content"
             android:layout_width="wrap_content"
             android:text="@string/receive_notice"
             android:textColor="@color/mgreen"
             android:layout_alignParentLeft="true"
-            android:layout_marginLeft="10dp"
             android:layout_centerVertical="true"/>
-        <CheckBox style="@style/MyCheckBox"
+        <Switch  
+		        android:id="@+id/receive_notice_swi"  
+		        android:layout_width="wrap_content"  
+		        android:layout_height="wrap_content" 
+		        android:layout_alignParentRight="true" 
+		        android:textOff="关"  
+		        android:textOn="开" /> 
+        <!--<CheckBox style="@style/MyCheckBox"
             android:layout_width="135dp"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
             android:scaleX="0.70"
     		android:scaleY="0.70"
-    		android:id="@+id/receive_notice_che"/>
+    		android:id="@+id/receive_notice_che"/>  -->
         
     </RelativeLayout>
     <View android:id="@+id/transview"

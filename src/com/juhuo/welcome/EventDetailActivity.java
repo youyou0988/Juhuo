@@ -372,6 +372,11 @@ public class EventDetailActivity extends Activity {
 			case R.id.weibo:
 				shareLay.setVisibility(View.GONE);
 				transView.setVisibility(View.GONE);
+				Intent intent=new Intent(Intent.ACTION_SEND);    
+				intent.setType("text/plain");  //分享的数据类型  
+				intent.putExtra(Intent.EXTRA_SUBJECT, "subject");  //主题  
+				intent.putExtra(Intent.EXTRA_TEXT,  "content");  //内容  
+				startActivity(Intent.createChooser(intent, "title"));  //目标应用选择对话框的标题
 				break;
 			}
 			
@@ -544,7 +549,7 @@ public class EventDetailActivity extends Activity {
 				if(organizer_status==2) status2.setTextColor(mResources.getColor(R.color.mgreen));
 				if(organizer_status==3) status3.setTextColor(mResources.getColor(R.color.mgreen));
 			}else if(organizer_status==5){
-				applyLay.setVisibility(View.GONE);
+				applyLay.setVisibility(View.VISIBLE);
 				applyEventBtn.setVisibility(View.GONE);
 				statusbarLay.setVisibility(View.GONE);
 			}else if(organizer_status==7){
