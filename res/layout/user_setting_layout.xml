@@ -33,7 +33,7 @@
                     android:layout_marginTop="10dp"/>
                 <TextView 
                     android:layout_height="wrap_content"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:textColor="@color/mgreen"
                     android:layout_below="@+id/t1"
                     android:id="@+id/t2"
@@ -49,7 +49,7 @@
                     android:layout_marginTop="10dp"/>
                   <TextView 
                     android:layout_height="wrap_content"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:textColor="@color/mgreen"
                     android:layout_below="@+id/t3"
                     android:id="@+id/t4"/>
@@ -63,7 +63,7 @@
                     android:layout_marginTop="10dp"/>
                     <TextView 
                     android:layout_height="wrap_content"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:textColor="@color/mgreen"
                     android:layout_below="@+id/t5"
                     android:id="@+id/t6"/>
@@ -96,7 +96,7 @@
                android:layout_marginTop="10dp"/>
                <TextView 
                android:layout_height="wrap_content"
-               android:layout_width="wrap_content"
+               android:layout_width="match_parent"
                android:textColor="@color/mgreen"
                android:layout_below="@+id/t9"
                android:id="@+id/t10"/>

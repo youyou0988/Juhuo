@@ -6,11 +6,13 @@ import java.util.List;
 
 import org.json.JSONObject;
 
+import android.app.ProgressDialog;
 import android.content.res.Resources;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,10 +22,12 @@ import android.widget.RadioButton;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
 import com.juhuo.tool.CheckStopAsyncTask;
 import com.juhuo.tool.JuhuoConfig;
 import com.juhuo.tool.JuhuoInfo;
 import com.juhuo.tool.Tool;
+import com.juhuo.welcome.HomeActivity;
 import com.juhuo.welcome.R;
 
 public class SetName extends Fragment {
@@ -32,8 +36,10 @@ public class SetName extends Fragment {
 	private String content;
 	private String type;
 	private Resources mResource;
-	private ImageView titleimg,titleimg2;
+	private ImageView titleimg;
 	private RadioButton btn,btn2;
+	private ProgressDialog mPgDialog;
+	private RelativeLayout checkLay;
 	private List<CheckStopAsyncTask> mAsyncTask = new ArrayList<CheckStopAsyncTask>();
 	public void setContent(String ct,String type){
 		this.content = ct;
@@ -43,6 +49,7 @@ public class SetName extends Fragment {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		mResource = getActivity().getResources();
+		mPgDialog = new ProgressDialog(getActivity());
 	}
 
 	@Override
@@ -79,7 +86,7 @@ public class SetName extends Fragment {
 			des.setText(content);
 		}
 		titleimg = (ImageView)parent.findViewById(R.id.action_title_img);
-		titleimg2 = (ImageView)parent.findViewById(R.id.action_title_img2);
+		checkLay = (RelativeLayout)parent.findViewById(R.id.checklay);
 		titleimg.setOnClickListener(new View.OnClickListener() {
 			
 			@Override
@@ -89,7 +96,7 @@ public class SetName extends Fragment {
 				getActivity().getSupportFragmentManager().popBackStack();
 			}
 		});
-		titleimg2.setOnClickListener(new View.OnClickListener() {
+		checkLay.setOnClickListener(new View.OnClickListener() {
 			
 			@Override
 			public void onClick(View v) {
@@ -111,11 +118,29 @@ public class SetName extends Fragment {
 				
 			}
 		});
-		
+		//not work
+//		parent.setOnKeyListener( new View.OnKeyListener()
+//		{
+//		    @Override
+//		    public boolean onKey( View v, int keyCode, KeyEvent event )
+//		    {
+//		        if( keyCode == KeyEvent.KEYCODE_BACK )
+//		        {
+//		        	getFragmentManager().beginTransaction().remove(SetName.this).commit();
+//					getActivity().getSupportFragmentManager().popBackStack();
+//		            return true;
+//		        }
+//		        return false;
+//		    }
+//		} );
 		return parent;
 	}
 	private class ChangeUserInfo extends CheckStopAsyncTask<HashMap<String,Object>,String,JSONObject>{
-
+		@Override
+	    protected void onPreExecute() {
+	        super.onPreExecute();
+	        mPgDialog.show();
+	    }
 		@Override
 		protected JSONObject doInBackground(HashMap<String, Object>... map) {
 			// TODO Auto-generated method stub
@@ -125,6 +150,7 @@ public class SetName extends Fragment {
 		@Override
 		protected void onPostExecute(JSONObject result) {
 			if(getStop()) return;
+			mPgDialog.dismiss();
 			if(result == null){
 				Log.i(TAG,"cannot get any");//we have reveived 500 error page
 				
@@ -151,5 +177,6 @@ public class SetName extends Fragment {
         }
         super.onDestroyView();
     }
+	
 
 }

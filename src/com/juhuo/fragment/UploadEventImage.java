@@ -207,17 +207,17 @@ public class UploadEventImage extends Fragment{
                     pager.setText(rowindex.size()+"/"+count);
                 }
             });
-            holder.imageview.setOnClickListener(new OnClickListener() {
- 
-                public void onClick(View v) {
-                    // TODO Auto-generated method stub
-                    int id = v.getId();
-                    Intent intent = new Intent();
-                    intent.setAction(Intent.ACTION_VIEW);
-                    intent.setDataAndType(Uri.parse("file://" + arrPath[id]), "image/*");
-                    startActivity(intent);
-                }
-            });
+//            holder.imageview.setOnClickListener(new OnClickListener() {
+// 
+//                public void onClick(View v) {
+//                    // TODO Auto-generated method stub
+//                    int id = v.getId();
+//                    Intent intent = new Intent();
+//                    intent.setAction(Intent.ACTION_VIEW);
+//                    intent.setDataAndType(Uri.parse("file://" + arrPath[id]), "image/*");
+//                    startActivity(intent);
+//                }
+//            });
 //            holder.imageview.setImageBitmap(thumbnails[position]);
             imageLoader.displayImage("file://"+ arrPath[position], holder.imageview, options);
             holder.checkbox.setChecked(thumbnailsselection[position]);

@@ -7,6 +7,7 @@ import org.json.JSONObject;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.os.AsyncTask;
@@ -14,6 +15,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -83,6 +85,8 @@ public class LoginActivity extends Activity {
 				if(hasFocus){
 					mUserName.setText(PRECELL);
 					mUserName.setSelection(PRECELL.length());
+					((InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE))
+			        .showSoftInput(mUserName, InputMethodManager.SHOW_FORCED);
 				}
 				
 			}

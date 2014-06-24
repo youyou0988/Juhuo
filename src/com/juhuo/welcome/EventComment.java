@@ -21,6 +21,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.BaseAdapter;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -60,6 +61,7 @@ public class EventComment extends Activity{
 	
 	protected void onCreate(Bundle savedInstanceState){
 		super.onCreate(savedInstanceState);
+		requestWindowFeature(Window.FEATURE_NO_TITLE);//»•µÙ±ÍÃ‚¿∏
 		setContentView(R.layout.comment);
 		mResources = getResources();
 		mPgDialog = new ProgressDialog(this);
@@ -99,9 +101,11 @@ public class EventComment extends Activity{
 		mapPara.put("id", this.event_id);
 		mapPara.put("token", JuhuoConfig.token);
 		mapPara.put("incremental", String.valueOf(true));
+		mAdapter = new CommentListAdapter();
 		if(jo==null){
 			//get network data
 			LoadEventComment loadEventComment = new LoadEventComment();
+			mAsyncTask.add(loadEventComment);
 			loadEventComment.execute(mapPara);
 		}else{
 			JSONArray ja;
@@ -115,7 +119,7 @@ public class EventComment extends Activity{
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			mAdapter = new CommentListAdapter();
+			
 			commentList.setAdapter(mAdapter);
 		}
 		
@@ -141,7 +145,7 @@ public class EventComment extends Activity{
 				mapPara.put("id", event_id);
 				mapPara.put("content", message.getEditableText().toString());
 				mapPara.put("time", df.format(new Date()));
-				mData.add(mapPara);
+				mData.add(0,mapPara);
 				mAdapter.notifyDataSetChanged();
 				noCommentText.setText("");
 				SendCommentClass task = new SendCommentClass();
@@ -232,6 +236,7 @@ public class EventComment extends Activity{
 	    protected void onPreExecute() {
 	        super.onPreExecute();
 	        noCommentText.setText("");
+	        mPgDialog.show();
 	    }
 		@Override
 		protected JSONObject doInBackground(HashMap<String, Object>... map) {
@@ -242,6 +247,7 @@ public class EventComment extends Activity{
 		@Override
 		protected void onPostExecute(JSONObject result) {
 			if(getStop()) return;
+			mPgDialog.dismiss();
 			if(result == null){
 				Log.i(TAG,"cannot get any");//we have reveived 500 error page
 				

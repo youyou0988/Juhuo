@@ -72,53 +72,58 @@ public class ApplyDetailTwo extends Activity {
 				finish();
 			}
 		});
-		HashMap<String,Object> map = new HashMap<String,Object>();
-		map.put("token", JuhuoConfig.token);
-		map.put("id", getIntent().getExtras().getString("id"));
-		ContactJudgeClass task = new ContactJudgeClass();
-		mAsyncTask.add(task);
-		task.execute(map);
-		actionTitleTxt2.setOnClickListener(new View.OnClickListener() {
-			
-			@Override
-			public void onClick(View arg0) {
-				// TODO Auto-generated method stub
-				TextView tv = (TextView)arg0;
-				if(tv.getText().equals("关注")){//加关注
-					JSONObject json = new JSONObject();
-					try {
-						json.put("token", JuhuoConfig.token);
-						JSONArray ja = new JSONArray();
-						JSONObject tm = new JSONObject();
-						tm.put("name", getIntent().getExtras().getString("name"));
-						tm.put("cell", getIntent().getExtras().getString("cell"));
-						ja.put(tm);
-						json.put("contacts", ja);
-					} catch (JSONException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-					CreateFollowClass task = new CreateFollowClass();
-					mAsyncTask.add(task);
-					task.execute(json);
-				}else{//取消关注
-					JSONObject json = new JSONObject();
-					try {
-						json.put("token", JuhuoConfig.token);
-						JSONArray ja = new JSONArray();
-						ja.put(contact_id);
-						json.put("ids", ja);
-					} catch (JSONException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-					ContactDeleteClass task = new ContactDeleteClass();
-					mAsyncTask.add(task);
-					task.execute(json);
-				}
+		if(JuhuoConfig.token.equals(JuhuoConfig.PUBLIC_TOKEN)){
+			actionTitleTxt2.setVisibility(View.INVISIBLE);
+		}else{
+			HashMap<String,Object> map = new HashMap<String,Object>();
+			map.put("token", JuhuoConfig.token);
+			map.put("id", getIntent().getExtras().getString("id"));
+			ContactJudgeClass task = new ContactJudgeClass();
+			mAsyncTask.add(task);
+			task.execute(map);
+			actionTitleTxt2.setOnClickListener(new View.OnClickListener() {
 				
-			}
-		});
+				@Override
+				public void onClick(View arg0) {
+					// TODO Auto-generated method stub
+					TextView tv = (TextView)arg0;
+					if(tv.getText().equals("关注")){//加关注
+						JSONObject json = new JSONObject();
+						try {
+							json.put("token", JuhuoConfig.token);
+							JSONArray ja = new JSONArray();
+							JSONObject tm = new JSONObject();
+							tm.put("name", getIntent().getExtras().getString("name"));
+							tm.put("cell", getIntent().getExtras().getString("cell"));
+							ja.put(tm);
+							json.put("contacts", ja);
+						} catch (JSONException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+						CreateFollowClass task = new CreateFollowClass();
+						mAsyncTask.add(task);
+						task.execute(json);
+					}else{//取消关注
+						JSONObject json = new JSONObject();
+						try {
+							json.put("token", JuhuoConfig.token);
+							JSONArray ja = new JSONArray();
+							ja.put(contact_id);
+							json.put("ids", ja);
+						} catch (JSONException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+						ContactDeleteClass task = new ContactDeleteClass();
+						mAsyncTask.add(task);
+						task.execute(json);
+					}
+					
+				}
+			});
+		}
+		
 		name = (TextView)findViewById(R.id.t2);
 		age = (TextView)findViewById(R.id.t4);
 		gender = (TextView)findViewById(R.id.t6);

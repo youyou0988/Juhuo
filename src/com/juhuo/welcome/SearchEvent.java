@@ -12,7 +12,6 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.res.Resources;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -88,24 +87,24 @@ public class SearchEvent extends Activity {
 			}
 		});
 		keyword.setImeOptions(EditorInfo.IME_ACTION_DONE); 
-		keyword.setOnKeyListener(new OnKeyListener() {  
-			  
-            @Override  
-            public boolean onKey(View v, int keyCode, KeyEvent event) {
-            	if (KeyEvent.KEYCODE_ENTER == keyCode && event.getAction() == KeyEvent.ACTION_DOWN) {  
-                	mPgDialog = new ProgressDialog(SearchEvent.this);
+		keyword.setOnEditorActionListener(new EditText.OnEditorActionListener() {
+			@Override
+			public boolean onEditorAction(TextView arg0, int actionId, KeyEvent arg2) {
+				// TODO Auto-generated method stub
+				if (actionId == EditorInfo.IME_ACTION_DONE) {
+					 //do here your stuff f
+					mPgDialog = new ProgressDialog(SearchEvent.this);
                     mPgDialog.setMessage(mResources.getString(R.string.getting_data));
                     mPgDialog.show();
                     HashMap<String,Object> mapPara = new HashMap<String,Object>();
-            		mapPara.put("token", JuhuoConfig.token);
-            		mapPara.put("title", keyword.getText().toString());
+                    mapPara.put("token", JuhuoConfig.token);
+                    mapPara.put("title", keyword.getText().toString());
                     getNetData(mapPara);
-                    return true;  
-                }  
-                return false;  
-  
-            }  
-        }); 
+					return true;
+			    }
+				return false;
+			} 
+		});
 	}
 	public void getNetData(HashMap<String,Object> map){
 		noEventsText.setText("");

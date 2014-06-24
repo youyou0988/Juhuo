@@ -85,7 +85,7 @@ public class ApplyDetailOne extends Activity {
 	protected ImageLoader imageLoader = ImageLoader.getInstance();
 	private ImageLoadingListener animateFirstListener = new AnimateFirstDisplayListener();
 	private String TAG="ApplyDetailOne";
-	private String type="HOT";
+//	private String type="HOT";
 	private Status st;
 	private String event_id;
 	private int organizer_status=7;
@@ -138,8 +138,13 @@ public class ApplyDetailOne extends Activity {
 			res = getIntent().getExtras().getString("APPLY_DETAIL");
 			urls = getIntent().getExtras().getStringArrayList("APPLY_URLS");
 			break;
+		case ORGANIZER:
+			actionTitle.setText(mResources.getString(R.string.organizer));
+			res = getIntent().getExtras().getString("ORGANIZER_DETAIL");
+			urls = getIntent().getExtras().getStringArrayList("ORGANIZER_URLS");
+			break;
 		}
-		type = getIntent().getExtras().getString("PAGE");
+//		type = getIntent().getExtras().getString("PAGE");
 		try {
 			JSONArray ja = new JSONArray(res);
 			mData = Tool.commonJ2L(ja);
@@ -316,7 +321,7 @@ public class ApplyDetailOne extends Activity {
 				                    public void onClick(DialogInterface dialog, int which) { 
 				                        // TODO Auto-generated method stub  
 				                    	Intent intent = new Intent();
-				                        intent.setAction(Intent.ACTION_CALL);
+				                        intent.setAction(Intent.ACTION_DIAL);
 				                        intent.setData(Uri.parse("tel:"+(String)mData.get(pos).get("cell")));
 				                        startActivity(intent);
 				                    } 

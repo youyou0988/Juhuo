@@ -15,6 +15,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@+id/titlebar"
+        android:layout_above="@+id/commentlay"
         android:divider="@color/divider"
         android:dividerHeight="0.2dp"
         android:listSelector="#0000"

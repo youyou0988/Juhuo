@@ -20,22 +20,26 @@
 	     <TextView android:id="@+id/action_title"
 	         android:layout_width="wrap_content"
 	         android:layout_height="wrap_content"
-	         android:text="@string/name"
+	         android:text="个人简介"
 	         android:textColor="@color/white"
 	         android:gravity="center"
 	         android:textStyle="bold"
 	         android:layout_centerInParent="true"
 	         android:textSize="22sp"/>
-	     <ImageView android:layout_width="wrap_content"
+	     <RelativeLayout android:layout_width="wrap_content"
 	         android:layout_height="wrap_content"
-	         android:background="@drawable/icon_check_inactive"
-	         android:layout_margin="@dimen/pic_margin"
-	         android:id="@+id/action_title_img2"
+	         android:padding="15px"
 	         android:layout_alignParentRight="true"
-	         />
+	         android:id="@+id/checklay">
+	         <ImageView android:layout_width="wrap_content"
+		         android:layout_height="wrap_content"
+		         android:background="@drawable/icon_check_inactive"
+		         android:id="@+id/action_title_img2"
+		         />
+	     </RelativeLayout>
 	</RelativeLayout>
 	<EditText android:layout_height="100dp"
-	    android:layout_width="wrap_content"
+	    android:layout_width="match_parent"
 	    android:layout_marginLeft="15dp"
 	    android:layout_marginTop="10dp"
 	    android:layout_marginRight="15dp"

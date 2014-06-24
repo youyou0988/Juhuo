@@ -145,16 +145,11 @@ public class UserSettingFragment extends Fragment{
 		});
 		JSONObject jsonCache = new JSONObject();
 		jsonCache = Tool.loadJsonFromFile(JuhuoConfig.USERINFO+JuhuoConfig.userId,getActivity());
-		if(jsonCache==null){
-			HashMap<String,Object> mapPara = new HashMap<String,Object>();
-			mapPara.put("token", JuhuoConfig.token);
-			LoadUserInfo loadUserInfo = new LoadUserInfo();
-			mAsyncTask.add(loadUserInfo);
-			loadUserInfo.execute(mapPara);
-		}else{
-			//initial components contents
-			setComponentsContent(jsonCache);
-		}
+		HashMap<String,Object> mapPara = new HashMap<String,Object>();
+		mapPara.put("token", JuhuoConfig.token);
+		LoadUserInfo loadUserInfo = new LoadUserInfo();
+		mAsyncTask.add(loadUserInfo);
+		loadUserInfo.execute(mapPara);
 		
 		return parent;
 	}

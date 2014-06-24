@@ -145,13 +145,12 @@ public class HomeActivity extends SlidingFragmentActivity {
 		if(keyCode == KeyEvent.KEYCODE_BACK)
 	    {
 	        SlidingMenu sm = getSlidingMenu();
-	        if(backTimes!=0)
+	        if(sm.isMenuShowing())
 	        {
 	            finish();
 	            return true;
 	        }else{
 	        	sm.showMenu();
-	        	backTimes++;
 	        	Tool.myToast(HomeActivity.this, mResources.getString(R.string.backhint));
 	        }
 	    }

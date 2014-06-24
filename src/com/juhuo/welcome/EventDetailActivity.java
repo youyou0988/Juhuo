@@ -52,6 +52,7 @@ import android.widget.LinearLayout.LayoutParams;
 import android.widget.RelativeLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.amap.api.maps2d.AMap;
 import com.amap.api.maps2d.CameraUpdateFactory;
@@ -75,6 +76,14 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.nostra13.universalimageloader.core.display.SimpleBitmapDisplayer;
 import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
+import com.sina.weibo.sdk.api.ImageObject;
+import com.sina.weibo.sdk.api.WebpageObject;
+import com.sina.weibo.sdk.api.WeiboMultiMessage;
+import com.sina.weibo.sdk.api.share.IWeiboDownloadListener;
+import com.sina.weibo.sdk.api.share.IWeiboShareAPI;
+import com.sina.weibo.sdk.api.share.SendMultiMessageToWeiboRequest;
+import com.sina.weibo.sdk.api.share.WeiboShareSDK;
+import com.sina.weibo.sdk.utils.Utility;
 import com.tencent.mm.sdk.openapi.IWXAPI;
 import com.tencent.mm.sdk.openapi.SendMessageToWX;
 import com.tencent.mm.sdk.openapi.WXAPIFactory;
@@ -139,6 +148,7 @@ public class EventDetailActivity extends Activity {
 	private Calendar startcal,endcal;
 	private Bitmap thumb;
 	private IWXAPI wxApi;
+	private IWeiboShareAPI  mWeiboShareAPI = null;
 	private View transView;
 	private SimpleDateFormat df = new SimpleDateFormat(Tool.ISO8601DATEFORMAT, Locale.getDefault());
 	private final int UPDATE_EVENT = 0;
@@ -168,6 +178,19 @@ public class EventDetailActivity extends Activity {
 		//实例化
 		wxApi = WXAPIFactory.createWXAPI(this, JuhuoConfig.APP_ID_WECHAT);
 		wxApi.registerApp(JuhuoConfig.APP_ID_WECHAT);
+		
+		mWeiboShareAPI = WeiboShareSDK.createWeiboAPI(this, JuhuoConfig.APP_KEY);
+		mWeiboShareAPI.registerApp();
+		if (!mWeiboShareAPI.isWeiboAppInstalled()) {
+            mWeiboShareAPI.registerWeiboDownloadListener(new IWeiboDownloadListener() {
+                @Override
+                public void onCancel() {
+                    Toast.makeText(EventDetailActivity.this, 
+                            R.string.weibosdk_demo_cancel_download_weibo, 
+                            Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
 		
 	}
 	
@@ -236,6 +259,7 @@ public class EventDetailActivity extends Activity {
 		actionTitleLay.setOnClickListener(InviListener);
 		actionTitleLay2.setOnClickListener(InviListener);
 		eventLinkLay.setOnClickListener(InviListener);
+		eventOrganizer.setOnClickListener(txtListener);
 		
 		mapView = (MapView) findViewById(R.id.map);
 		mapView.onCreate(savedInstanceState);// 必须要写
@@ -279,6 +303,19 @@ public class EventDetailActivity extends Activity {
 		mRefreshableView.setRefreshListener(mRefreshListener);    
 		mRefreshableView.setPullDownElastic(new PullDownElasticImp(this)); 
 	}
+	OnClickListener txtListener = new View.OnClickListener() {
+		
+		@Override
+		public void onClick(View arg0) {
+			// TODO Auto-generated method stub
+			Intent invintent = new Intent(EventDetailActivity.this,ApplyDetailOne.class);
+			invintent.putExtra("ORGANIZER_DETAIL", applyList.get(JuhuoConfig.INVI_ORGANIZER).toString());
+			invintent.putExtra("ORGANIZER_URLS", map.get(JuhuoConfig.INVI_ORGANIZER));
+			invintent.putExtra("TYPE", Status.ORGANIZER);
+			invintent.putExtra("ORGANIZER_STATUS", organizer_status);
+			startActivity(invintent);
+		}
+	};
 	OnClickListener InviListener = new OnClickListener(){
 		@Override
 		public void onClick(View view) {
@@ -287,11 +324,10 @@ public class EventDetailActivity extends Activity {
 			switch (v.getId()){
 			case R.id.participantwid:
 				Intent parintent = new Intent(EventDetailActivity.this,ApplyDetailOne.class);
-				parintent.putExtra("APPLY_DETAIL", applyList.get(JuhuoConfig.INVI_ORGANIZER).toString());
-				parintent.putExtra("APPLY_URLS", map.get(JuhuoConfig.INVI_ORGANIZER));
+				parintent.putExtra("APPLY_DETAIL", applyList.get(JuhuoConfig.INVI_YES).toString());
+				parintent.putExtra("APPLY_URLS", map.get(JuhuoConfig.INVI_YES));
 				parintent.putExtra("TYPE", Status.PARTICIPANT);
 				parintent.putExtra("ORGANIZER_STATUS", organizer_status);
-				parintent.putExtra("PAGE", type);
 				startActivity(parintent);
 				break;
 			case R.id.invitedwid:
@@ -300,7 +336,6 @@ public class EventDetailActivity extends Activity {
 				invintent.putExtra("INVITED_URLS", map.get(JuhuoConfig.INVI_NULL));
 				invintent.putExtra("TYPE", Status.INVITED);
 				invintent.putExtra("ORGANIZER_STATUS", organizer_status);
-				invintent.putExtra("PAGE", type);
 				startActivity(invintent);
 				break;
 			case R.id.absentwid:
@@ -315,7 +350,6 @@ public class EventDetailActivity extends Activity {
 			case R.id.commentlay:
 				Intent comintent = new Intent(EventDetailActivity.this,EventComment.class);
 				comintent.putExtra("id", event_id);
-				comintent.putExtra("PAGE", type);
 				comintent.putExtra("organizer_status",organizer_status);
 				startActivity(comintent);
 				break;
@@ -324,7 +358,6 @@ public class EventDetailActivity extends Activity {
 				applytent.putExtra("APPLY_DETAIL", applyList.get(JuhuoConfig.INVI_APPLY).toString());
 				applytent.putExtra("APPLY_URLS", map.get(JuhuoConfig.INVI_APPLY));
 				applytent.putExtra("TYPE", Status.APPLY);
-				applytent.putExtra("PAGE", type);
 				applytent.putExtra("event_id", event_id);
 				startActivity(applytent);
 				break;
@@ -372,11 +405,7 @@ public class EventDetailActivity extends Activity {
 			case R.id.weibo:
 				shareLay.setVisibility(View.GONE);
 				transView.setVisibility(View.GONE);
-				Intent intent=new Intent(Intent.ACTION_SEND);    
-				intent.setType("text/plain");  //分享的数据类型  
-				intent.putExtra(Intent.EXTRA_SUBJECT, "subject");  //主题  
-				intent.putExtra(Intent.EXTRA_TEXT,  "content");  //内容  
-				startActivity(Intent.createChooser(intent, "title"));  //目标应用选择对话框的标题
+				weiBoShare();
 				break;
 			}
 			
@@ -523,10 +552,14 @@ public class EventDetailActivity extends Activity {
 				}else{
 					url="";
 				}
+				if(status==JuhuoConfig.INVI_ORGANIZER){
+					applyList.get(status).put(jaChoices.getJSONObject(i));//for next page
+					map.get(status).add(url);
+				}
 				
 				if(status==JuhuoConfig.INVI_YES||status==JuhuoConfig.INVI_MAYBE||status==JuhuoConfig.INVI_ORGANIZER){
-					applyList.get(JuhuoConfig.INVI_ORGANIZER).put(jaChoices.getJSONObject(i));//for next page
-					map.get(JuhuoConfig.INVI_ORGANIZER).add(url);
+					applyList.get(JuhuoConfig.INVI_YES).put(jaChoices.getJSONObject(i));//for next page
+					map.get(JuhuoConfig.INVI_YES).add(url);
 				}else{
 					map.get(status).add(url);
 					applyList.get(status).put(jaChoices.getJSONObject(i));
@@ -645,9 +678,29 @@ public class EventDetailActivity extends Activity {
         // insert event to calendar
         Uri uri = cr.insert(CalendarContract.Events.CONTENT_URI, values);
 	}
-	
-	
-	
+	private void weiBoShare(){
+		WeiboMultiMessage weiboMessage = new WeiboMultiMessage();
+
+		weiboMessage.mediaObject = getWebpageObj();
+        SendMultiMessageToWeiboRequest request = new SendMultiMessageToWeiboRequest();
+        request.transaction = String.valueOf(System.currentTimeMillis());
+        request.multiMessage = weiboMessage;
+        
+        mWeiboShareAPI.sendRequest(request);
+    
+	}
+	private WebpageObject getWebpageObj() {
+        WebpageObject mediaObject = new WebpageObject();
+        mediaObject.identify = Utility.generateGUID();
+        mediaObject.title = "组织者:"+organizer;
+        mediaObject.description = "活动邀请:"+title;
+        
+        // 设置 Bitmap 类型的图片到视频对象里
+        mediaObject.setThumbImage(thumb);
+        mediaObject.actionUrl = shareLink;
+        mediaObject.defaultText = "Juhuo WebPage";
+        return mediaObject;
+	}
 	
 	private void wechatShare(int flag){
 		
@@ -657,8 +710,8 @@ public class EventDetailActivity extends Activity {
 		msg.title = "组织者:"+organizer;
 		msg.description = "活动邀请:"+title;
 		//这里替换一张自己工程里的图片资源
-		
 		if(!sharepicurl.equals("")&&thumb!=null&&thumb.getByteCount()<30000){
+			Log.i(TAG+"wechatshare", "set image");
 			msg.setThumbImage(thumb);
 		}
 		
@@ -672,36 +725,45 @@ public class EventDetailActivity extends Activity {
 	public Bitmap getBitmapFromURL(String src) {
 	    try {
 	        InputStream sourceStream;
+//	        OutputStream outputStream;
 	        File cachedImage = ImageLoader.getInstance().getDiscCache().get(src);
 	        if (cachedImage.exists()) { // if image was cached by UIL
 	            sourceStream = new FileInputStream(cachedImage);
+//	            outputStream = new FileOutputStream(cachedImage);
 	        } else { // otherwise - download image
 	        	URL url = new URL(src);
 		        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 		        connection.setDoInput(true);
 		        connection.connect();
 		        sourceStream = connection.getInputStream();
+//		        outputStream = connection.getOutputStream();
 	        }
+	        
 	        final BitmapFactory.Options options = new BitmapFactory.Options();
-	        options.inJustDecodeBounds = true;
-	        BitmapFactory.decodeStream(sourceStream,new Rect(),options);
-	        sourceStream.close();
-	        options.inSampleSize = calculateInSampleSize(options, 35, 35);
+	        options.inJustDecodeBounds = false;
+	        options.inSampleSize = 70;
+	        Bitmap compressedImage = BitmapFactory.decodeStream((InputStream) new URL(src).getContent(),new Rect(),options);
+
+//	        options.inSampleSize = calculateInSampleSize(options, 35, 35);
 	        
 	        // Decode bitmap with inSampleSize set
-	        options.inJustDecodeBounds = false;
+//	        options.inJustDecodeBounds = false;
 //	        if(cachedImage.exists()){
 //	        	Log.i(TAG, cachedImage.getAbsolutePath());
 //	        	Bitmap compressedImage = BitmapFactory.decodeStream(new FileInputStream(ImageLoader.getInstance().getDiscCache().get(src)),null,options);
 //		        Log.i(TAG,String.valueOf(compressedImage==null));
 //		        return compressedImage;
 //	        }else{
-	        	URL url = new URL(src);
-		        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-		        connection.setDoInput(true);
-		        connection.connect();
-		        Bitmap compressedImage = BitmapFactory.decodeStream(connection.getInputStream(),null,options);
-		        Log.i(TAG,String.valueOf(compressedImage==null));
+//	        	URL url = new URL(src);
+//		        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+//		        connection.setDoInput(true);
+//		        connection.connect();
+//		        Bitmap compressedImage = BitmapFactory.decodeStream(sourceStream,null,options);
+		       
+		        if(compressedImage!=null){
+		        	 Log.i(TAG+"compressimage",String.valueOf(compressedImage.getByteCount()));
+		        }
+		        sourceStream.close();
 		        return compressedImage;
 //	        }
 	    } catch (IOException e) {
@@ -743,6 +805,10 @@ public class EventDetailActivity extends Activity {
 			mUiSettings.setZoomControlsEnabled(false);  
 			mUiSettings.setZoomGesturesEnabled(false); 
 			mUiSettings.setScrollGesturesEnabled(false);  
+			mUiSettings.setAllGesturesEnabled(false);
+			mUiSettings.setScaleControlsEnabled(false);
+			
+			
 		}
 	}
 	// 滑动图片数据适配器
@@ -888,10 +954,9 @@ public class EventDetailActivity extends Activity {
 	public boolean onPrepareOptionsMenu(Menu menu){
 		MenuInflater inflater = getMenuInflater();
 		menu.clear();
-		if(type.equals("MYorganizer")){
-			Log.i(TAG, type);
+		if(organizer_status==5){
 			inflater.inflate(R.menu.most, menu);
-		}else{//click image
+		}else{
 			inflater.inflate(R.menu.main, menu);
 		}
 		return true;

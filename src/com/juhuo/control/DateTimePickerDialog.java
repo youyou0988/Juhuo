@@ -38,7 +38,7 @@ public class DateTimePickerDialog extends AlertDialog implements OnClickListener
 			}
 		});
 	    
-	    setButton("设置", this);
+	    setButton("确定", this);
         setButton2("取消", (OnClickListener)null);
         mDate.setTimeInMillis(date);
 	    updateTitle(mDate.getTimeInMillis()); 

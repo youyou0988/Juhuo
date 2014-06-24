@@ -137,6 +137,7 @@ public class CreateEvent extends Activity implements LocationSource,AMapLocation
 		if(getIntent().getExtras().getString("type").equals("update")){
 			createBtn.setText(mResources.getString(R.string.update_event));
 			actionTitle.setText(mResources.getString(R.string.update_event));
+			actionTitleText2.setText("È·¶¨");
 			JSONObject jo = new JSONObject();
 			jo = Tool.loadJsonFromFile(JuhuoConfig.EVENTINFO+getIntent().getExtras().getString("event_id"), this);
 			if(jo!=null){
@@ -378,6 +379,7 @@ public class CreateEvent extends Activity implements LocationSource,AMapLocation
 			mUiSettings.setZoomControlsEnabled(false);  
 			mUiSettings.setZoomGesturesEnabled(false); 
 			mUiSettings.setScrollGesturesEnabled(false);  
+			
 			if(!getIntent().getExtras().getString("type").equals("update")){
 				setUpMap();
 			}
