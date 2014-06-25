@@ -54,12 +54,12 @@ import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.amap.api.maps2d.AMap;
-import com.amap.api.maps2d.CameraUpdateFactory;
-import com.amap.api.maps2d.MapView;
-import com.amap.api.maps2d.UiSettings;
-import com.amap.api.maps2d.model.CameraPosition;
-import com.amap.api.maps2d.model.LatLng;
+import com.amap.api.maps.AMap;
+import com.amap.api.maps.CameraUpdateFactory;
+import com.amap.api.maps.MapView;
+import com.amap.api.maps.UiSettings;
+import com.amap.api.maps.model.CameraPosition;
+import com.amap.api.maps.model.LatLng;
 import com.juhuo.adapter.HotEventsAdapter.AnimateFirstDisplayListener;
 import com.juhuo.contact.SelectContactActivity;
 import com.juhuo.control.PullDownElasticImp;
@@ -76,7 +76,6 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.nostra13.universalimageloader.core.display.SimpleBitmapDisplayer;
 import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
-import com.sina.weibo.sdk.api.ImageObject;
 import com.sina.weibo.sdk.api.WebpageObject;
 import com.sina.weibo.sdk.api.WeiboMultiMessage;
 import com.sina.weibo.sdk.api.share.IWeiboDownloadListener;
@@ -111,7 +110,7 @@ public class EventDetailActivity extends Activity {
 	
 	// 包含圆点图片的View
 	private ViewGroup imageCircleView = null;
-	private ImageView[] imageCircleViews = null; 
+	private ArrayList<ImageView> imageCircleViews; 
 	
 	// 布局设置类
 	private SlideImageLayout slideLayout = null;
@@ -213,7 +212,7 @@ public class EventDetailActivity extends Activity {
 		viewPager.setLayoutParams(layoutParams);
 		
 		// 圆点图片区域
-		imageCircleViews = new ImageView[length];
+		imageCircleViews = new ArrayList<ImageView>();
 		imageCircleView = (ViewGroup) main.findViewById(R.id.layout_circle_images);
 		slideLayout = new SlideImageLayout(EventDetailActivity.this);
 		slideLayout.setCircleImageLayout(length);
@@ -221,8 +220,8 @@ public class EventDetailActivity extends Activity {
 		dummyView = slideLayout.getSlideImageLayout2("");
 		for(int i = 0;i < length;i++){
 			imagePageViews.add(dummyView);
-			imageCircleViews[i] = slideLayout.getCircleImageLayout(i);
-			imageCircleView.addView(slideLayout.getLinearLayout(imageCircleViews[i], 10, 10));
+			imageCircleViews.add(slideLayout.getCircleImageLayout(i));
+			imageCircleView.addView(slideLayout.getLinearLayout(imageCircleViews.get(i), 10, 10));
 		}
 		
 		setContentView(main);
@@ -476,11 +475,21 @@ public class EventDetailActivity extends Activity {
 		try {
 			if(result.has("suc_photos")){
 				JSONArray ja = result.getJSONArray("suc_photos");
-				for(int i=0;i<ja.length();i++){
+				Log.i(TAG+"imagePageViews", String.valueOf(imagePageViews.size()));
+				int imagePageViewsSize = imagePageViews.size();
+				for(int i=0;i<imagePageViewsSize;i++){
 					String url = ja.getJSONObject(i).getString("url");
 					imagePageViews.set(i, slideLayout.getSlideImageLayout2(url));
 					if(i==0) sharepicurl = url;
 				}
+				if(imagePageViewsSize<ja.length()){
+					for(int i=imagePageViewsSize;i<ja.length();i++){
+						String url = ja.getJSONObject(i).getString("url");
+						imagePageViews.add(slideLayout.getSlideImageLayout2(url));
+						imageCircleViews.add(slideLayout.getCircleImageLayout(i-1));
+					}
+				}
+				
 			}
 			adapter = new SlideImageAdapter();
 			viewPager.setAdapter(adapter);  
@@ -887,11 +896,11 @@ public class EventDetailActivity extends Activity {
         	pageIndex = index;
         	slideLayout.setPageIndex(index);
         	
-            for (int i = 0; i < imageCircleViews.length; i++) {  
-            	imageCircleViews[index].setBackgroundResource(R.drawable.dot_selected1);
+            for (int i = 0; i < imageCircleViews.size(); i++) {  
+            	imageCircleViews.get(index).setBackgroundResource(R.drawable.dot_selected1);
                 
                 if (index != i) {  
-                	imageCircleViews[i].setBackgroundResource(R.drawable.dot_none1);  
+                	imageCircleViews.get(i).setBackgroundResource(R.drawable.dot_none1);  
                 }  
             }
         }  
@@ -1009,9 +1018,16 @@ public class EventDetailActivity extends Activity {
 		        	mRefreshableView.onRefreshing();
 		    		LoadEventInfo loadEventInfo = new LoadEventInfo();
 		    		mAsyncTask.add(loadEventInfo);
-		    		loadEventInfo.execute(mapPara);
-		            break;  
-		        
+		    		loadEventInfo.execute(mapPara);		    		
+		    		Bundle buddle = data.getExtras(); 
+		    		int a = buddle.getInt("addedPicNumber");
+		    		for(int i=0;i<a;i++){
+			    			View dummyView = new View(this);
+				    		dummyView = slideLayout.getSlideImageLayout2("");
+				    		imagePageViews.add(dummyView);
+				    		imageCircleViews.add(slideLayout.getCircleImageLayout(i));
+			    		}
+		            break;
 	        }  
 		}	
     }

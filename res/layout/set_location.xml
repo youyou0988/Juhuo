@@ -27,7 +27,7 @@
 	         android:layout_alignParentRight="true"
 	         android:id="@+id/check"/>   
 	</RelativeLayout>
-	<com.amap.api.maps2d.MapView
+	<com.amap.api.maps.MapView
            xmlns:android="http://schemas.android.com/apk/res/android"
            android:id="@+id/map"
            android:layout_width="match_parent"

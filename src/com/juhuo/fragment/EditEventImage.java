@@ -51,6 +51,7 @@ public class EditEventImage extends Fragment{
 	private ArrayList<String> existarrPath = new ArrayList<String>();
     private int[] isuploaded;
     private boolean allUploaded,activityFinish=false;
+    private int adapterType = 0;//0 for create original;1 for update original ;2 for create exist;3 for update exist 
     private ProgressDialog mPgDialog;
     private DisplayImageOptions options;
     protected ImageLoader imageLoader = ImageLoader.getInstance();
@@ -74,6 +75,10 @@ public class EditEventImage extends Fragment{
 		mPgDialog = new ProgressDialog(getActivity());
         mPgDialog.setMessage(mResources.getString(R.string.uploading_photo));
         createOrUpdate = getActivity().getIntent().getExtras().getString("createOrUpdate");
+        if(createOrUpdate.equals("update")){
+			existarrPath = (ArrayList<String>) getActivity().getIntent().getExtras().get("arrPath");
+			photoarrid = (ArrayList<Integer>) getActivity().getIntent().getExtras().get("arrPathid");
+		}
 	}
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -125,17 +130,21 @@ public class EditEventImage extends Fragment{
 			switch(v.getId()){
 			case R.id.filter_all_events:
 				existBtn.setTextColor(mResources.getColor(R.color.mgray));
-				imageAdapter.setArrPath(originalarrPath);
+				if(createOrUpdate.equals("update")){
+					imageAdapter.setArrPath(originalarrPath,1);
+				}else{
+					imageAdapter.setArrPath(originalarrPath,0);
+				}
+				
 				imageAdapter.notifyDataSetChanged();
 				break;
 			case R.id.filter_default_event:
 				uploadBtn.setTextColor(mResources.getColor(R.color.mgray));
 				if(createOrUpdate.equals("update")){
-					existarrPath = (ArrayList<String>) getActivity().getIntent().getExtras().get("arrPath");
-					photoarrid = (ArrayList<Integer>) getActivity().getIntent().getExtras().get("arrPathid");
+					imageAdapter.setArrPath(existarrPath,3);
+				}else{
+					imageAdapter.setArrPath(existarrPath,2);
 				}
-				Log.i(TAG, existarrPath.toString());
-				imageAdapter.setArrPath(existarrPath);
 				imageAdapter.notifyDataSetChanged();
 				break;
 			}
@@ -168,7 +177,8 @@ public class EditEventImage extends Fragment{
 						Intent intent = new Intent(getActivity(),CreateEvent.class);
 						intent.putExtra("photo_ids",photoarrid.toString());
 						intent.putExtra("imageurl", "file://"+originalarrPath.get(0));
-						intent.putExtra("photo_num", originalarrPath.size()+existarrPath.size());
+						intent.putExtra("photo_num", existarrPath.size());
+						intent.putExtra("add_photo_number", originalarrPath.size());
 						getActivity().setResult(getActivity().RESULT_OK, intent);
 						getActivity().finish();
 						activityFinish = true;
@@ -187,12 +197,16 @@ public class EditEventImage extends Fragment{
 					}
 			  }
 			
-		}
+			}
 	};
 	public void setImageGrid(ArrayList<String> selectedarr){
 		this.originalarrPath = selectedarr;
 		this.isuploaded = new int[this.originalarrPath.size()];
-		imageAdapter.setArrPath(selectedarr);
+		if(createOrUpdate.equals("update")){
+			imageAdapter.setArrPath(selectedarr,1);
+		}else{
+			imageAdapter.setArrPath(selectedarr,0);
+		}
 		imageAdapter.notifyDataSetChanged();
 		imageAdapter.notifyDataSetInvalidated();
 		uploadimage(0);
@@ -250,6 +264,9 @@ public class EditEventImage extends Fragment{
 //				Tool.myToast(getActivity(), mResources.getString(R.string.upload_photo_success));
 				try {
 					photoarrid.add(result.getInt("id"));
+					if(createOrUpdate.equals("update")){
+						existarrPath.add(result.getString("smallurl"));
+					}
 				} catch (JSONException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -263,6 +280,7 @@ public class EditEventImage extends Fragment{
 	private class ImageAdapter extends BaseAdapter {
         private LayoutInflater mInflater;
         private ArrayList<String> arrPath;
+        private int adapterType;
         
         public ImageAdapter(ArrayList<String> selectedarr) {
         	mInflater = (LayoutInflater) getActivity()
@@ -270,8 +288,9 @@ public class EditEventImage extends Fragment{
         	this.arrPath = selectedarr;
             
         }
-        public void setArrPath(ArrayList<String> selectedarr){
+        public void setArrPath(ArrayList<String> selectedarr,int type){
         	this.arrPath = selectedarr;
+        	this.adapterType = type;
         }
  
         public int getCount() {
@@ -312,14 +331,19 @@ public class EditEventImage extends Fragment{
 //                    startActivity(intent);
                 }
             });
-            if(isuploaded!=null){
+            if(adapterType==0||adapterType==1){
             	holder.che.setChecked(isuploaded[position]==1?true:false);
+            	imageLoader.displayImage("file://"+ arrPath.get(position)
+            			, holder.imageview, options);
+            }else if(adapterType==3){
+            	holder.che.setVisibility(View.INVISIBLE);
+            	imageLoader.displayImage(arrPath.get(position)
+            			, holder.imageview, options);
             }else{
             	holder.che.setVisibility(View.INVISIBLE);
-            }
-            imageLoader.displayImage(createOrUpdate.equals("update")?arrPath.get(position):("file://"+ arrPath.get(position))
+            	imageLoader.displayImage("file://"+ arrPath.get(position)
             			, holder.imageview, options);
-            
+            }         
             holder.id = position;
             return convertView;
         }

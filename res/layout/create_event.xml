@@ -83,7 +83,7 @@
 	                    android:id="@+id/t2"
 	                    android:singleLine="true"
 	                    android:ellipsize="end"/>
-	                 <TextView 
+	                 <!--<TextView 
 	                    android:layout_height="wrap_content"
 	                    android:layout_width="wrap_content"
 	                    android:textColor="@color/mgray"
@@ -112,7 +112,7 @@
 	                    android:textColor="@color/mgreen"
 	                    android:text="@string/firstpic"
 	                    android:layout_below="@+id/t5"
-	                    android:id="@+id/t6"/>
+	                    android:id="@+id/t6"/>  -->
 	            </RelativeLayout>
 	        </RelativeLayout>
 	        <RelativeLayout android:layout_height="fill_parent"
@@ -233,7 +233,7 @@
 	                        android:textStyle="bold"
 	                        android:background="@null" />
 	                </RelativeLayout>
-	                <com.amap.api.maps2d.MapView
+	                <com.amap.api.maps.MapView
 	                    xmlns:android="http://schemas.android.com/apk/res/android"
 	                    android:id="@+id/map"
 	                    android:layout_width="match_parent"

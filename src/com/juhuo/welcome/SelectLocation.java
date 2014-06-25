@@ -18,23 +18,22 @@ import android.view.Window;
 import android.view.animation.BounceInterpolator;
 import android.view.animation.Interpolator;
 import android.widget.ImageView;
-import android.widget.TextView;
 
 import com.amap.api.location.LocationManagerProxy;
-import com.amap.api.maps2d.AMap;
-import com.amap.api.maps2d.AMap.InfoWindowAdapter;
-import com.amap.api.maps2d.AMap.OnInfoWindowClickListener;
-import com.amap.api.maps2d.AMap.OnMapLoadedListener;
-import com.amap.api.maps2d.AMap.OnMarkerClickListener;
-import com.amap.api.maps2d.AMap.OnMarkerDragListener;
-import com.amap.api.maps2d.CameraUpdateFactory;
-import com.amap.api.maps2d.MapView;
-import com.amap.api.maps2d.Projection;
-import com.amap.api.maps2d.model.BitmapDescriptorFactory;
-import com.amap.api.maps2d.model.CameraPosition;
-import com.amap.api.maps2d.model.LatLng;
-import com.amap.api.maps2d.model.Marker;
-import com.amap.api.maps2d.model.MarkerOptions;
+import com.amap.api.maps.AMap;
+import com.amap.api.maps.AMap.InfoWindowAdapter;
+import com.amap.api.maps.AMap.OnInfoWindowClickListener;
+import com.amap.api.maps.AMap.OnMapLoadedListener;
+import com.amap.api.maps.AMap.OnMarkerClickListener;
+import com.amap.api.maps.AMap.OnMarkerDragListener;
+import com.amap.api.maps.CameraUpdateFactory;
+import com.amap.api.maps.MapView;
+import com.amap.api.maps.Projection;
+import com.amap.api.maps.model.BitmapDescriptorFactory;
+import com.amap.api.maps.model.CameraPosition;
+import com.amap.api.maps.model.LatLng;
+import com.amap.api.maps.model.Marker;
+import com.amap.api.maps.model.MarkerOptions;
 import com.amap.api.services.core.LatLonPoint;
 import com.amap.api.services.geocoder.GeocodeResult;
 import com.amap.api.services.geocoder.GeocodeSearch;
@@ -210,7 +209,7 @@ public class SelectLocation extends Activity implements
 				double lat = t * currentLoc.latitude + (1 - t)
 						* startLatLng.latitude;
 				marker.setPosition(new LatLng(lat, lng));
-				aMap.invalidate();// 刷新地图
+//				aMap.invalidate();// 刷新地图
 				if (t < 1.0) {
 					handler.postDelayed(this, 16);
 				}

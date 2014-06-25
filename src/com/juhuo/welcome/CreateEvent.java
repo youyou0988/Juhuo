@@ -28,22 +28,22 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.amap.api.location.AMapLocation;
 import com.amap.api.location.AMapLocationListener;
 import com.amap.api.location.LocationManagerProxy;
 import com.amap.api.location.LocationProviderProxy;
-import com.amap.api.maps2d.AMap;
-import com.amap.api.maps2d.CameraUpdateFactory;
-import com.amap.api.maps2d.LocationSource;
-import com.amap.api.maps2d.MapView;
-import com.amap.api.maps2d.UiSettings;
-import com.amap.api.maps2d.model.BitmapDescriptorFactory;
-import com.amap.api.maps2d.model.CameraPosition;
-import com.amap.api.maps2d.model.LatLng;
-import com.amap.api.maps2d.model.MyLocationStyle;
+import com.amap.api.maps.AMap;
+import com.amap.api.maps.CameraUpdateFactory;
+import com.amap.api.maps.LocationSource;
+import com.amap.api.maps.LocationSource.OnLocationChangedListener;
+import com.amap.api.maps.MapView;
+import com.amap.api.maps.UiSettings;
+import com.amap.api.maps.model.BitmapDescriptorFactory;
+import com.amap.api.maps.model.CameraPosition;
+import com.amap.api.maps.model.LatLng;
+import com.amap.api.maps.model.MyLocationStyle;
 import com.juhuo.control.DateTimePickerDialog;
 import com.juhuo.control.DateTimePickerDialog.OnDateTimeSetListener;
 import com.juhuo.tool.CheckStopAsyncTask;
@@ -71,7 +71,7 @@ public class CreateEvent extends Activity implements LocationSource,AMapLocation
 	private AMapLocation currentLoc;
 	private String photo_ids,time_begin,time_end,event_type="0",description,addr,title,event_id;
 	private double lat,lng;
-	private int privacy=0,need_approve_apply=0,allow_apns=0;
+	private int privacy=0,need_approve_apply=0,allow_apns=0,picNumberInt=0;
 	private CheckBox privacyche,need_approve_che,allow_apns_che;
 	private SimpleDateFormat df = new SimpleDateFormat(Tool.ISO8601DATEFORMAT, Locale.getDefault());
 	private Calendar time_begin_cal,time_end_cal;
@@ -162,37 +162,39 @@ public class CreateEvent extends Activity implements LocationSource,AMapLocation
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
-				privacy = privacyche.isChecked()?1:0;
-				need_approve_apply = need_approve_che.isChecked()?1:0;
-				allow_apns = allow_apns_che.isChecked()?1:0;
-				title = eventTitle.getText().toString();
-				HashMap<String,Object> map = new HashMap<String,Object>();
-				map.put("token", JuhuoConfig.token);
-				map.put("title", title);
-				map.put("time_begin", time_begin);
-				map.put("time_end", time_end);
-				map.put("description", description);
-				map.put("cost", (eventCost.getText().toString().equals("")
-						||eventCost.getText().toString().equals("√‚∑—"))?"0":
-						eventCost.getText().toString());
-				map.put("url", eventLink.getText().toString());
-				map.put("event_type", event_type);
-				map.put("need_approve_apply", String.valueOf(need_approve_apply));
-				if(!photo_ids.equals("")){
-					map.put("photo_ids", photo_ids);
-				}
-				map.put("privacy", String.valueOf(privacy));
-				map.put("allow_apns", String.valueOf(allow_apns));
-				map.put("lat", String.valueOf(lat));
-				map.put("lng", String.valueOf(lng));
-				map.put("addr",eventPlace.getText().toString());
-				CreateEventWord task = new CreateEventWord(getIntent().getExtras().getString("type"));
-				Log.i(TAG, map.toString());
-				task.execute(map);
-				
+				saveEvent();
 			}
 		});
-		
+		actionTitleText2.setOnClickListener(typeClick);
+	}
+	private void saveEvent(){
+		privacy = privacyche.isChecked()?1:0;
+		need_approve_apply = need_approve_che.isChecked()?1:0;
+		allow_apns = allow_apns_che.isChecked()?1:0;
+		title = eventTitle.getText().toString();
+		HashMap<String,Object> map = new HashMap<String,Object>();
+		map.put("token", JuhuoConfig.token);
+		map.put("title", title);
+		map.put("time_begin", time_begin);
+		map.put("time_end", time_end);
+		map.put("description", description);
+		map.put("cost", (eventCost.getText().toString().equals("")
+				||eventCost.getText().toString().equals("√‚∑—"))?"0":
+				eventCost.getText().toString());
+		map.put("url", eventLink.getText().toString());
+		map.put("event_type", event_type);
+		map.put("need_approve_apply", String.valueOf(need_approve_apply));
+		if(!photo_ids.equals("")){
+			map.put("photo_ids", photo_ids);
+		}
+		map.put("privacy", String.valueOf(privacy));
+		map.put("allow_apns", String.valueOf(allow_apns));
+		map.put("lat", String.valueOf(lat));
+		map.put("lng", String.valueOf(lng));
+		map.put("addr",eventPlace.getText().toString());
+		CreateEventWord task = new CreateEventWord(getIntent().getExtras().getString("type"));
+		Log.i(TAG, map.toString());
+		task.execute(map);
 	}
 	private void setViewsContent(JSONObject result){
 		try {
@@ -268,6 +270,9 @@ public class CreateEvent extends Activity implements LocationSource,AMapLocation
 				Intent intent = new Intent(CreateEvent.this,EditEventDetail.class);
 				intent.putExtra("detail", vt.getText());
 				startActivityForResult(intent,EditDetailEvent);
+				break;
+			case R.id.action_title_text2:
+				saveEvent();
 				break;
 			}
 			
@@ -356,6 +361,7 @@ public class CreateEvent extends Activity implements LocationSource,AMapLocation
 					Tool.myToast(CreateEvent.this, mResources.getString(R.string.update_event_success));
 					Intent intent = new Intent(CreateEvent.this,EventDetailActivity.class);
 					intent.putExtra("update_event", "success");
+					intent.putExtra("addedPicNumber", picNumberInt);
 					setResult(RESULT_OK, intent);
 					
 				}else{
@@ -423,6 +429,7 @@ public class CreateEvent extends Activity implements LocationSource,AMapLocation
 		        	Bundle photobuddle = data.getExtras();  
 		            photo_ids = photobuddle.getString("photo_ids");
 		            picNumber.setText(photobuddle.getInt("photo_num")+"’≈");
+		            picNumberInt = photobuddle.getInt("add_photo_number");
 		            imageLoader.displayImage(photobuddle.getString("imageurl"), image,options);
 		        	break;
 	        }  

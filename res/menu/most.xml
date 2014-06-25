@@ -26,6 +26,11 @@
         android:showAsAction="never"
         android:title="@string/share_event"/>
     <item
+        android:id="@+id/delete_event"
+        android:orderInCategory="100"
+        android:showAsAction="never"
+        android:title="@string/delete_event"/>
+    <item
         android:id="@+id/cancel"
         android:orderInCategory="100"
         android:showAsAction="never"
