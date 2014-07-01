@@ -13,6 +13,7 @@ import org.json.JSONObject;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
@@ -28,6 +29,7 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Switch;
 import android.widget.TextView;
 
 import com.amap.api.location.AMapLocation;
@@ -37,7 +39,6 @@ import com.amap.api.location.LocationProviderProxy;
 import com.amap.api.maps.AMap;
 import com.amap.api.maps.CameraUpdateFactory;
 import com.amap.api.maps.LocationSource;
-import com.amap.api.maps.LocationSource.OnLocationChangedListener;
 import com.amap.api.maps.MapView;
 import com.amap.api.maps.UiSettings;
 import com.amap.api.maps.model.BitmapDescriptorFactory;
@@ -60,6 +61,7 @@ public class CreateEvent extends Activity implements LocationSource,AMapLocation
 	private TextView actionTitleText,actionTitleText2,eventBeginTime,eventEndTime,eventType
 		,picNumber,actionTitle,eventDetailText;
 	private ImageView image;
+	private ProgressDialog mPgDialog;
 	private EditText eventPlace,eventTitle,eventCost,eventLink;
 	private Button createBtn;
 	private Resources mResources;
@@ -69,10 +71,10 @@ public class CreateEvent extends Activity implements LocationSource,AMapLocation
 	private OnLocationChangedListener mListener;
 	private LocationManagerProxy mAMapLocationManager;
 	private AMapLocation currentLoc;
-	private String photo_ids,time_begin,time_end,event_type="0",description,addr,title,event_id;
+	private String photo_ids="",time_begin,time_end,event_type="0",description,addr,title,event_id;
 	private double lat,lng;
 	private int privacy=0,need_approve_apply=0,allow_apns=0,picNumberInt=0;
-	private CheckBox privacyche,need_approve_che,allow_apns_che;
+	private Switch privacyche,need_approve_che,allow_apns_che;
 	private SimpleDateFormat df = new SimpleDateFormat(Tool.ISO8601DATEFORMAT, Locale.getDefault());
 	private Calendar time_begin_cal,time_end_cal;
 	private static final int SelectLocation = 0;
@@ -100,6 +102,7 @@ public class CreateEvent extends Activity implements LocationSource,AMapLocation
 		requestWindowFeature(Window.FEATURE_NO_TITLE);//»•µÙ±ÍÃ‚¿∏
 		setContentView(R.layout.create_event);
 		mResources = getResources();
+		mPgDialog = new ProgressDialog(this);
 		actionTitleText = (TextView)findViewById(R.id.action_title_text);
 		actionTitleText2 = (TextView)findViewById(R.id.action_title_text2);
 		actionTitle = (TextView)findViewById(R.id.action_title);
@@ -114,9 +117,9 @@ public class CreateEvent extends Activity implements LocationSource,AMapLocation
 		eventCost = (EditText)findViewById(R.id.event_cost);
 		image = (ImageView)findViewById(R.id.image);
 		createBtn = (Button)findViewById(R.id.create_btn);
-		privacyche = (CheckBox)findViewById(R.id.ispublicche);
-		need_approve_che = (CheckBox)findViewById(R.id.isapproveche);
-		allow_apns_che = (CheckBox)findViewById(R.id.newmessageche);
+		privacyche = (Switch)findViewById(R.id.ispublicche);
+		need_approve_che = (Switch)findViewById(R.id.isapproveche);
+		allow_apns_che = (Switch)findViewById(R.id.newmessageche);
 		actionTitleText.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View arg0) {
@@ -168,7 +171,7 @@ public class CreateEvent extends Activity implements LocationSource,AMapLocation
 		actionTitleText2.setOnClickListener(typeClick);
 	}
 	private void saveEvent(){
-		privacy = privacyche.isChecked()?1:0;
+		privacy = privacyche.isChecked()?0:1;
 		need_approve_apply = need_approve_che.isChecked()?1:0;
 		allow_apns = allow_apns_che.isChecked()?1:0;
 		title = eventTitle.getText().toString();
@@ -194,6 +197,7 @@ public class CreateEvent extends Activity implements LocationSource,AMapLocation
 		map.put("addr",eventPlace.getText().toString());
 		CreateEventWord task = new CreateEventWord(getIntent().getExtras().getString("type"));
 		Log.i(TAG, map.toString());
+		mAsyncTask.add(task);
 		task.execute(map);
 	}
 	private void setViewsContent(JSONObject result){
@@ -336,6 +340,16 @@ public class CreateEvent extends Activity implements LocationSource,AMapLocation
 			createOrUpdate = ty;
 		}
 		@Override
+	    protected void onPreExecute() {
+	        super.onPreExecute();
+	        if(createOrUpdate.equals("update")){
+	        	mPgDialog.setMessage(mResources.getString(R.string.updating));
+	        }else{
+	        	mPgDialog.setMessage(mResources.getString(R.string.creating));
+	        }
+	        mPgDialog.show();
+	    }
+		@Override
 		protected JSONObject doInBackground(HashMap<String, Object>... map) {
 			// TODO Auto-generated method stub
 			HashMap<String,Object> mapped = map[0];
@@ -350,6 +364,7 @@ public class CreateEvent extends Activity implements LocationSource,AMapLocation
 		@Override
 		protected void onPostExecute(JSONObject result) {
 			if(getStop()) return;
+			mPgDialog.dismiss();
 			if(result == null){
 				Log.i(TAG,"cannot get any");//we have reveived 500 error page
 				Tool.myToast(CreateEvent.this, mResources.getString(R.string.error_network));

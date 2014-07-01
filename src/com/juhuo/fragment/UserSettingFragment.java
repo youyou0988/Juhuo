@@ -63,7 +63,7 @@ public class UserSettingFragment extends Fragment{
 	private ImageView actionTitleImg;
 	private ImageView actionTitleImg2;
 	private TextView actionTitle,noEventsText;
-	private RelativeLayout parent;
+	private RelativeLayout parent,actionTitleLay;
 	private View transView;
 	private Button logout;
 	private int menuType = 1;//0 for picture;1 for plus;2 for logout
@@ -110,7 +110,7 @@ public class UserSettingFragment extends Fragment{
 				R.layout.user_setting_layout, null);
 		logout = (Button)parent.findViewById(R.id.logout);
 		transView = (View)parent.findViewById(R.id.transview);
-		
+		actionTitleLay = (RelativeLayout)parent.findViewById(R.id.action_title_lay);
 		actionTitleImg = (ImageView)parent.findViewById(R.id.action_title_img);
 		actionTitleImg2 = (ImageView)parent.findViewById(R.id.action_title_img2);
 		actionTitle = (TextView)parent.findViewById(R.id.action_title);
@@ -130,7 +130,14 @@ public class UserSettingFragment extends Fragment{
 		age.setOnClickListener(txtClick);
 		gender.setOnClickListener(txtClick);
 		description.setOnClickListener(txtClick);
-		actionTitleImg.setOnClickListener(clickLisnter);
+		actionTitleLay.setOnClickListener(new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View arg0) {
+				// TODO Auto-generated method stub
+				((SlidingFragmentActivity)getActivity()).toggle();
+			}
+		});
 		actionTitleImg2.setOnClickListener(clickLisnter);
 		image.setOnClickListener(clickLisnter);
 		logout.setOnClickListener(new View.OnClickListener() {
@@ -225,8 +232,6 @@ public class UserSettingFragment extends Fragment{
 				//sth is wrong
 				Tool.dialog(getActivity());
 			}else{
-				Intent intent = new Intent(getActivity(),MainActivity.class);
-				startActivity(intent);
 				getActivity().finish();
 			}
 		}

@@ -8,6 +8,7 @@
     <string name="slash_name">聚伙</string>
     <string name="slash_login">登陆</string>
     <string name="slash_skil_login">随便逛逛</string>
+    <string name="juhuo_protocol">聚伙用户协议</string>
     <string name="login_name">登录</string>
     <string name="logout">退出登录</string>
     <string name="login_username_hint">聚伙用户名/注册手机号码</string>
@@ -88,6 +89,7 @@
 	<string name="update_event_success">修改活动成功！</string>
 	<string name="send_invitation_success">发送邀请成功！</string>
 	<string name="send_remind_success">提醒已发送！</string>
+	<string name="send_email">发送邮件</string>
 	
 	<string name="name">姓名</string>
 	<string name="age">年龄</string>
@@ -133,8 +135,11 @@
     <string name="getting_data">正在获取数据，请稍候</string>
     <string name="uploading_photo">正在上传图片请稍后</string>
     <string name="reading_contacts">正在读取联系人列表请稍候</string>
+    <string name="updating">正在更新活动请稍后</string>
+    <string name="creating">正在创建活动请稍后</string>
     <string name="add_to_calendar_success">添加日历成功！</string>
     <string name="makesure_delete_event">确定删除这个活动么？</string>
+    <string name="delete_event">删除活动</string>
     
     <string name="xlistview_header_hint_normal">下拉刷新</string>
     <string name="xlistview_header_hint_ready">松开刷新数据</string>
@@ -171,5 +176,25 @@
     <string name="backhint">再按一次退出程序</string>
     <string name="system_setting">系统设置</string>
     <string name="receive_notice">接受新消息通知</string>
+    <string name="user_feedback">用户反馈</string>
+    <string name="please_feedback">请填写您的反馈</string>
     <string name="weibosdk_demo_cancel_download_weibo">取消下载</string>
+    <string name="long_protocol">\u0020\u0020\u0020\u0020“聚伙”iOS版适用于苹果公司iPhone手机iOS操作系统6.0以上版本，对于在其他操作系统平台使用本应用可能出现的任何问题，Weichang Wang恕不承担任何责任。\n
+    \u0020\u0020\u0020\u0020“聚伙”及服务的所有权和运营权以及业务规则及活动的解释权均归Weichang Wang所有。本应用及在提供服务过程中，需经您同意并提供手机位置数据、电话号码等属于您的私人信息，此类信息将仅限于满足您的组织聚会需求，我将采取合理的措施保护您的个人隐私，除法律或有法律赋予权限的政府部门要求或您同意等原因外，Weichang Wang未经您同意不会向除合作单位以外的第三方公开、透露您的个人隐私。
+    \u0020\u0020\u0020\u0020在“聚伙”应用使用过程中将产生的通信数据流量费用，该服务与费用由您的通信运营商提供，Weichang Wang不提供通信服务和流量费用的收取。\n
+\u0020\u0020\u0020\u0020“聚伙”旨在提供您一种新型的组织聚会方式，对于爽约行为不承担责任;用户注册成功后，该用户帐号和密码由用户负责保管；用户使用过程中，须对自身使用行为，对任何由用户通过“聚伙”服务发布、公开的信息，及对由此产生的任何后果承担全部责任。用户提交、发布或显示的信息将对其他用户及第三方服务及网站可见。
+\u0020\u0020\u0020\u0020为提高用户的使用感受和满意度，用户同意Weichang Wang将基于用户的操作行为对用户数据进行调查研究和分析，从而进一步优化“聚伙”服务。\n
+\u0020\u0020\u0020\u0020“聚伙”的具体内容由Weichang Wang根据实际情况提供，包括但不限于授权用户通过其帐号，使用“聚伙”服务发布观点、评论、图片、视频、转发链接等，Weichang Wang有权对其提供的服务或产品形态进行升级或其他调整。\n
+\u0020\u0020\u0020\u0020用户理解，Weichang Wang需要定期或不定期地对提供服务的平台（如互联网网站、移动网络等）或相关的设备进行检修或者维护，如因此类情况而造成服务在合理时间内的中断，Weichang Wang无需为此承担任何责任，但Weichang Wang应尽可能事先进行通告。\n
+\u0020\u0020\u0020\u0020由于“聚伙”服务的存在前提是用户在申请开通“聚伙”服务的过程中所提供的帐号，则用户不应将其帐号、密码转让或出借予他人使用。如用户发现其帐号或“聚伙”服务遭他人非法使用，应立即通知Weichang Wang。因黑客行为或用户的保管疏忽导致帐号、密码及”聚伙“服务遭他人非法使用，Weichang Wang有权拒绝承担任何责任。\n
+\u0020\u0020\u0020\u0020用户同意Weichang Wang在提供“聚伙”服务过程中以各种方式投放各种商业性广告或其他任何类型的商业信息（包括但不限于在“聚伙”网站的任何页面上投放广告），并且，用户同意接受Weichang Wang通过电子邮件或其他方式向用户发送商品促销或其他相关商业信息。\n
+\u0020\u0020\u0020\u0020对于用户通过“聚伙”服务公开发布的任何内容，用户同意Weichang Wang在全世界范围内具有免费的、永久性的、不可撤销的、非独家的和完全再许可的权利和许可，以使用、复制、修改、改编、出版、翻译、据以创作衍生作品、传播、表演和展示此等内容（整体或部分），和/或将此等内容编入当前已知的或以后开发的其他任何形 式的作品、媒体或技术中。\n
+\u0020\u0020\u0020\u0020用户在使用“聚伙”服务过程中，必须遵循以下原则：遵守中国有关的法律和法规；遵守所有与网络服务、网络协议、规定和程序；不得为任何非法目的而使用“聚伙”服务系统；不得以任何形式使用“聚伙”服务侵犯Weichang Wang的权利和/或利益；不得利用“聚伙”服务系统进行任何可能对互联网或移动网正常运转造成不利影响的行为；不得利用Weichang Wang提供的“聚伙”服务上传、展示或传播任何虚假的、骚扰性的、中伤他人的、种族歧视性的、辱骂性的、恐吓性的、成人情色的或其他任何非法的信息资料；不得以任何方式侵犯其他任何人依法享有的专利权、著作权、商标权、名誉权或其他任何合法权益；不得利用“聚伙”服务系统进行任何不利于Weichang Wang的行为；\n
+\u0020\u0020\u0020\u0020Weichang Wang有权对用户使用“聚伙”服务的情况进行审查和监督(包括但不限于对用户存储在“聚伙”平台的内容进行审核)，如用户在使用“聚伙”服务时违反任何上述规定，Weichang Wang或其授权的主体有权要求用户改正或直接采取一切必要的措施（包括但不限于更改或删除用户张贴的内容等、暂停或终止用户使用“聚伙”服务的权利）以消除或减轻用户不当行为造成的影响，Weichang Wang在进行前述操作前，操作过程中或操作完成后将尽可能对用户进行通知。\n
+\u0020\u0020\u0020\u0020Weichang Wang针对某些特定的”聚伙“服务的使用通过各种方式（包括但不限于网页公告、系统通知、私信、短信提醒等）作出的任何声明、通知、警示等内容视为本协议的一部分，用户如使用该等“聚伙”服务，视为用户同意该等声明、通知、警示的内容。\n
+\u0020\u0020\u0020\u0020用户在使用“聚伙”服务的过程中应文明发言，并依法尊重其它用户的人格权与个人隐私，共同建立和谐、文明、礼貌的网络社交环境。\n
+\u0020\u0020\u0020\u0020为提升“聚伙”服务的质量，Weichang Wang可能会与第三方合作共同向用户提供相关的”聚伙“服务，此类合作可能需要包括但不限于“聚伙”用户数据与第三方用户数据的互通。在此情况下，用户知晓并同意如该第三方同意承担与Weichang Wang同等的保护用户隐私的责任，则Weichang Wang有权将用户的注册资料等提供给该第三方，并与第三方约定用户数据仅为双方合作的“聚伙”服务之目的使用；并且，Weichang Wang将对该等第三方使用用户数据的行为进行监督和管理，尽一切合理努力保护用户个人信息的安全性。\n
+\u0020\u0020\u0020\u0020对于因不可抗力或Weichang Wang不能控制的原因造成的“聚伙”服务中断或其它缺陷，Weichang Wang不承担任何责任，但将尽力减少因此而给用户造成的损失和影响。\n
+        
+    </string>
 </resources>

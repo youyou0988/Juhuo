@@ -17,6 +17,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.juhuo.tool.CheckStopAsyncTask;
@@ -40,6 +41,7 @@ public class ApplyDetailTwo extends Activity {
 	private TextView actionTitle,actionTitleTxt2;
 	private Resources mResources;
 	private ProgressDialog mPgDialog;
+	private RelativeLayout actionTitleLay;
 	private int contact_id=0;
 	DisplayImageOptions options = new DisplayImageOptions.Builder()
 	.imageScaleType(ImageScaleType.IN_SAMPLE_INT)
@@ -60,12 +62,11 @@ public class ApplyDetailTwo extends Activity {
 		setContentView(R.layout.apply_detail_two);
 		mResources = getResources();
 		mPgDialog = new ProgressDialog(this);
-		actionTitleImg = (ImageView)findViewById(R.id.action_title_img);
 		actionTitleTxt2 = (TextView)findViewById(R.id.action_title_txt2);
 		actionTitle = (TextView)findViewById(R.id.action_title);
-		actionTitleImg.setBackgroundDrawable(mResources.getDrawable(R.drawable.icon_back));
 		actionTitle.setText(mResources.getString(R.string.description));
-		actionTitleImg.setOnClickListener(new View.OnClickListener() {
+		actionTitleLay = (RelativeLayout)findViewById(R.id.action_title_lay);
+		actionTitleLay.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View arg0) {
 				// TODO Auto-generated method stub

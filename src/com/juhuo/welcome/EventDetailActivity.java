@@ -1,5 +1,6 @@
 package com.juhuo.welcome;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -20,10 +21,13 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.ActivityNotFoundException;
 import android.content.ContentResolver;
 import android.content.ContentValues;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
@@ -144,15 +148,15 @@ public class EventDetailActivity extends Activity {
 	private final String TAG = "EventDetailActivity";
 	private String description="";
 	private String type,title,organizer,sharepicurl="",shareLink;
+	private StringBuffer participantsForEmail = new StringBuffer();
 	private Calendar startcal,endcal;
 	private Bitmap thumb;
 	private IWXAPI wxApi;
 	private IWeiboShareAPI  mWeiboShareAPI = null;
 	private View transView;
 	private SimpleDateFormat df = new SimpleDateFormat(Tool.ISO8601DATEFORMAT, Locale.getDefault());
-	private final int UPDATE_EVENT = 0;
+	private final int UPDATE_EVENT = 0,APPLY_DETAIL = 1;
 	private List<CheckStopAsyncTask> mAsyncTask = new ArrayList<CheckStopAsyncTask>();
-	
 	protected void onCreate(Bundle savedInstanceState){
 		super.onCreate(savedInstanceState);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);//去掉标题栏
@@ -237,8 +241,6 @@ public class EventDetailActivity extends Activity {
 		actionTitleImg2.setVisibility(View.VISIBLE);
 		actionTitle.setText(mResources.getString(R.string.detail_event));
 		
-		actionTitleImg.setOnClickListener(clickListener);
-		actionTitleImg2.setOnClickListener(clickListener);
 		
 		eventTitle = (TextView)findViewById(R.id.event_title);
 		eventTime = (TextView)findViewById(R.id.event_time);
@@ -358,7 +360,7 @@ public class EventDetailActivity extends Activity {
 				applytent.putExtra("APPLY_URLS", map.get(JuhuoConfig.INVI_APPLY));
 				applytent.putExtra("TYPE", Status.APPLY);
 				applytent.putExtra("event_id", event_id);
-				startActivity(applytent);
+				startActivityForResult(applytent,APPLY_DETAIL);
 				break;
 			case R.id.action_title_lay:
 				finish();
@@ -477,7 +479,7 @@ public class EventDetailActivity extends Activity {
 				JSONArray ja = result.getJSONArray("suc_photos");
 				Log.i(TAG+"imagePageViews", String.valueOf(imagePageViews.size()));
 				int imagePageViewsSize = imagePageViews.size();
-				for(int i=0;i<imagePageViewsSize;i++){
+				for(int i=0;ja.length()!=0&&i<imagePageViewsSize;i++){
 					String url = ja.getJSONObject(i).getString("url");
 					imagePageViews.set(i, slideLayout.getSlideImageLayout2(url));
 					if(i==0) sharepicurl = url;
@@ -569,12 +571,15 @@ public class EventDetailActivity extends Activity {
 				if(status==JuhuoConfig.INVI_YES||status==JuhuoConfig.INVI_MAYBE||status==JuhuoConfig.INVI_ORGANIZER){
 					applyList.get(JuhuoConfig.INVI_YES).put(jaChoices.getJSONObject(i));//for next page
 					map.get(JuhuoConfig.INVI_YES).add(url);
+					participantsForEmail.append(jaChoices.getJSONObject(i).getString("name"));
+					participantsForEmail.append(":");
+					participantsForEmail.append(jaChoices.getJSONObject(i).getString("cell")+"\n");
 				}else{
 					map.get(status).add(url);
 					applyList.get(status).put(jaChoices.getJSONObject(i));
 				}
 			}
-			setChoicesTable(JuhuoConfig.INVI_ORGANIZER,map);
+			setChoicesTable(JuhuoConfig.INVI_YES,map);
 			setChoicesTable(JuhuoConfig.INVI_NULL,map);
 			setChoicesTable(JuhuoConfig.INVI_NO,map);
 			setChoicesTable(JuhuoConfig.INVI_APPLY,map);
@@ -617,7 +622,7 @@ public class EventDetailActivity extends Activity {
 		TableRow tr = new TableRow(this);
 		TextView tx = new TextView(this);
 //		map.get(type).removeAll(Collections.singleton(""));
-		if(type==JuhuoConfig.INVI_ORGANIZER){
+		if(type==JuhuoConfig.INVI_YES){
 			//participant layout
 			tr = (TableRow)findViewById(R.id.participantrows);
 			tx = (TextView)findViewById(R.id.participant);
@@ -734,47 +739,37 @@ public class EventDetailActivity extends Activity {
 	public Bitmap getBitmapFromURL(String src) {
 	    try {
 	        InputStream sourceStream;
-//	        OutputStream outputStream;
 	        File cachedImage = ImageLoader.getInstance().getDiscCache().get(src);
 	        if (cachedImage.exists()) { // if image was cached by UIL
 	            sourceStream = new FileInputStream(cachedImage);
-//	            outputStream = new FileOutputStream(cachedImage);
 	        } else { // otherwise - download image
 	        	URL url = new URL(src);
 		        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 		        connection.setDoInput(true);
 		        connection.connect();
 		        sourceStream = connection.getInputStream();
-//		        outputStream = connection.getOutputStream();
 	        }
 	        
 	        final BitmapFactory.Options options = new BitmapFactory.Options();
 	        options.inJustDecodeBounds = false;
-	        options.inSampleSize = 70;
-	        Bitmap compressedImage = BitmapFactory.decodeStream((InputStream) new URL(src).getContent(),new Rect(),options);
-
-//	        options.inSampleSize = calculateInSampleSize(options, 35, 35);
+	        options.inSampleSize = 10;
+	        Bitmap compressedBit = BitmapFactory.decodeStream((InputStream) new URL(src).getContent(),new Rect(),options);
 	        
-	        // Decode bitmap with inSampleSize set
-//	        options.inJustDecodeBounds = false;
-//	        if(cachedImage.exists()){
-//	        	Log.i(TAG, cachedImage.getAbsolutePath());
-//	        	Bitmap compressedImage = BitmapFactory.decodeStream(new FileInputStream(ImageLoader.getInstance().getDiscCache().get(src)),null,options);
-//		        Log.i(TAG,String.valueOf(compressedImage==null));
-//		        return compressedImage;
-//	        }else{
-//	        	URL url = new URL(src);
-//		        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-//		        connection.setDoInput(true);
-//		        connection.connect();
-//		        Bitmap compressedImage = BitmapFactory.decodeStream(sourceStream,null,options);
-		       
-		        if(compressedImage!=null){
-		        	 Log.i(TAG+"compressimage",String.valueOf(compressedImage.getByteCount()));
-		        }
-		        sourceStream.close();
-		        return compressedImage;
-//	        }
+			ByteArrayOutputStream baos = new ByteArrayOutputStream();
+			int options2 = 80;//个人喜欢从80开始,
+			compressedBit.compress(Bitmap.CompressFormat.JPEG, options2, baos);
+			while (baos.toByteArray().length / 1024 > 30) { 
+				Log.i(TAG, String.valueOf(baos.toByteArray().length/1024));
+				baos.reset();
+				options2 -= 10;
+				compressedBit.compress(Bitmap.CompressFormat.JPEG, options2, baos);
+			}
+	        
+	        if(compressedBit!=null){
+	        	 Log.i(TAG+"compressimage",String.valueOf(compressedBit.getByteCount()));
+	        }
+	        sourceStream.close();
+	        return compressedBit;
 	    } catch (IOException e) {
 	        e.printStackTrace();
 	        return null;
@@ -1004,12 +999,51 @@ public class EventDetailActivity extends Activity {
 			SendRemind task = new SendRemind();
 			mAsyncTask.add(task);
 			task.execute(map);
+			break;
+		case R.id.send_email:
+			Intent testintent=new Intent(Intent.ACTION_SEND);
+            testintent.putExtra(Intent.EXTRA_TEXT, participantsForEmail.toString());
+            testintent.setType("message/rfc822");
+            startActivity(Intent.createChooser(testintent, "发送"));
+			break;
+		case R.id.delete_event:
+			dialog();
+			break;
 		}
 		return super.onOptionsItemSelected(item);
 	}
+	protected void dialog() {
+		Dialog alertDialog = new AlertDialog.Builder(this)
+				.setTitle("确定删除活动:").
+				setPositiveButton("确定", new DialogInterface.OnClickListener() { 
+		             
+		            @Override 
+		            public void onClick(DialogInterface dialog, int which) { 
+		                // TODO Auto-generated method stub  
+		            	dialog.dismiss();
+						HashMap<String,Object> map = new HashMap<String,Object>();
+			            map.put("token", JuhuoConfig.token);
+			            map.put("id", event_id);
+			            DeleteEvent deleteEvent = new DeleteEvent();
+			            mAsyncTask.add(deleteEvent);
+			            deleteEvent.execute(map);
+		            } 
+		        }). 
+		        setNegativeButton("取消", new DialogInterface.OnClickListener() { 
+		             
+		            @Override 
+		            public void onClick(DialogInterface dialog, int which) { 
+		                // TODO Auto-generated method stub  
+		            	dialog.dismiss();
+		            } 
+		        }).
+		        create(); 
+		alertDialog.show();
+	}
 	@Override  
     public void onActivityResult(int requestCode, int resultCode, Intent data)  
-    {  
+    { 
+//		Log.i(TAG+"result", String.valueOf(requestCode));
 		if(data!=null){
 			switch (requestCode)  
 	        {  
@@ -1028,6 +1062,12 @@ public class EventDetailActivity extends Activity {
 				    		imageCircleViews.add(slideLayout.getCircleImageLayout(i));
 			    		}
 		            break;
+		        case APPLY_DETAIL:
+		        	mRefreshableView.onRefreshing();
+		    		LoadEventInfo loadEventInfo2 = new LoadEventInfo();
+		    		mAsyncTask.add(loadEventInfo2);
+		    		loadEventInfo2.execute(mapPara);	
+					break;
 	        }  
 		}	
     }
@@ -1041,6 +1081,36 @@ public class EventDetailActivity extends Activity {
         }
         super.onStop();
     }
+	private class DeleteEvent extends CheckStopAsyncTask<HashMap<String,Object>,String,JSONObject>{
+		@Override
+	    protected void onPreExecute() {
+	        super.onPreExecute();
+	        mPgDialog.show();
+	    }
+		@Override
+		protected JSONObject doInBackground(HashMap<String,Object>... map) {
+			// TODO Auto-generated method stub
+
+			HashMap<String,Object> mapped = map[0];
+			return new JuhuoInfo().loadNetData(mapped,JuhuoConfig.EVENT_DELETE);
+		}
+		@Override
+		protected void onPostExecute(JSONObject result) {
+			if(getStop()) return;
+			if(result == null){
+				Log.i(TAG,"cannot get any");//we have reveived 500 error page
+			}else if(result.has("wrong_data")){
+				//sth is wrong
+				Tool.dialog(EventDetailActivity.this);
+			}else{
+				Intent intent = new Intent(EventDetailActivity.this,HomeActivity.class);
+				intent.putExtra("pos", getIntent().getExtras().getInt("pos"));
+				intent.putExtra("message", "delete_success");
+				setResult(RESULT_OK, intent);
+				finish();
+			}
+		}
+	}
 	private class SendRemind extends CheckStopAsyncTask<HashMap<String,Object>,String,JSONObject>{
 		@Override
 	    protected void onPreExecute() {

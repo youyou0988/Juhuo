@@ -8,15 +8,17 @@
 	     android:id="@+id/titlebar"
 	     android:padding="@dimen/titlebar_padding"
 	     >
-	     <ImageView android:layout_width="wrap_content"
-	         android:layout_height="wrap_content"
-	         android:background="@drawable/icon_back"
-	         android:layout_marginTop="8dp"
-	         android:layout_marginBottom="6dp"
-	         android:layout_marginLeft="9dp"
+	     <RelativeLayout android:layout_height="match_parent"
+	         android:layout_width="40dp"
 	         android:layout_alignParentLeft="true"
-	         android:layout_marginRight="9dp"
-	         android:id="@+id/action_title_img"/>
+	         android:id="@+id/action_title_lay"
+	         >
+	         <ImageView android:layout_width="wrap_content"
+		         android:layout_height="wrap_content"
+		         android:background="@drawable/icon_back"
+		         android:layout_centerVertical="true"
+		         android:id="@+id/action_title_img"/>
+	     </RelativeLayout>
 	     <TextView android:id="@+id/action_title"
 	         android:layout_width="wrap_content"
 	         android:layout_height="wrap_content"

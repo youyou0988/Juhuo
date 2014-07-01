@@ -12,12 +12,15 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.util.Log;
 import android.view.Display;
@@ -38,6 +41,7 @@ import com.juhuo.tool.CheckStopAsyncTask;
 import com.juhuo.tool.JuhuoConfig;
 import com.juhuo.tool.JuhuoInfo;
 import com.juhuo.tool.Tool;
+import com.juhuo.welcome.ApplyDetailOne;
 import com.juhuo.welcome.EventDetailActivity;
 import com.juhuo.welcome.R;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
@@ -67,6 +71,7 @@ public class HotEventsAdapter extends BaseAdapter {
 	private int picNumber[];//for detail event page 
 	private Calendar calendar= Calendar.getInstance();
 	int month = calendar.get(Calendar.MONTH)+1;
+	private final int EVENT_DETAIL=1;
 	//设置当前的日期和时间
 	private String currentTime = calendar.get(Calendar.YEAR)+"-"+month+"-"+calendar.get(Calendar.DAY_OF_MONTH)+"T"+calendar.get(Calendar.HOUR_OF_DAY)+":"+calendar.get(Calendar.MINUTE);
 	DisplayImageOptions options = new DisplayImageOptions.Builder()
@@ -83,7 +88,11 @@ public class HotEventsAdapter extends BaseAdapter {
 	private ImageLoadingListener animateFirstListener = new AnimateFirstDisplayListener();
 	private String type;
 	private List<CheckStopAsyncTask> mAsyncTask = new ArrayList<CheckStopAsyncTask>();
-	
+	public void removeUrl(int pos){
+		for(int i=pos;i<URLS.length-1;i++){
+			URLS[pos] = URLS[pos+1];
+		}
+	}
 	
 //	private final ImageDownloader imageDownloader = new ImageDownloader();
 	//for network New Data use
@@ -138,8 +147,10 @@ public class HotEventsAdapter extends BaseAdapter {
 	public void setListView(ListView lv){
 		this.listView = lv;
 		this.listView.setOnItemClickListener(evlistOnClickListener);
-		if(type.equals("MYorganizer")||type.equals("MYrelated")){
+		if(type.equals("MYorganizer")){
 			this.listView.setOnItemLongClickListener(evlistLoneClickListener);
+		}else{
+			this.listView.setOnItemLongClickListener(null);
 		}
 		
 	}
@@ -198,9 +209,7 @@ public class HotEventsAdapter extends BaseAdapter {
 		holder.eventLocation.setText(mData.get(position).get("addr"));
         holder.eventTime.setText(mData.get(position).get("time"));
         //hide apply number for guest
-        if(type=="HOT"){
-        	holder.eventApply.setVisibility(View.INVISIBLE);
-        }else{
+        if(type.equals("MYorganizer")){
         	holder.eventApply.setVisibility(View.VISIBLE);
         	if(mData.get(position).get("apply_number").equals("0")){
             	holder.eventApply.setVisibility(View.INVISIBLE);
@@ -208,6 +217,9 @@ public class HotEventsAdapter extends BaseAdapter {
             	holder.eventApply.setVisibility(View.VISIBLE);
             	holder.eventApply.setText(mData.get(position).get("apply_number"));
             }
+        	
+        }else{
+        	holder.eventApply.setVisibility(View.INVISIBLE);
         }
         
         
@@ -250,54 +262,54 @@ public class HotEventsAdapter extends BaseAdapter {
 			intent.putExtra("picNumber",picNumber[position-1]);
 			intent.putExtra("eventId", mData.get(position-1).get("eventId"));
 			intent.putExtra("type", type);
-			activity.startActivity(intent);
+			intent.putExtra("pos", position-1);
+			activity.startActivityForResult(intent,EVENT_DETAIL);
 		}
 		
 	};
 	OnItemLongClickListener evlistLoneClickListener = new OnItemLongClickListener() {
 
         public boolean onItemLongClick(AdapterView<?> arg0, View arg1,
-                int pos, long id) {
+                final int pos, long id) {
             // TODO Auto-generated method stub
 
-            Log.v("long clicked","pos: " + pos);
-            dialog(pos);
+//            Log.v("long clicked",type);
+            Dialog alertDialog = new AlertDialog.Builder(activity)
+					.setTitle("确定删除活动:").
+					setPositiveButton("确定", new DialogInterface.OnClickListener() { 
+		                 
+		                @Override 
+		                public void onClick(DialogInterface dialog, int which) { 
+		                    // TODO Auto-generated method stub  
+		                	dialog.dismiss();
+		    				HashMap<String,Object> map = new HashMap<String,Object>();
+		    	            map.put("token", JuhuoConfig.token);
+		    	            map.put("id", mData.get(pos-1).get("eventId"));
+		    	            DeleteEvent deleteEvent = new DeleteEvent(pos-1);
+		    	            mAsyncTask.add(deleteEvent);
+		    	            deleteEvent.execute(map);
+		    	            int position = pos-1;
+		    	            for(int i=position;i<URLS.length-1;i++){
+		    					URLS[i] = URLS[i+1];
+		    				}
+		    				mData.remove(position);
+		    				Log.i("datalist", String.valueOf(mData.size()));
+		    				notifyDataSetChanged();
+		                } 
+		            }). 
+		            setNegativeButton("取消", new DialogInterface.OnClickListener() { 
+		                 
+		                @Override 
+		                public void onClick(DialogInterface dialog, int which) { 
+		                    // TODO Auto-generated method stub  
+		                	dialog.dismiss();
+		                } 
+		            }).
+		            create(); 
+		    alertDialog.show();
             return true;
         }
     };
-    protected void dialog(final int pos) {
-		final Dialog dialog = new Dialog(activity);
-		dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-		Drawable d = Tool.getShape(Color.WHITE);
-		dialog.getWindow().setBackgroundDrawable(d);
-		dialog.setContentView(R.layout.delete_dialog);
-		Button yes = (Button) dialog.findViewById(R.id.yes);
-		Button no = (Button) dialog.findViewById(R.id.no);
-		yes.setOnClickListener(new View.OnClickListener() {
-
-			@Override
-			public void onClick(View v) {
-				// TODO Auto-generated method stub
-				dialog.dismiss();
-				HashMap<String,Object> map = new HashMap<String,Object>();
-	            map.put("token", JuhuoConfig.token);
-	            map.put("id", mData.get(pos-1).get("eventId"));
-	            DeleteEvent deleteEvent = new DeleteEvent(pos-1);
-	            mAsyncTask.add(deleteEvent);
-	            deleteEvent.execute(map);
-				
-			}
-		});
-		no.setOnClickListener(new View.OnClickListener() {
-
-			@Override
-			public void onClick(View v) {
-				// TODO Auto-generated method stub
-				dialog.dismiss();
-			}
-		});
-		dialog.show();
-	}
     private class DeleteEvent extends CheckStopAsyncTask<HashMap<String,Object>,String,JSONObject>{
     	private int pos;
     	protected DeleteEvent(int pos){
@@ -315,19 +327,15 @@ public class HotEventsAdapter extends BaseAdapter {
 			if(getStop()) return;
 			if(result == null){
 				Log.i(TAG,"cannot get any");//we have reveived 500 error page
+				Tool.myToast(activity, "连接服务器失败,请检查您的网络连接");
 			}else if(result.has("wrong_data")){
 				//sth is wrong
 				Tool.dialog(activity);
 			}else{
-				for(int i=pos;i<URLS.length-1;i++){
-					URLS[pos] = URLS[pos+1];
-				}
-				mData.remove(this.pos);
-				Log.i("datalist", String.valueOf(mData.size()));
-				notifyDataSetChanged();
-//				notifyDataSetInvalidated();
+				Tool.myToast(activity, "删除活动成功");
 			}
 		}
 	}
+    
 
 }

@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.text.method.ScrollingMovementMethod;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 public class EventDetailOne extends Activity {
@@ -13,6 +14,7 @@ public class EventDetailOne extends Activity {
 	private TextView actionTitle;
 	private Resources mResources;
 	private TextView detail;
+	private RelativeLayout actionTitleLay,actionTitleLay2;
 	protected void onCreate(Bundle savedInstanceState){
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.description_detail);
@@ -20,9 +22,11 @@ public class EventDetailOne extends Activity {
 		actionTitleImg = (ImageView)findViewById(R.id.action_title_img);
 		actionTitleImg2 = (ImageView)findViewById(R.id.action_title_img2);
 		actionTitle = (TextView)findViewById(R.id.action_title);
+		actionTitleLay = (RelativeLayout)findViewById(R.id.action_title_lay);
+		actionTitleLay2 = (RelativeLayout)findViewById(R.id.action_title_lay2);
 		actionTitleImg.setBackgroundDrawable(mResources.getDrawable(R.drawable.icon_back));
 		actionTitleImg2.setVisibility(View.INVISIBLE);
-		actionTitleImg.setOnClickListener(new View.OnClickListener() {
+		actionTitleLay.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View arg0) {
 				// TODO Auto-generated method stub

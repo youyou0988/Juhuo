@@ -41,7 +41,7 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 public class EditEventImage extends Fragment{
 	private Resources mResources;
 	private String TAG = "EditEventImage";
-	private RelativeLayout parent;
+	private RelativeLayout parent,actionTitleLay;
 	private Button chooseImg,uploadBtn,existBtn;;
 	private Fragment mContent;
 	private ImageAdapter imageAdapter;
@@ -177,7 +177,12 @@ public class EditEventImage extends Fragment{
 						Intent intent = new Intent(getActivity(),CreateEvent.class);
 						intent.putExtra("photo_ids",photoarrid.toString());
 						intent.putExtra("imageurl", "file://"+originalarrPath.get(0));
-						intent.putExtra("photo_num", existarrPath.size());
+						if(createOrUpdate.equals("update")){
+							intent.putExtra("photo_num", existarrPath.size());
+						}else{
+							intent.putExtra("photo_num", originalarrPath.size());
+						}
+						
 						intent.putExtra("add_photo_number", originalarrPath.size());
 						getActivity().setResult(getActivity().RESULT_OK, intent);
 						getActivity().finish();

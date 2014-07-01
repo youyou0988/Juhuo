@@ -141,7 +141,8 @@
 	            android:layout_toRightOf="@+id/notice"
 	            android:textColor="@color/mgreen"
 	            android:layout_marginTop="5dp"
-	            android:layout_marginLeft="5dp"/>
+	            android:layout_marginLeft="5dp"
+	            android:id="@+id/protocol"/>
 	    </RelativeLayout>
 	    <Button
             android:id="@+id/login_btn"

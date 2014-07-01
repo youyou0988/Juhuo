@@ -1,10 +1,9 @@
 package com.juhuo.fragment;
 
+import java.io.File;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
-
+import java.util.Date;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
@@ -12,6 +11,7 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -19,8 +19,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.widget.BaseAdapter;
 import android.widget.CheckBox;
 import android.widget.GridView;
@@ -29,24 +27,16 @@ import android.widget.LinearLayout.LayoutParams;
 import android.widget.RelativeLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
-
-import com.juhuo.adapter.HotEventsAdapter.AnimateFirstDisplayListener;
+import com.juhuo.tool.JuhuoConfig;
 import com.juhuo.tool.Tool;
 import com.juhuo.welcome.R;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.assist.FailReason;
-import com.nostra13.universalimageloader.core.assist.ImageScaleType;
-import com.nostra13.universalimageloader.core.display.FadeInBitmapDisplayer;
-import com.nostra13.universalimageloader.core.display.SimpleBitmapDisplayer;
-import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
-import com.nostra13.universalimageloader.core.listener.ImageLoadingProgressListener;
-import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
 
 public class UploadEventImage extends Fragment{
 	private Resources mResources;
 	private String TAG = "UploadEventImage";
-	private RelativeLayout parent;
+	private RelativeLayout parent,actionTitleLay;
 	private int count;
     private Bitmap[] thumbnails;
     private boolean[] thumbnailsselection;
@@ -58,8 +48,10 @@ public class UploadEventImage extends Fragment{
     private Fragment prevone;
     private DisplayImageOptions options;
     protected ImageLoader imageLoader = ImageLoader.getInstance();
-    
-    
+    private static final int PHOTO_REQUEST_TAKEPHOTO = 1;// 拍照
+    private static final int PHOTO_REQUEST_CUT = 3;// 结果
+    // 创建一个以当前时间为名称的文件
+    File tempFile = new File(Environment.getExternalStorageDirectory(),getPhotoFileName());
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -104,6 +96,17 @@ public class UploadEventImage extends Fragment{
 		pager = (TextView)parent.findViewById(R.id.pager);
 		cancel = (TextView)parent.findViewById(R.id.cancel);
 		makesure = (TextView)parent.findViewById(R.id.makesure);
+		actionTitleLay = (RelativeLayout)parent.findViewById(R.id.action_title_lay);
+		actionTitleLay.setOnClickListener(new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View arg0) {
+				// TODO Auto-generated method stub
+				getFragmentManager().beginTransaction().remove(UploadEventImage.this).commit();
+				getActivity().getSupportFragmentManager().popBackStack();
+				getActivity().finish();
+			}
+		});
 		GridView imagegrid = (GridView) parent.findViewById(R.id.PhoneImageGrid);
 		tr = (TableRow)parent.findViewById(R.id.rows);
 		tr.setLayoutParams(new TableRow.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT));
@@ -157,7 +160,7 @@ public class UploadEventImage extends Fragment{
         }
  
         public int getCount() {
-            return count;
+            return count+1;
         }
  
         public Object getItem(int position) {
@@ -219,11 +222,62 @@ public class UploadEventImage extends Fragment{
 //                }
 //            });
 //            holder.imageview.setImageBitmap(thumbnails[position]);
-            imageLoader.displayImage("file://"+ arrPath[position], holder.imageview, options);
-            holder.checkbox.setChecked(thumbnailsselection[position]);
+            Log.i(TAG, arrPath.toString());
+            if(position<count){
+            	imageLoader.displayImage("file://"+ arrPath[position], holder.imageview, options);
+            	holder.checkbox.setVisibility(View.VISIBLE);
+            	holder.checkbox.setChecked(thumbnailsselection[position]);
+            	holder.imageview.setOnClickListener(null);
+            }else{
+            	Log.i(TAG, "fsojfso");
+            	imageLoader.displayImage("drawable://" + R.drawable.camera, holder.imageview, options);
+            	holder.checkbox.setVisibility(View.INVISIBLE);
+            	holder.imageview.setOnClickListener(new View.OnClickListener() {
+					
+					@Override
+					public void onClick(View arg0) {
+						// TODO Auto-generated method stub
+						Log.i(TAG, "start to take a picture");
+						// 调用系统的拍照功能
+			            Intent intentpic = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+			            // 指定调用相机拍照后照片的储存路径
+			            intentpic.putExtra(MediaStore.EXTRA_OUTPUT,Uri.fromFile(tempFile));
+			            startActivityForResult(intentpic, PHOTO_REQUEST_TAKEPHOTO);
+					}
+				});
+            }
+            
             holder.id = position;
             return convertView;
         }
+    }
+	@Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        // TODO Auto-generated method stub
+
+        switch (requestCode) {
+        case PHOTO_REQUEST_TAKEPHOTO:
+        	//tempFile is the picture
+        	Log.i(TAG, tempFile.getAbsolutePath());
+        	if(tempFile.exists()){
+        		ArrayList<String> selectedarr = new ArrayList<String>();
+            	selectedarr.add(tempFile.getAbsolutePath());
+            	((EditEventImage)prevone).setImageGrid(selectedarr);
+                getFragmentManager().executePendingTransactions();
+                getActivity().getSupportFragmentManager().popBackStack();
+        	}
+        	
+            break;
+        }
+
+        super.onActivityResult(requestCode, resultCode, data);
+
+    }
+    //使用系统当前日期加以调整作为照片的名称
+    private String getPhotoFileName() {
+        Date date = new Date(System.currentTimeMillis());
+        SimpleDateFormat dateFormat = new SimpleDateFormat("'IMG'_yyyyMMdd_HHmmss");
+        return dateFormat.format(date) + "upload.jpg";
     }
     class ViewHolder {
         ImageView imageview;

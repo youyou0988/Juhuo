@@ -13,7 +13,6 @@ import android.view.animation.AnimationUtils;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-
 import com.juhuo.tool.JuhuoConfig;
 import com.juhuo.tool.Tool;
 
@@ -32,6 +31,7 @@ public class MainActivity extends Activity {
 		getSize();
 		initComponents();
 		setListener();
+		
 	}
 	private void getSize(){
 		Display display = getWindowManager().getDefaultDisplay(); 

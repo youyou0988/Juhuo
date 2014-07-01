@@ -46,7 +46,7 @@ public class FollowFragment extends Fragment{
 	private String TAG = "MyEventFragment";
 	private ImageView actionTitleImg;
 	private TextView actionTitle,noEventsText;
-	private RelativeLayout parent;
+	private RelativeLayout parent,actionTitleLay;
 	private XListView followEventsList;
 	private ListView followpersonList;
 	private Button followMeBtn,myFollowBtn,followEventsBtn;
@@ -58,7 +58,7 @@ public class FollowFragment extends Fragment{
 	private int currentListType = 0;//0 关注我的人 1 我关注的人 2 我关注的活动列表
 	private String handle;
 	private final int COUNT=20;
-    private int offset=20;
+    private int offset=0;
 	private LayoutInflater mInflater;
 	private ProgressDialog mPgDialog;
 	DisplayImageOptions options = new DisplayImageOptions.Builder()
@@ -97,11 +97,12 @@ public class FollowFragment extends Fragment{
 				R.layout.follow_event, null);
 		followEventsList = (XListView)parent.findViewById(R.id.followevents_listview);
 		followpersonList = (ListView)parent.findViewById(R.id.followperson_listview);
+		followEventsList.setPullLoadEnable(true);
 		followEventsList.setXListViewListener(refresh);
 		followpersonList.setOnItemClickListener(personItemListener);
 		transView = (View)parent.findViewById(R.id.transview);
 		transView2 = (View)parent.findViewById(R.id.transview2);
-		
+		actionTitleLay = (RelativeLayout)parent.findViewById(R.id.action_title_lay);
 		actionTitleImg = (ImageView)parent.findViewById(R.id.action_title_img);
 		actionTitle = (TextView)parent.findViewById(R.id.action_title);
 		noEventsText = (TextView)parent.findViewById(R.id.no_events_found);
@@ -109,7 +110,7 @@ public class FollowFragment extends Fragment{
 		actionTitle.setText(mResources.getString(R.string.my_follow));
 		
 		//open the sliding menu
-		actionTitleImg.setOnClickListener(new View.OnClickListener() {
+		actionTitleLay.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
@@ -128,6 +129,7 @@ public class FollowFragment extends Fragment{
 		followpersonList.setAdapter(followAdapter);
 		HashMap<String,Object> mapPara = new HashMap<String,Object>();
 		mapPara.put("token", JuhuoConfig.token);
+		mapPara.put("followme", String.valueOf(true));
 		LoadContactList task = new LoadContactList("person");
 		mAsyncTask.add(task);
 		task.execute(mapPara);		
@@ -299,7 +301,7 @@ public class FollowFragment extends Fragment{
 							hotEventsAdapter.notifyDataSetChanged();
 							hotEventsAdapter.setListView(followEventsList);
 							followEventsList.setAdapter(hotEventsAdapter);
-							offset = ja.length();
+							offset += ja.length();
 						}else{
 							//no events found
 							followEventsList.setVisibility(View.INVISIBLE);

@@ -40,7 +40,7 @@ public class SearchEvent extends Activity {
 	private Resources mResources;
 	private EditText keyword;
 	private MyListView listview;
-	private RelativeLayout titlebar;
+	private RelativeLayout titlebar,titleLay;
 	private ProgressDialog mPgDialog;
 	private HotEventsAdapter hotEventsAdapter;
 	private JSONArray mData;
@@ -55,10 +55,11 @@ public class SearchEvent extends Activity {
 		titlebar = (RelativeLayout)findViewById(R.id.titlebar);
 		actionTitleImg = (ImageView)findViewById(R.id.action_title_img);
 		actionTitle = (TextView)findViewById(R.id.action_title);
+		titleLay = (RelativeLayout)findViewById(R.id.action_title_lay);
 		cancel = (TextView)findViewById(R.id.cancel);
 		noEventsText = (TextView)findViewById(R.id.no_events_found);
 		actionTitleImg.setBackgroundDrawable(mResources.getDrawable(R.drawable.icon_back));
-		actionTitleImg.setOnClickListener(new View.OnClickListener() {
+		titleLay.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View arg0) {
 				// TODO Auto-generated method stub

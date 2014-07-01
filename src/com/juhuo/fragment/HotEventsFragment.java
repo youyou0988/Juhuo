@@ -48,8 +48,7 @@ import com.juhuo.welcome.SearchEvent;
 public class HotEventsFragment extends Fragment{
 	private Resources mResources;
 	private ProgressDialog mPgDialog;
-	private String TAG = "HotEventsFragment";
-	private ImageView actionTitleImg,actionTitleImg2;
+	private ImageView actionTitleImg2,actionTitleImg;
 	private TextView actionTitle,noEventsText;
 	private RelativeLayout parent,filterlistlayout,actionTitleLay,actionTitleLay2;
 	private XListView hotEventsList;
@@ -59,6 +58,8 @@ public class HotEventsFragment extends Fragment{
 	private HotEventsAdapter hotEventsAdapter;
 	private FilterEventAdapter filterEventAdapter;
 	Animation animationSlideDown;
+	private final String TAG = "HotEventsFragment";
+	private final int EVENT_DETAIL=1;
 //	private List<AsyncTask<String,String,Object>> mAsyncTask = 
 //			new ArrayList<AsyncTask<String,String,Object>>();
 	private List<CheckStopAsyncTask> mAsyncTask = new ArrayList<CheckStopAsyncTask>();
@@ -74,7 +75,7 @@ public class HotEventsFragment extends Fragment{
 	private List<HashMap<String,String>> cacheList= new ArrayList<HashMap<String,String>>();
     private String handle;
     private final int COUNT=20;
-    private int offset=20;
+    private int offset=0;
     private SimpleDateFormat df = new SimpleDateFormat(Tool.ISO8601DATEFORMAT, Locale.getDefault());
 	
 	@Override
@@ -108,6 +109,7 @@ public class HotEventsFragment extends Fragment{
 			@Override
 			public void onLoadMore() {
 				// TODO Auto-generated method stub
+				Log.i("push", "load more");
 				if(handle.equals("")){
 					onLoaded();
                 }else{
@@ -116,7 +118,6 @@ public class HotEventsFragment extends Fragment{
                     mapMore.put("handle", handle);
                     mapMore.put("count", String.valueOf(COUNT));
                     mapMore.put("offset", String.valueOf(offset));
-                    offset = offset+COUNT;
                     LoadMoreEvents task = new LoadMoreEvents();
                     mAsyncTask.add(task);
                     task.execute(mapMore);
@@ -132,6 +133,7 @@ public class HotEventsFragment extends Fragment{
 		transView2 = (View)parent.findViewById(R.id.transview2);
 		
 		actionTitleImg = (ImageView)parent.findViewById(R.id.action_title_img);
+		actionTitleLay = (RelativeLayout)parent.findViewById(R.id.action_title_lay);
 		actionTitleImg2 = (ImageView)parent.findViewById(R.id.action_title_img2);
 		actionTitleLay = (RelativeLayout)parent.findViewById(R.id.action_title_lay);
 		actionTitleLay2 = (RelativeLayout)parent.findViewById(R.id.action_title_lay2);
@@ -174,11 +176,14 @@ public class HotEventsFragment extends Fragment{
 				getActivity());
 		JSONObject jsonCache = new JSONObject();
 		jsonCache = Tool.loadJsonFromFile(JuhuoConfig.EVENTLISTFILE,getActivity());
+		
 		if(jsonCache==null){
 			noEventsText.setText(mResources.getString(R.string.no_events_found));	
 		}else{
+			int totalCount=0;
 			try {
 				hotEventsAdapter.setJSONData(jsonCache.getJSONArray("events"),"HOT",mAsyncTask);
+				totalCount = jsonCache.getJSONArray("events").length();
 			} catch (JSONException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -186,10 +191,12 @@ public class HotEventsFragment extends Fragment{
 			hotEventsAdapter.notifyDataSetChanged();
 			hotEventsAdapter.setListView(hotEventsList);
 			hotEventsList.setAdapter(hotEventsAdapter);
+			Tool.isShowFooter(hotEventsList,totalCount);
 		}
 		getNetData(mapPara);
 		return parent;
 	}
+	
 	private void onLoaded() {
 		hotEventsList.stopRefresh();
 		hotEventsList.stopLoadMore();
@@ -325,13 +332,14 @@ public class HotEventsFragment extends Fragment{
 					}else{
 						Tool.myToast(getActivity(), mResources.getString(R.string.no_events_found));
 					}
-					onLoaded();
 					
+					offset +=ja.length();
 				} catch (JSONException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			}
+			onLoaded();
 		}
 	}
 	private class LoadEventList extends CheckStopAsyncTask<HashMap<String,Object>,String,JSONObject>{
@@ -380,7 +388,8 @@ public class HotEventsFragment extends Fragment{
 						hotEventsAdapter.notifyDataSetChanged();
 						hotEventsAdapter.setListView(hotEventsList);
 						hotEventsList.setAdapter(hotEventsAdapter);
-						offset = ja.length();
+						Tool.isShowFooter(hotEventsList,ja.length());
+						offset += ja.length();
 					}else{
 						//no events found
 						hotEventsList.setVisibility(View.INVISIBLE);
@@ -406,6 +415,7 @@ public class HotEventsFragment extends Fragment{
 		Log.i("sliding menu", transView.getBackground().toString());
 		transView.setVisibility(View.INVISIBLE);
 	}
+	
 	@Override
     public void onDestroyView()
     {
@@ -436,6 +446,23 @@ public class HotEventsFragment extends Fragment{
 		public void onAnimationStart(Animation animation) {
 			// TODO Auto-generated method stub
 			
-		}};
+		}
+	};
+	
+//	@Override  
+//    public void onActivityResult(int requestCode, int resultCode, Intent data)  
+//    {  
+//		Log.i(TAG, "delete_event"+requestCode);
+//		if(data!=null){
+//			switch (requestCode)  
+//	        {  
+//		        case EVENT_DETAIL:
+//		        	Tool.RemoveJSONArray(mData, data.getExtras().getInt("pos"));
+//		        	hotEventsAdapter.setJSONData(mData,"MY"+"organizer",mAsyncTask);
+//		        	hotEventsAdapter.removeUrl(data.getExtras().getInt("pos"));
+//					hotEventsAdapter.notifyDataSetChanged();
+//	        }  
+//		}	
+//    }
 
 }

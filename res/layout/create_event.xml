@@ -296,15 +296,13 @@
 	                        android:textSize="15sp"
 	                        android:textStyle="bold" /> 
 	
-	                    <CheckBox  
-				            android:id="@+id/ispublicche"
-				            style="@style/MyCheckBox"
-				            android:layout_width="135dp"
-				            android:layout_height="wrap_content"
-				            android:layout_alignParentRight="true"
-				            android:scaleX="0.70"
-				    		android:scaleY="0.70"
-				    		/>  
+	                    <Switch  
+					        android:id="@+id/ispublicche"  
+					        android:layout_width="wrap_content"  
+					        android:layout_height="wrap_content" 
+					        android:layout_alignParentRight="true" 
+					        android:textOff="关闭"  
+					        android:textOn="打开" />   
 	
 	                    <View
 	                        android:layout_width="match_parent"
@@ -332,15 +330,13 @@
 	                        android:textSize="15sp"
 	                        android:textStyle="bold" />
 	
-	                    <CheckBox  
-				            android:id="@+id/isapproveche"
-				            style="@style/MyCheckBox"
-				            android:layout_width="135dp"
-				            android:layout_height="wrap_content"
-				            android:layout_alignParentRight="true"           
-				            android:scaleX="0.70"
-				    		android:scaleY="0.70"
-				            />  
+	                    <Switch  
+					        android:id="@+id/isapproveche"  
+					        android:layout_width="wrap_content"  
+					        android:layout_height="wrap_content" 
+					        android:layout_alignParentRight="true" 
+					        android:textOff="关闭"  
+					        android:textOn="打开" /> 
 	
 	                    <View
 	                        android:layout_width="match_parent"
@@ -368,15 +364,13 @@
 	                        android:textSize="15sp"
 	                        android:textStyle="bold" />
 	
-	                    <CheckBox  
-				            android:id="@+id/newmessageche"
-				            style="@style/MyCheckBox"
-				            android:layout_width="135dp"
-				            android:layout_height="wrap_content"
-				            android:layout_alignParentRight="true"           
-				            android:scaleX="0.70"
-				    		android:scaleY="0.70"
-				            />  
+	                    <Switch  
+					        android:id="@+id/newmessageche"  
+					        android:layout_width="wrap_content"  
+					        android:layout_height="wrap_content" 
+					        android:layout_alignParentRight="true" 
+					        android:textOff="关闭"  
+					        android:textOn="打开" /> 
 	
 	                    <View
 	                        android:layout_width="match_parent"

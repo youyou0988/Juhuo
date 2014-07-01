@@ -45,6 +45,7 @@ import android.widget.TableRow;
 import android.widget.Toast;
 import android.widget.ImageView.ScaleType;
 
+import com.juhuo.refreshview.XListView;
 import com.juhuo.welcome.EventDetailActivity;
 import com.juhuo.welcome.MainActivity;
 import com.juhuo.welcome.R;
@@ -355,5 +356,31 @@ public class Tool {
     	} 
     	return "";
     }
-    
+
+	public static JSONArray RemoveJSONArray(JSONArray jarray, int pos) {
+
+		JSONArray Njarray = new JSONArray();
+		try {
+			for (int i = 0; i < jarray.length(); i++) {
+				if (i != pos)
+					Njarray.put(jarray.get(i));
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return Njarray;
+	}
+	public static void isShowFooter(XListView listView,int totalLength){
+//		int visibleCount = listView.getLastVisiblePosition()-listView.getFirstVisiblePosition()+1;
+//		
+//		Log.i("lastposition", String.valueOf(listView.getLastVisiblePosition()));
+//		Log.i("firstposition", String.valueOf(listView.getFirstVisiblePosition()));
+//		Log.i("visibleones", String.valueOf(visibleCount));
+		if(3>totalLength){
+			listView.setPullLoadEnable(false);
+		}else{
+			listView.setPullLoadEnable(true);
+		}
+		return;
+	}
 }

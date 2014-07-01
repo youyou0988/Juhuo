@@ -12,7 +12,8 @@
         android:layout_marginTop="20dp"
         android:layout_below="@+id/titlebar"
         android:background="@color/white"
-        android:padding="10dp">
+        android:padding="10dp"
+        android:id="@+id/switchLay">
         <TextView android:layout_height="wrap_content"
             android:layout_width="wrap_content"
             android:text="@string/receive_notice"
@@ -24,8 +25,9 @@
 		        android:layout_width="wrap_content"  
 		        android:layout_height="wrap_content" 
 		        android:layout_alignParentRight="true" 
-		        android:textOff="关"  
-		        android:textOn="开" /> 
+		        android:textOff="关闭"  
+		        android:textOn="打开"
+		        android:checked="true" /> 
         <!--<CheckBox style="@style/MyCheckBox"
             android:layout_width="135dp"
             android:layout_height="wrap_content"
@@ -35,6 +37,24 @@
     		android:id="@+id/receive_notice_che"/>  -->
         
     </RelativeLayout>
+    
+    <RelativeLayout android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:layout_below="@+id/switchLay"
+        android:background="@color/white"
+        android:padding="12dp"
+        android:id="@+id/feedbackLay">
+        <TextView android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:text="@string/user_feedback"
+            android:textColor="@color/mgreen"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"/>
+        
+        
+    </RelativeLayout>
+    
     <View android:id="@+id/transview"
         android:layout_height="match_parent"
         android:layout_width="match_parent"

@@ -18,6 +18,7 @@ import android.view.Window;
 import android.view.animation.BounceInterpolator;
 import android.view.animation.Interpolator;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 
 import com.amap.api.location.LocationManagerProxy;
 import com.amap.api.maps.AMap;
@@ -50,7 +51,6 @@ public class SelectLocation extends Activity implements
 	private MapView mapView;
 	private GeocodeSearch geocoderSearch;
 	private AMap aMap;
-	private ImageView back,check,search;
 	private LocationManagerProxy mAMapLocationManager;
 	private MarkerOptions markerOption;
 	private Marker marker;// 有跳动效果的marker对象
@@ -58,36 +58,36 @@ public class SelectLocation extends Activity implements
 	private String description;
 	private Resources mResources;
 	private LatLonPoint latLonPoint;
+	private RelativeLayout backLay,searchLay,checkLay;
 	protected void onCreate(Bundle savedInstanceState){
 		super.onCreate(savedInstanceState);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);//去掉标题栏
 		setContentView(R.layout.set_location);
 		mResources = getResources();
-		back = (ImageView)findViewById(R.id.back);
-		check = (ImageView)findViewById(R.id.check);
-		search = (ImageView)findViewById(R.id.search);
+		backLay = (RelativeLayout)findViewById(R.id.backLay);
+		checkLay = (RelativeLayout)findViewById(R.id.checkLay);
+		searchLay = (RelativeLayout)findViewById(R.id.searchLay);
 		mapView = (MapView) findViewById(R.id.map);
 		mapView.onCreate(savedInstanceState);// 必须要写
 		currentLoc = (LatLng)getIntent().getExtras().get("currentLoc");
 		description = getIntent().getExtras().getString("description");
 		init();
-		back.setOnClickListener(imgClick);
-		search.setOnClickListener(imgClick);
-		check.setOnClickListener(imgClick);
+		backLay.setOnClickListener(relClick);
+		searchLay.setOnClickListener(relClick);
+		checkLay.setOnClickListener(relClick);
 	}
-	OnClickListener imgClick = new View.OnClickListener() {
-		
+	OnClickListener relClick = new View.OnClickListener() {
 		@Override
 		public void onClick(View arg0) {
 			// TODO Auto-generated method stub
-			ImageView v = (ImageView)arg0;
+			RelativeLayout v = (RelativeLayout)arg0;
 			switch(v.getId()){
-			case R.id.back:
+			case R.id.backLay:
 				finish();
 				break;
-			case R.id.search:
+			case R.id.searchLay:
 				break;
-			case R.id.check:
+			case R.id.checkLay:
 				Intent intent = new Intent(SelectLocation.this,CreateEvent.class);
 				intent.putExtra("newLocation", currentLoc);  
 				intent.putExtra("description", description);

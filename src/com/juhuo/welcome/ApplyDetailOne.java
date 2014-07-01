@@ -66,7 +66,7 @@ public class ApplyDetailOne extends Activity {
 	private TextView actionTitle;
 	private EditText messageTxt;
 	private Resources mResources;
-	private RelativeLayout approve;
+	private RelativeLayout approve,actionTitleLay;
 	private ApplyDetailAdapter mAdapter;
 	private ArrayList<HashMap<String,Object>> mData;
 	private LayoutInflater mInflater;
@@ -101,12 +101,14 @@ public class ApplyDetailOne extends Activity {
 		actionTitleImg = (ImageView)findViewById(R.id.action_title_img);
 		actionTitleImg2 = (ImageView)findViewById(R.id.action_title_img2);
 		actionTitle = (TextView)findViewById(R.id.action_title);
+		actionTitleLay = (RelativeLayout)findViewById(R.id.action_title_lay);
 		actionTitleImg.setBackgroundDrawable(mResources.getDrawable(R.drawable.icon_back));
 		actionTitleImg2.setVisibility(View.INVISIBLE);
-		actionTitleImg.setOnClickListener(new View.OnClickListener() {
+		actionTitleLay.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View arg0) {
 				// TODO Auto-generated method stub
+				
 				finish();
 			}
 		});
@@ -160,9 +162,11 @@ public class ApplyDetailOne extends Activity {
 	}
 	private class EventApproveClass extends CheckStopAsyncTask<HashMap<String,Object>,String,JSONObject>{
     	public int pos,decision;
-		public EventApproveClass(int pos,int decision){
+    	public String photourl;
+		public EventApproveClass(int pos,int decision,String url){
     		this.pos = pos;
     		this.decision = decision;
+    		this.photourl = url;
     	}
 		@Override
 	    protected void onPreExecute() {
@@ -190,11 +194,18 @@ public class ApplyDetailOne extends Activity {
 				Tool.myToast(ApplyDetailOne.this, mResources.getString(R.string.approve_success));
 				if(decision==0){//approve
 					mData.remove(pos);	
+					urls.remove(pos);
+					Intent intent = new Intent(ApplyDetailOne.this,EventDetailActivity.class);
+					intent.putExtra("approve_urls", "success");
+					setResult(RESULT_OK, intent);
+					Log.i(TAG, "send intent");
+					finish();
 				}else{//decline
 					mData.get(pos).put("status", "7");
 				}
 				mAdapter.notifyDataSetChanged();
 				approve.setVisibility(View.GONE);
+				
 			}
 		}
 	}
@@ -234,7 +245,7 @@ public class ApplyDetailOne extends Activity {
 							decision = 1;
 							break;
 						}
-						EventApproveClass task = new EventApproveClass(position,decision);
+						EventApproveClass task = new EventApproveClass(position,decision,urls.get(position));
 						mAsyncTask.add(task);
 						task.execute(params);
 					}

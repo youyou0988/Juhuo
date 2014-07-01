@@ -9,6 +9,7 @@ public class JuhuoConfig {
 	public static String EVENTLISTSPECIFIC = "juhuo_event_specific_list_";
 	public static String USERINFO = "juhuo_user_info_";
 	public static String APP_ID_WECHAT = "wxb4d0cc21ea52f7c4";
+	public static String channelId = "C53aa42ae78f67";
 	/** 当前 DEMO 应用的 APP_KEY，第三方应用应该使用自己的 APP_KEY 替换该 APP_KEY */
     public static final String APP_KEY      = "3834437266";
 
@@ -54,6 +55,7 @@ public class JuhuoConfig {
 	public static String CHANGE_PASSWORD = PRODUCTIONPREFIX+"user/chgpass/";
 	public static String USER_MODIFY = PRODUCTIONPREFIX+"user/modify/";
 	public static String ACTIVE_ACCOUNT = PRODUCTIONPREFIX+"user/applyactivate/";
+	public static String USER_FEEDBACK = PRODUCTIONPREFIX+"user/feedback/";
 	
 	public static String EVENT_CREATE = PRODUCTIONPREFIX+"event/create/";
 	public static String EVENT_UPDATE = PRODUCTIONPREFIX+"event/modify/";

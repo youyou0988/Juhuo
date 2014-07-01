@@ -56,6 +56,7 @@ public class EventComment extends Activity{
 	private EditText message;
 	private ImageView send;
 	private TextView noCommentText;
+	private RelativeLayout actionTitleLay;
 	private SimpleDateFormat df = new SimpleDateFormat(Tool.ISO8601DATEFORMAT, Locale.getDefault());
 	private List<CheckStopAsyncTask> mAsyncTask = new ArrayList<CheckStopAsyncTask>();
 	
@@ -68,10 +69,11 @@ public class EventComment extends Activity{
 		mData = new ArrayList<HashMap<String,Object>>();
 		actionTitleImg = (ImageView)findViewById(R.id.action_title_img);
 		actionTitleImg2 = (ImageView)findViewById(R.id.action_title_img2);
+		actionTitleLay = (RelativeLayout)findViewById(R.id.action_title_lay);
 		actionTitle = (TextView)findViewById(R.id.action_title);
 		actionTitleImg.setBackgroundDrawable(mResources.getDrawable(R.drawable.icon_back));
 		actionTitleImg2.setVisibility(View.INVISIBLE);
-		actionTitleImg.setOnClickListener(new View.OnClickListener() {
+		actionTitleLay.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View arg0) {
 				// TODO Auto-generated method stub

@@ -53,9 +53,9 @@ public class MyEventFragment extends Fragment{
 	private HashMap<String,Object> mapPara;
 	private String handle;
 	private int filter;
-	private final int CREATE_EVENT = 0;
+	private final int CREATE_EVENT = 0,EVENT_DETAIL=1;
 	private final int COUNT=20;
-    private int offset=20;
+    private int offset=0;
     private List<CheckStopAsyncTask> mAsyncTask = new ArrayList<CheckStopAsyncTask>();
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -75,6 +75,7 @@ public class MyEventFragment extends Fragment{
 		parent = (RelativeLayout) inflater.inflate(
 				R.layout.hot_event, null);
 		hotEventsList = (XListView)parent.findViewById(R.id.hotevents_listview);
+		hotEventsList.setPullLoadEnable(true);
 		hotEventsList.setXListViewListener(new XListView.IXListViewListener(){
 
 			@Override
@@ -97,7 +98,7 @@ public class MyEventFragment extends Fragment{
 			@Override
 			public void onLoadMore() {
 				// TODO Auto-generated method stub
-				Log.e(TAG, "onLoad");
+				Log.i("push", "load more");
                 if(handle.equals("")){
                 	onLoaded();
                 }else{
@@ -106,7 +107,6 @@ public class MyEventFragment extends Fragment{
                     mapMore.put("handle", handle);
                     mapMore.put("count", String.valueOf(COUNT));
                     mapMore.put("offset", String.valueOf(offset));
-                    offset = offset+COUNT;
                     LoadMoreEvents task;
                     if(filter==0){
                     	task = new LoadMoreEvents("organizer");
@@ -173,8 +173,10 @@ public class MyEventFragment extends Fragment{
 		if(jsonCache==null){
 			noEventsText.setText(mResources.getString(R.string.no_events_found));
 		}else{
+			int length = 0;
 			try {
 				hotEventsAdapter.setJSONData(jsonCache.getJSONArray("events"),"MYorganizer",mAsyncTask);
+				length = jsonCache.getJSONArray("events").length();
 			} catch (JSONException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -182,6 +184,7 @@ public class MyEventFragment extends Fragment{
 			hotEventsAdapter.notifyDataSetChanged();
 			hotEventsAdapter.setListView(hotEventsList);
 			hotEventsList.setAdapter(hotEventsAdapter);
+			Tool.isShowFooter(hotEventsList,length);
 		}
 		getNetData(mapPara,"organizer");
 		return parent;
@@ -197,13 +200,13 @@ public class MyEventFragment extends Fragment{
 			mapPara.put("incremental", "true");
 			switch(v.getId()){
 			case R.id.filter_all_events:
-				filterAllEvent.setTextColor(mResources.getColor(R.color.mgray));
+				filterDefaultEvent.setTextColor(mResources.getColor(R.color.mgray));
 				filter = 1;
 				mapPara.put("related", String.valueOf(JuhuoConfig.userId));
 				getNetData(mapPara,"related");
 				break;
 			case R.id.filter_default_event:
-				filterDefaultEvent.setTextColor(mResources.getColor(R.color.mgray));
+				filterAllEvent.setTextColor(mResources.getColor(R.color.mgray));
 				filter = 0;
 				mapPara.put("organizer", String.valueOf(JuhuoConfig.userId));
 				getNetData(mapPara,"organizer");
@@ -245,13 +248,14 @@ public class MyEventFragment extends Fragment{
 				try {
 					JSONArray ja = result.getJSONArray("events");
 					Log.i(TAG, ja.toString());
+					offset += ja.length();
 					if(ja.length()!=0) {
 						for(int i=0;i<ja.length();i++){
 							mData.put(ja.getJSONObject(i));
 						}
 						hotEventsAdapter.setJSONData(mData,"MY"+type,mAsyncTask);
 						hotEventsAdapter.notifyDataSetChanged();
-						
+						Tool.isShowFooter(hotEventsList,ja.length());
 					}else{
 						Tool.myToast(getActivity(), mResources.getString(R.string.no_events_found));
 					}
@@ -323,7 +327,8 @@ public class MyEventFragment extends Fragment{
 						hotEventsAdapter.notifyDataSetChanged();
 						hotEventsAdapter.setListView(hotEventsList);
 						hotEventsList.setAdapter(hotEventsAdapter);
-						offset = ja.length();
+						offset += ja.length();
+						Tool.isShowFooter(hotEventsList,ja.length());
 					}else{
 						//no events found
 						hotEventsList.setVisibility(View.INVISIBLE);
@@ -357,7 +362,11 @@ public class MyEventFragment extends Fragment{
 		        case CREATE_EVENT:  
 		        	getNetData(mapPara,"organizer");
 		            break;  
-		        
+		        case EVENT_DETAIL:
+		        	Tool.RemoveJSONArray(mData, data.getExtras().getInt("pos"));
+		        	hotEventsAdapter.setJSONData(mData,"MY"+"organizer",mAsyncTask);
+		        	hotEventsAdapter.removeUrl(data.getExtras().getInt("pos"));
+					hotEventsAdapter.notifyDataSetChanged();
 	        }  
 		}	
     }

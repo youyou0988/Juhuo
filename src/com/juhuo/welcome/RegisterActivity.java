@@ -7,6 +7,7 @@ import org.json.JSONObject;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Point;
@@ -16,6 +17,7 @@ import android.util.Log;
 import android.view.Display;
 import android.view.View;
 import android.view.Window;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -32,10 +34,10 @@ public class RegisterActivity extends Activity {
 	private EditText mUserName;
 	private EditText mPassword,mPassword2;
 	private Button loginBtn;
-	private TextView registerFree,actionTitle;
+	private TextView registerFree,actionTitle,protocol;
 	private Resources mResources;
 	private ProgressDialog mPgDialog;
-	private RelativeLayout titleBar,loginInput,cellLay;
+	private RelativeLayout titleBar,loginInput,cellLay,titleLay;
 	private String TAG = "LoginActivity";
 	private String PRECELL = "+86";
 	
@@ -58,8 +60,8 @@ public class RegisterActivity extends Activity {
 		layoutParams.addRule(RelativeLayout.BELOW,cellLay.getId());
 		loginInput.setLayoutParams(layoutParams);
 		
-		action_title_img = (ImageView)findViewById(R.id.action_title_img);
-		action_title_img.setOnClickListener(new View.OnClickListener() {
+		titleLay = (RelativeLayout)findViewById(R.id.action_title_lay);
+		titleLay.setOnClickListener(new View.OnClickListener() {
 			
 			@Override
 			public void onClick(View arg0) {
@@ -69,6 +71,7 @@ public class RegisterActivity extends Activity {
 		});
 		actionTitle = (TextView)findViewById(R.id.action_title);
 		actionTitle.setText(mResources.getString(R.string.register));
+		protocol = (TextView)findViewById(R.id.protocol);
 		mUserName = (EditText)findViewById(R.id.user_name);
 		mPassword = (EditText)findViewById(R.id.user_password);
 		mPassword2 = (EditText)findViewById(R.id.user_password2);
@@ -86,16 +89,10 @@ public class RegisterActivity extends Activity {
 				if(hasFocus){
 					mUserName.setText(PRECELL);
 					mUserName.setSelection(PRECELL.length());
+					((InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE))
+			        .showSoftInput(mUserName, InputMethodManager.SHOW_FORCED);
 				}
 				
-			}
-		});
-		action_title_img.setOnClickListener(new View.OnClickListener() {
-			
-			@Override
-			public void onClick(View arg0) {
-				// TODO Auto-generated method stub
-				RegisterActivity.this.finish();
 			}
 		});
 		loginBtn.setOnClickListener(new View.OnClickListener() {
@@ -124,6 +121,15 @@ public class RegisterActivity extends Activity {
 				} else {
 					Tool.myToast(RegisterActivity.this,mResources.getString(R.string.current_net_invalide));
 				}
+			}
+		});
+		protocol.setOnClickListener(new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View arg0) {
+				// TODO Auto-generated method stub
+				Intent intent = new Intent(RegisterActivity.this,ProtocolActivity.class);
+				startActivity(intent);
 			}
 		});
 	}

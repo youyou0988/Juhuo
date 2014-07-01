@@ -22,6 +22,7 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
+    <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.CHANGE_CONFIGURATION" />
     <uses-permission android:name="android.permission.READ_CALENDAR"/>   
@@ -65,6 +66,12 @@
             android:theme="@style/AppTheme" >
         </activity>
         <activity
+            android:name="ProtocolActivity"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme" >
+        </activity>
+        <activity
             android:name="HomeActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait"
@@ -73,6 +80,12 @@
         </activity>
         <activity
             android:name="EventDetailActivity"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme" >
+        </activity>
+        <activity
+            android:name="FeedBackActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme" >
@@ -148,6 +161,18 @@
 		    android:exported="true"
 		    android:screenOrientation="portrait" 
 		    android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+        <service android:name="com.juhuo.welcome.MyService" android:label="APNS">
+            <intent-filter>
+                <action android:name="com.juhuo.welcome.MyService.START" />
+                <action android:name="com.juhuo.welcome.MyService.STOP" />
+                <category android:name="android.intent.category.DEFAULT"/>
+            </intent-filter>
+        </service>
+        <receiver android:name="com.juhuo.welcome.MyBroadcastReceiver">
+            <intent-filter>
+                <action android:name="com.juhuo.welcome.MyService.ON_NTY" />
+            </intent-filter>
+        </receiver>  
     </application>
 
 </manifest>

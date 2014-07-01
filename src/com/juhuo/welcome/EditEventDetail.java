@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.Window;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 public class EditEventDetail extends Activity {
@@ -15,6 +16,7 @@ public class EditEventDetail extends Activity {
 	private TextView actionTitle;
 	private EditText detail;
 	private Resources mResources;
+	private RelativeLayout actionTitleLay,actionTitleLay2;
 	protected void onCreate(Bundle savedInstanceState){
 		super.onCreate(savedInstanceState);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);//»•µÙ±ÍÃ‚¿∏
@@ -22,6 +24,8 @@ public class EditEventDetail extends Activity {
 		mResources = getResources();
 		actionTitleImg = (ImageView)findViewById(R.id.action_title_img);
 		actionTitleImg2 = (ImageView)findViewById(R.id.action_title_img2);
+		actionTitleLay = (RelativeLayout)findViewById(R.id.action_title_lay);
+		actionTitleLay2 = (RelativeLayout)findViewById(R.id.action_title_lay2);
 		actionTitle = (TextView)findViewById(R.id.action_title);
 		detail = (EditText)findViewById(R.id.detail);
 		detail.setText(getIntent().getExtras().getString("detail"));
@@ -29,14 +33,14 @@ public class EditEventDetail extends Activity {
 		actionTitleImg.setBackgroundDrawable(mResources.getDrawable(R.drawable.icon_back));
 		actionTitleImg2.setBackgroundDrawable(mResources.getDrawable(R.drawable.icon_check_inactive));
 		actionTitleImg2.setVisibility(View.VISIBLE);
-		actionTitleImg.setOnClickListener(new View.OnClickListener() {
+		actionTitleLay.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View arg0) {
 				// TODO Auto-generated method stub
 				finish();
 			}
 		});
-		actionTitleImg2.setOnClickListener(new View.OnClickListener() {
+		actionTitleLay2.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View arg0) {
 				// TODO Auto-generated method stub

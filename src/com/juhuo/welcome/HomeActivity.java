@@ -1,5 +1,6 @@
 package com.juhuo.welcome;
 
+import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Point;
 import android.os.Bundle;
@@ -10,7 +11,7 @@ import android.view.Display;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.Window;
-import android.widget.ImageView;
+import android.widget.RelativeLayout;
 
 import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
 import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu.OnCloseListener;
@@ -27,10 +28,11 @@ import com.juhuo.tool.Tool;
 public class HomeActivity extends SlidingFragmentActivity {
 	private int WIDTH,HEIGHT;
 	private Fragment mContent;
-	private ImageView actionTitleImg;
+	private RelativeLayout actionTitleLay;
 	private Resources mResources;
 	private int backTimes = 0;
 	private final String TAG = "HomeActivity";
+	private final int EVENT_DETAIL=1;
 	@Override
 	public void onCreate(Bundle savedInstanceState){
 		super.onCreate(savedInstanceState);
@@ -157,6 +159,8 @@ public class HomeActivity extends SlidingFragmentActivity {
 	    return false;
 //	    return super.onKeyUp(keyCode, event);
 	}
+	
+	
 //	@Override
 //	public void onBackPressed() { 
 //	    //实现Home键效果 

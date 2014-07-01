@@ -1,12 +1,13 @@
-<RelativeLayout android:layout_height="match_parent" 
+<RelativeLayout android:layout_width="match_parent" 
+    android:layout_height="match_parent"
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:background="@drawable/bg_brey">
+    android:background="@color/white">
     <RelativeLayout android:layout_height="45dp"
 	     android:layout_width="fill_parent"
 	     android:background="@drawable/bg_titlebar"
 	     android:id="@+id/titlebar"
 	     android:padding="@dimen/titlebar_padding"
+	     android:layout_alignParentTop="true"
 	     >
 	     <RelativeLayout android:layout_height="match_parent"
 	         android:layout_width="40dp"
@@ -22,34 +23,29 @@
 	     <TextView android:id="@+id/action_title"
 	         android:layout_width="wrap_content"
 	         android:layout_height="wrap_content"
-	         android:text="@string/name"
+	         android:text="@string/user_feedback"
 	         android:textColor="@color/white"
 	         android:gravity="center"
 	         android:textStyle="bold"
 	         android:layout_centerInParent="true"
 	         android:textSize="22sp"/>
-	     <RelativeLayout android:layout_width="wrap_content"
+	     <TextView android:layout_width="wrap_content"
 	         android:layout_height="wrap_content"
-	         android:padding="15px"
+	         android:visibility="visible"
+	         android:layout_marginTop="5dp"
+	         android:id="@+id/action_title_txt2"
 	         android:layout_alignParentRight="true"
-	         android:id="@+id/checklay">
-	         <ImageView android:layout_width="wrap_content"
-		         android:layout_height="wrap_content"
-		         android:background="@drawable/icon_check_inactive"
-		         android:id="@+id/action_title_img2"
-		         />
-	     </RelativeLayout>
-	     
+	         android:text="发送"
+	         android:textColor="@color/white"/>
 	</RelativeLayout>
-	<EditText android:layout_height="wrap_content"
-	    android:layout_width="match_parent"
-	    android:layout_marginLeft="15dp"
-	    android:layout_marginTop="10dp"
-	    android:layout_marginRight="15dp"
-	    android:layout_below="@+id/titlebar"
-	    android:background="@drawable/bg_text"
-	    android:id="@+id/name"
-	    android:textColor="@color/mgreen"/>
-	
-	
+    <EditText android:id="@+id/detail"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:padding="10dp"
+        android:textColor="@color/mgray"
+        android:layout_below="@+id/titlebar"
+        android:scrollbars="vertical"
+        android:background="@null"
+        android:cursorVisible="true"
+        android:hint="@string/please_feedback"/>
 </RelativeLayout>

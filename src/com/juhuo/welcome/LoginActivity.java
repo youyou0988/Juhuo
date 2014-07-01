@@ -1,7 +1,6 @@
 package com.juhuo.welcome;
 
 import java.util.HashMap;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -12,6 +11,7 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
@@ -37,6 +37,7 @@ public class LoginActivity extends Activity {
 	private RelativeLayout titleBar,loginInput,actionTitleLay;
 	private String TAG = "LoginActivity";
 	private String PRECELL = "+86";
+	private String devId ;
 	
 	protected void onCreate(Bundle savedInstanceState){
 		super.onCreate(savedInstanceState);
@@ -45,6 +46,18 @@ public class LoginActivity extends Activity {
 		
 		initComponents();
         setListener();
+        // get device id
+        TelephonyManager tel = (TelephonyManager) 
+        getSystemService(Context.TELEPHONY_SERVICE);
+        if (tel != null) {
+        	devId = tel.getDeviceId();
+        }
+        Intent intent = new Intent(MyService.START);
+		intent.putExtra("ch", "C53aa42ae78f67");  
+		intent.putExtra("devId", devId);    
+		startService(intent);
+		//Intent intent = new Intent(MyService.STOP);
+		//startService(intent);
 	}
 	private void initComponents(){
 		mResources = getResources();
@@ -72,8 +85,8 @@ public class LoginActivity extends Activity {
 		mPgDialog = new ProgressDialog(this);
         mPgDialog.setMessage(mResources.getString(R.string.loginning));
         //just for test
-        mUserName.setText("+8615210588692");
-        mPassword.setText("123456");
+//        mUserName.setText("+8615210588692");
+//        mPassword.setText("123456");
 	}
 	private void setListener(){
 		mUserName.setOnFocusChangeListener(new View.OnFocusChangeListener() {
@@ -129,6 +142,8 @@ public class LoginActivity extends Activity {
 			HashMap<String,Object> map = new HashMap<String,Object>();
 			map.put("cell", mUserName.getText().toString().trim());
 			map.put("passwd", mPassword.getText().toString());
+			if(devId!=null) map.put("devId", devId);
+			Log.i(TAG, map.toString());
         	JSONObject tmpResult = new JuhuoInfo().loadNetData(map, JuhuoConfig.LOGIN);
         	return tmpResult;
         }

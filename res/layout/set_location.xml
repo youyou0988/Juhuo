@@ -7,25 +7,42 @@
 	     android:id="@+id/titlebar"
 	     android:padding="@dimen/titlebar_padding"
 	     >
-	     <ImageView android:layout_height="wrap_content"
-	         android:layout_width="wrap_content"
-	         android:background="@drawable/icon_back"
-	         android:layout_centerVertical="true"
+	     <RelativeLayout android:layout_height="match_parent"
+	         android:layout_width="40dp"
 	         android:layout_alignParentLeft="true"
-	         android:id="@+id/back"/> 
-         <ImageView android:layout_height="wrap_content"
-	         android:layout_width="wrap_content"
-	         android:background="@drawable/icon_search"
-	         android:layout_centerVertical="true"
-	         android:layout_toLeftOf="@+id/check"
-	         android:layout_marginRight="5dp"
-	         android:id="@+id/search"/> 
-         <ImageView android:layout_height="wrap_content"
-	         android:layout_width="wrap_content"
-	         android:background="@drawable/icon_check_inactive"
-	         android:layout_centerVertical="true"
+	         android:id="@+id/backLay"
+	         >
+	         <ImageView android:layout_width="wrap_content"
+		         android:layout_height="wrap_content"
+		         android:background="@drawable/icon_back"
+		         android:layout_centerVertical="true"
+		         android:id="@+id/back"/>
+	     </RelativeLayout>
+	     
+	    <RelativeLayout android:layout_height="match_parent"
+	         android:layout_width="40dp"
+	         android:id="@+id/searchLay"
+	         android:layout_toLeftOf="@+id/checkLay"
+	         >
+	         <ImageView android:layout_width="wrap_content"
+		         android:layout_height="wrap_content"
+		         android:background="@drawable/icon_search"
+		         android:layout_centerVertical="true"
+		         android:layout_alignParentRight="true"
+		         android:id="@+id/search"/>
+	    </RelativeLayout> 
+        <RelativeLayout android:layout_height="match_parent"
+	         android:layout_width="40dp"
 	         android:layout_alignParentRight="true"
-	         android:id="@+id/check"/>   
+	         android:id="@+id/checkLay"
+	         >
+	         <ImageView android:layout_width="wrap_content"
+		         android:layout_height="wrap_content"
+		         android:background="@drawable/icon_check_inactive"
+		         android:layout_centerVertical="true"
+		         android:layout_alignParentRight="true"
+		         android:id="@+id/check"/>
+	     </RelativeLayout> 
 	</RelativeLayout>
 	<com.amap.api.maps.MapView
            xmlns:android="http://schemas.android.com/apk/res/android"

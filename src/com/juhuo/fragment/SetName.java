@@ -6,15 +6,16 @@ import java.util.List;
 
 import org.json.JSONObject;
 
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.res.Resources;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -22,24 +23,25 @@ import android.widget.RadioButton;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
+import com.juhuo.control.DateTimePickerDialog;
+import com.juhuo.control.DateTimePickerDialog.OnDateTimeSetListener;
 import com.juhuo.tool.CheckStopAsyncTask;
 import com.juhuo.tool.JuhuoConfig;
 import com.juhuo.tool.JuhuoInfo;
 import com.juhuo.tool.Tool;
-import com.juhuo.welcome.HomeActivity;
 import com.juhuo.welcome.R;
 
 public class SetName extends Fragment {
 	private final String TAG="SetName";
 	private EditText name,des;
+	private TextView age;
 	private String content;
 	private String type;
 	private Resources mResource;
 	private ImageView titleimg;
 	private RadioButton btn,btn2;
 	private ProgressDialog mPgDialog;
-	private RelativeLayout checkLay;
+	private RelativeLayout checkLay,titleLay;
 	private List<CheckStopAsyncTask> mAsyncTask = new ArrayList<CheckStopAsyncTask>();
 	public void setContent(String ct,String type){
 		this.content = ct;
@@ -63,15 +65,14 @@ public class SetName extends Fragment {
 			name.setText(content);
 		}else if(type.equals("age")){
 			parent = (RelativeLayout) inflater.inflate(
-					R.layout.set_name, null);
-			name = (EditText)parent.findViewById(R.id.name);
-			TextView title = (TextView)parent.findViewById(R.id.action_title);
-			title.setText(mResource.getString(R.string.age));
+					R.layout.set_age, null);
+			age = (TextView)parent.findViewById(R.id.age);
 			if(content.equals("δ֪")){
-				name.setText("1970-01-01");
+				age.setText("1970-01-01");
 			}else{
-				name.setText(content);
+				age.setText(content);
 			}
+			age.setOnClickListener(txtClickListener);
 		}else if(type.equals("gender")){
 			parent = (RelativeLayout) inflater.inflate(
 					R.layout.set_gender, null);
@@ -85,9 +86,9 @@ public class SetName extends Fragment {
 			des = (EditText)parent.findViewById(R.id.description);
 			des.setText(content);
 		}
-		titleimg = (ImageView)parent.findViewById(R.id.action_title_img);
+		titleLay = (RelativeLayout)parent.findViewById(R.id.action_title_lay);
 		checkLay = (RelativeLayout)parent.findViewById(R.id.checklay);
-		titleimg.setOnClickListener(new View.OnClickListener() {
+		titleLay.setOnClickListener(new View.OnClickListener() {
 			
 			@Override
 			public void onClick(View v) {
@@ -106,7 +107,7 @@ public class SetName extends Fragment {
 				if(type.equals("name")){
 					mapPara.put("name", name.getText().toString());
 				}else if(type.equals("age")){
-					mapPara.put("birthday", name.getText().toString());
+					mapPara.put("birthday", age.getText().toString());
 				}else if(type.equals("gender")){
 					mapPara.put("gender", btn.isChecked()?"0":"1");
 				}else{
@@ -135,6 +136,23 @@ public class SetName extends Fragment {
 //		} );
 		return parent;
 	}
+	OnClickListener txtClickListener = new View.OnClickListener() {
+		
+		@Override
+		public void onClick(View arg0) {
+			// TODO Auto-generated method stub
+			long date = 0;
+			DateTimePickerDialog dialog  = new DateTimePickerDialog(getActivity(), date);
+			dialog.setOnDateTimeSetListener(new OnDateTimeSetListener()
+		      {
+				public void OnDateTimeSet(AlertDialog dialog, long date)
+				{
+					age.setText(Tool.getStringDate(date));
+				}
+			});
+			dialog.show();
+		}
+	};
 	private class ChangeUserInfo extends CheckStopAsyncTask<HashMap<String,Object>,String,JSONObject>{
 		@Override
 	    protected void onPreExecute() {
