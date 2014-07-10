@@ -105,8 +105,8 @@ public class RegisterActivity extends Activity {
 					if (!"".equals(mUserName.getText().toString().trim())
 							&& !"".equals(mPassword.getText().toString()
 									.trim())) {
-						if(!mPassword.getText().toString()
-									.trim().equals(mPassword2.getText().toString()
+						if((mPassword.getText().toString()
+									.trim()).equals(mPassword2.getText().toString()
 									.trim())){
 							
 							new RegisterTask().execute();

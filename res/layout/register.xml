@@ -82,7 +82,7 @@
                    android:textSize="16sp"
                    android:textColor="@color/gray"
                    android:singleLine="true"
-                   android:inputType="phone"/>
+                   android:password="true"/>
 	       </RelativeLayout>
 	       <View android:layout_width="match_parent"
 	           android:layout_height="0.5dp"

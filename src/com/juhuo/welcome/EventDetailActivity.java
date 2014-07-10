@@ -486,6 +486,7 @@ public class EventDetailActivity extends Activity {
 				}
 				if(imagePageViewsSize<ja.length()){
 					for(int i=imagePageViewsSize;i<ja.length();i++){
+						Log.i(TAG+"index", String.valueOf(i));
 						String url = ja.getJSONObject(i).getString("url");
 						imagePageViews.add(slideLayout.getSlideImageLayout2(url));
 						imageCircleViews.add(slideLayout.getCircleImageLayout(i-1));

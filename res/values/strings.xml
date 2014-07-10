@@ -85,11 +85,13 @@
 	<string name="active_acc_success">账号激活成功！</string>
 	<string name="cha_info_success">修改信息成功！</string>
 	<string name="upload_photo_success">上传头像成功！</string>
+	<string name="upload_picture_success">上传图片成功!</string>
 	<string name="create_event_success">创建活动成功！</string>
 	<string name="update_event_success">修改活动成功！</string>
 	<string name="send_invitation_success">发送邀请成功！</string>
 	<string name="send_remind_success">提醒已发送！</string>
 	<string name="send_email">发送邮件</string>
+	<string name="please_enter_comment">请输入评论内容</string>
 	
 	<string name="name">姓名</string>
 	<string name="age">年龄</string>

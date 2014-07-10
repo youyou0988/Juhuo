@@ -24,12 +24,6 @@
             android:layout_alignParentRight="true"
             android:textSize="12sp"/>
     </RelativeLayout>
-    <TextView android:layout_height="wrap_content"
-        android:layout_width="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_below="@+id/lay1"
-        android:textColor="@color/mgray"
-        android:id="@+id/commenter_content"/>
     <ImageView android:layout_height="75px"
         android:layout_width="75px"
         android:scaleType="fitXY"
@@ -37,6 +31,5 @@
         android:background="@drawable/default_image"
         android:id="@+id/comment_picture"
         android:layout_below="@+id/lay1"
-        android:layout_alignParentBottom="true"
-        android:visibility="gone"/>
+        android:layout_alignParentBottom="true"/>
 </RelativeLayout>
