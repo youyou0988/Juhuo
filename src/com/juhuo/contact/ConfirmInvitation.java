@@ -39,12 +39,13 @@ public class ConfirmInvitation  extends Fragment{
 	private String TAG = "ConfirmInvitation";
 	private RelativeLayout parent;
 	private ProgressDialog mPgDialog;
-	private ImageView actionTitleImg;
+//	private ImageView actionTitleImg;
 	private TextView actionTitle,eventTitle,beginTime,endTime;
 	private Button sendBtn;
 	private ImageView image;
 	private ListView confirmListView;
 	private String event_id;
+	private RelativeLayout actionTitleLay;
 	DisplayImageOptions options = new DisplayImageOptions.Builder()
 	.imageScaleType(ImageScaleType.EXACTLY_STRETCHED)
 	.showImageOnLoading(R.drawable.default_image)
@@ -76,12 +77,12 @@ public class ConfirmInvitation  extends Fragment{
 		Log.i(TAG, "onCreateView");
 		parent = (RelativeLayout) inflater.inflate(
 				R.layout.confirm_invitation, null);
-		actionTitleImg = (ImageView)parent.findViewById(R.id.action_title_img);
+		actionTitleLay = (RelativeLayout)parent.findViewById(R.id.action_title_lay);
 		actionTitle = (TextView)parent.findViewById(R.id.action_title);
 		actionTitle.setText(mResources.getString(R.string.confirm_invitation));
 		
 		//open the sliding menu
-		actionTitleImg.setOnClickListener(new View.OnClickListener() {
+		actionTitleLay.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub

@@ -27,11 +27,13 @@
     <string name="password_incorrect">两次输入的密码不符</string>
     <string name="register_notice">我已阅读并同意</string>
     <string name="register_protocol"><u>聚伙用户协议</u></string>
+    <string name="register_pleaseapprove">请同意用户协议</string>
     <string name="register_success">注册成功</string>
     
     <string name="login_input_name_password">请输入用户名和密码</string>
     <string name="loginning">正在登录...</string>
     <string name="current_net_invalide">当前网络不可用！</string>
+    <string name="user_exist">用户已存在</string>
     <string name="login_failed_username_password">用户名或密码错误</string>
     <string name="login_success">登录成功!</string>
     
@@ -129,6 +131,7 @@
     <string name="pleaselink">添加链接</string>
     <string name="please_enter_newpassword">请输入新密码</string>
     <string name="please_enter_keyword">请输入活动关键字</string>
+    <string name="please_enter_feedback">请填写反馈意见</string>
     <string name="error_network">连接服务器失败,请检查您的网络连接</string>
     <string name="error_key">key验证无效！</string>
     <string name="error_other">未知错误，请稍后重试!错误码为</string>
@@ -181,7 +184,7 @@
     <string name="user_feedback">用户反馈</string>
     <string name="please_feedback">请填写您的反馈</string>
     <string name="weibosdk_demo_cancel_download_weibo">取消下载</string>
-    <string name="long_protocol">\u0020\u0020\u0020\u0020“聚伙”iOS版适用于苹果公司iPhone手机iOS操作系统6.0以上版本，对于在其他操作系统平台使用本应用可能出现的任何问题，Weichang Wang恕不承担任何责任。\n
+    <string name="long_protocol">\u0020\u0020\u0020\u0020“聚伙”Android版适用于Android手机操作系统4.0以上版本，对于在其他操作系统平台使用本应用可能出现的任何问题，Weichang Wang恕不承担任何责任。\n
     \u0020\u0020\u0020\u0020“聚伙”及服务的所有权和运营权以及业务规则及活动的解释权均归Weichang Wang所有。本应用及在提供服务过程中，需经您同意并提供手机位置数据、电话号码等属于您的私人信息，此类信息将仅限于满足您的组织聚会需求，我将采取合理的措施保护您的个人隐私，除法律或有法律赋予权限的政府部门要求或您同意等原因外，Weichang Wang未经您同意不会向除合作单位以外的第三方公开、透露您的个人隐私。
     \u0020\u0020\u0020\u0020在“聚伙”应用使用过程中将产生的通信数据流量费用，该服务与费用由您的通信运营商提供，Weichang Wang不提供通信服务和流量费用的收取。\n
 \u0020\u0020\u0020\u0020“聚伙”旨在提供您一种新型的组织聚会方式，对于爽约行为不承担责任;用户注册成功后，该用户帐号和密码由用户负责保管；用户使用过程中，须对自身使用行为，对任何由用户通过“聚伙”服务发布、公开的信息，及对由此产生的任何后果承担全部责任。用户提交、发布或显示的信息将对其他用户及第三方服务及网站可见。

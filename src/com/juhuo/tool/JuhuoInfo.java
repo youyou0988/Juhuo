@@ -39,6 +39,7 @@ public class JuhuoInfo {
 	private String SUCCESS_STATUS = "200";
 	private String PASSWORD_WRONG = "401";
 	private String INVALID_TOKEN = "402";
+	private String USEREXIST = "403";
 	private String NOT_FOUND_WRONG = "404";
 	
 	private String getCode(String tmp){

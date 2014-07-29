@@ -364,7 +364,7 @@ public class UserSettingFragment extends Fragment{
 	}
 	public void setComponentsContent(JSONObject result){
 		try {
-			name.setText(result.getString("name"));
+			name.setText(result.getString("name").equals("")?"ÄäÃû":result.getString("name"));
 			String ag = result.getString("birthday").equals("null")?"Î´Öª":result.getString("birthday");
 			if(ag.equals("Î´Öª")){
 				age.setText(ag);
@@ -387,6 +387,7 @@ public class UserSettingFragment extends Fragment{
 			}
 			imageLoader.displayImage(url,image, options);
 			//set left menu icon
+			LeftMenuFragment.userName.setText(result.getString("name"));
 			imageLoader.displayImage(url, LeftMenuFragment.userImage, options2);
 		} catch (JSONException e) {
 			// TODO Auto-generated catch block

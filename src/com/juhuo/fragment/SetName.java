@@ -1,8 +1,11 @@
 package com.juhuo.fragment;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 
 import org.json.JSONObject;
 
@@ -36,13 +39,14 @@ public class SetName extends Fragment {
 	private EditText name,des;
 	private TextView age;
 	private String content;
-	private String type;
+	private String type,birthday;
 	private Resources mResource;
 	private ImageView titleimg;
 	private RadioButton btn,btn2;
 	private ProgressDialog mPgDialog;
 	private RelativeLayout checkLay,titleLay;
 	private List<CheckStopAsyncTask> mAsyncTask = new ArrayList<CheckStopAsyncTask>();
+	private SimpleDateFormat df = new SimpleDateFormat(Tool.ISO8601DATEFORMAT, Locale.getDefault());
 	public void setContent(String ct,String type){
 		this.content = ct;
 		this.type = type;
@@ -52,6 +56,7 @@ public class SetName extends Fragment {
 		super.onCreate(savedInstanceState);
 		mResource = getActivity().getResources();
 		mPgDialog = new ProgressDialog(getActivity());
+		
 	}
 
 	@Override
@@ -64,6 +69,7 @@ public class SetName extends Fragment {
 			name = (EditText)parent.findViewById(R.id.name);
 			name.setText(content);
 		}else if(type.equals("age")){
+			birthday = df.format(new Date());
 			parent = (RelativeLayout) inflater.inflate(
 					R.layout.set_age, null);
 			age = (TextView)parent.findViewById(R.id.age);
@@ -107,7 +113,7 @@ public class SetName extends Fragment {
 				if(type.equals("name")){
 					mapPara.put("name", name.getText().toString());
 				}else if(type.equals("age")){
-					mapPara.put("birthday", age.getText().toString());
+					mapPara.put("birthday", birthday);
 				}else if(type.equals("gender")){
 					mapPara.put("gender", btn.isChecked()?"0":"1");
 				}else{
@@ -148,6 +154,7 @@ public class SetName extends Fragment {
 				public void OnDateTimeSet(AlertDialog dialog, long date)
 				{
 					age.setText(Tool.getStringDate(date));
+					birthday = df.format(date);
 				}
 			});
 			dialog.show();

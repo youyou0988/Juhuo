@@ -10,18 +10,16 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
-import android.graphics.Point;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Display;
 import android.view.View;
 import android.view.Window;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -40,6 +38,7 @@ public class RegisterActivity extends Activity {
 	private RelativeLayout titleBar,loginInput,cellLay,titleLay;
 	private String TAG = "LoginActivity";
 	private String PRECELL = "+86";
+	private CheckBox check;
 	
 	protected void onCreate(Bundle savedInstanceState){
 		super.onCreate(savedInstanceState);
@@ -76,6 +75,7 @@ public class RegisterActivity extends Activity {
 		mPassword = (EditText)findViewById(R.id.user_password);
 		mPassword2 = (EditText)findViewById(R.id.user_password2);
 		loginBtn = (Button)findViewById(R.id.login_btn);
+		check = (CheckBox)findViewById(R.id.check);
 		mPgDialog = new ProgressDialog(this);
         mPgDialog.setMessage(mResources.getString(R.string.registering));
 
@@ -108,8 +108,13 @@ public class RegisterActivity extends Activity {
 						if((mPassword.getText().toString()
 									.trim()).equals(mPassword2.getText().toString()
 									.trim())){
+							if(check.isChecked()){
+								new RegisterTask().execute();
+							}else{
+								Tool.myToast(RegisterActivity.this, mResources.getString(R.string.register_pleaseapprove));
+							}
 							
-							new RegisterTask().execute();
+							
 						}else{
 							Tool.myToast(RegisterActivity.this, mResources.getString(R.string.password_incorrect));
 						}
@@ -141,6 +146,7 @@ public class RegisterActivity extends Activity {
 			HashMap<String,Object> map = new HashMap<String,Object>();
 			map.put("cell", mUserName.getText().toString().trim());
 			map.put("passwd", mPassword.getText().toString());
+			map.put("name","");
         	JSONObject tmpResult = new JuhuoInfo().loadNetData(map, JuhuoConfig.REGISTER);
         	return tmpResult;
         }
@@ -156,7 +162,7 @@ public class RegisterActivity extends Activity {
 		protected void onPostExecute(JSONObject result) {
 			if(result == null){
 				Log.i(TAG,"i am not in");
-				Tool.myToast(RegisterActivity.this,mResources.getString(R.string.current_net_invalide));
+				Tool.myToast(RegisterActivity.this,mResources.getString(R.string.user_exist));
 			}else{
 				Tool.myToast(RegisterActivity.this,mResources.getString(R.string.register_success));
 				Intent intent2Home = new Intent(RegisterActivity.this, HomeActivity.class);

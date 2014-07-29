@@ -44,10 +44,11 @@ public class JuhuoConfig {
 	public static String token = "";
 	public static Integer userId=0;
 	public static String userName="";
+	public static boolean notification = true; 
 	
-	public static String PRODUCTIONPREFIX = "http://115.28.211.238/v0/";
-//	public static String PRODUCTIONPREFIX="http://115.29.141.31/v0/";
-	public static String REGISTER = PRODUCTIONPREFIX+"user/register/";
+//	public static String PRODUCTIONPREFIX = "http://115.28.211.238/v0/";
+	public static String PRODUCTIONPREFIX="http://115.29.141.31/v0/";
+	public static String REGISTER = PRODUCTIONPREFIX+"user/create/";
 	public static String LOGIN = PRODUCTIONPREFIX+"user/login/";
 	public static String LOGOUT = PRODUCTIONPREFIX+"user/logout/";
 	public static String USER_INFO = PRODUCTIONPREFIX+"user/info/";

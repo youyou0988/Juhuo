@@ -18,6 +18,7 @@ import android.widget.Switch;
 import android.widget.TextView;
 
 import com.jeremyfeinstein.slidingmenu.lib.app.SlidingFragmentActivity;
+import com.juhuo.tool.JuhuoConfig;
 import com.juhuo.welcome.FeedBackActivity;
 import com.juhuo.welcome.MyService;
 import com.juhuo.welcome.R;
@@ -66,6 +67,12 @@ public class SettingFragment extends Fragment{
 				startActivity(intent);
 			}
 		});
+		Log.i(TAG, String.valueOf(JuhuoConfig.notification));
+		if(JuhuoConfig.notification){
+			receiveNotification.setChecked(true);
+		}else{
+			receiveNotification.setChecked(false);
+		}
 		receiveNotification.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 		    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 		        // do something, the isChecked will be
@@ -82,9 +89,11 @@ public class SettingFragment extends Fragment{
 		    		intent.putExtra("ch", "C53aa42ae78f67");  
 		    		intent.putExtra("devId", devId);    
 		    		getActivity().startService(intent);
+		    		JuhuoConfig.notification = true;
 		    	}else{
 		    		Intent intent = new Intent(MyService.STOP);
 		    		getActivity().startService(intent);
+		    		JuhuoConfig.notification = false;
 		    	}
 		    }
 		});

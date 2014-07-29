@@ -27,7 +27,7 @@
 		        android:layout_alignParentRight="true" 
 		        android:textOff="关闭"  
 		        android:textOn="打开"
-		        android:checked="true" /> 
+		        /> 
         <!--<CheckBox style="@style/MyCheckBox"
             android:layout_width="135dp"
             android:layout_height="wrap_content"

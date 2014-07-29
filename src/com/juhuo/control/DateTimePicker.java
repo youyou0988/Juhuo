@@ -15,8 +15,9 @@ public class DateTimePicker extends FrameLayout
 	private final NumberPicker mDateSpinner;
 	private final NumberPicker mHourSpinner;
 	private final NumberPicker mMinuteSpinner;
+	private final NumberPicker mYearSpinner;
 	private Calendar mDate;
-    private int mHour,mMinute; 
+    private int mHour,mMinute,mYear; 
     private String[] mDateDisplayValues = new String[7];
     private OnDateTimeChangedListener mOnDateTimeChangedListener;
     
@@ -25,10 +26,17 @@ public class DateTimePicker extends FrameLayout
     	super(context);
     	 mDate = Calendar.getInstance();
     	 mDate.setTimeInMillis(milliseconds);
+    	 mYear = mDate.get(Calendar.YEAR);
          mHour=mDate.get(Calendar.HOUR_OF_DAY);
          mMinute=mDate.get(Calendar.MINUTE);
     	 
     	 inflate(context, R.layout.datedialog, this);
+    	 
+    	 mYearSpinner=(NumberPicker)this.findViewById(R.id.np_year);
+    	 mYearSpinner.setMinValue(1970);
+    	 mYearSpinner.setMaxValue(2100);
+    	 mYearSpinner.setValue(mYear);
+    	 mYearSpinner.setOnValueChangedListener(mOnYearChangedListener);
     	 
     	 mDateSpinner=(NumberPicker)this.findViewById(R.id.np_date);
     	 mDateSpinner.setMinValue(0);
@@ -59,6 +67,16 @@ public class DateTimePicker extends FrameLayout
 			onDateTimeChanged();
 		}
 	};
+	private NumberPicker.OnValueChangeListener mOnYearChangedListener=new OnValueChangeListener()
+	{
+		@Override
+		public void onValueChange(NumberPicker picker, int oldVal, int newVal)
+		{
+			mYear = mYearSpinner.getValue();
+			onDateTimeChanged();
+		}
+	};
+	
     
     private NumberPicker.OnValueChangeListener mOnHourChangedListener=new OnValueChangeListener()
 	{
@@ -110,7 +128,7 @@ public class DateTimePicker extends FrameLayout
 	  {
 	        if (mOnDateTimeChangedListener != null)
 	        {
-	            mOnDateTimeChangedListener.onDateTimeChanged(this, mDate.get(Calendar.YEAR),
+	            mOnDateTimeChangedListener.onDateTimeChanged(this, mYear,
 	            		mDate.get(Calendar.MONTH), mDate.get(Calendar.DAY_OF_MONTH),mHour, mMinute);
 	        }
 	    }

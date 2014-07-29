@@ -37,7 +37,8 @@ public class SelectContact extends Fragment{
 	private RelativeLayout parent;
 	private AmazingListView lsContact;
 	private SectionContactAdapter adapter;
-	private ImageView actionTitleImg,actionTitleImg2;
+	private ImageView actionTitleImg2;
+	private RelativeLayout actionTitleLay;
 	private TextView actionTitle;
 	private Button confirmInvi;
 	private List<Pair<String, List<Contact>>> all = new ArrayList<Pair<String, List<Contact>>>();
@@ -89,17 +90,19 @@ public class SelectContact extends Fragment{
 		contactList = new ArrayList<Contact>();
 		characterParser = CharacterParser.getInstance();
 		confirmInvi = (Button) parent.findViewById(R.id.confirm_btn);
-		actionTitleImg = (ImageView)parent.findViewById(R.id.action_title_img);
+//		actionTitleImg = (ImageView)parent.findViewById(R.id.action_title_img);
+		actionTitleLay = (RelativeLayout)parent.findViewById(R.id.action_title_lay);
 		actionTitleImg2 = (ImageView)parent.findViewById(R.id.action_title_img2);
 		actionTitle = (TextView)parent.findViewById(R.id.action_title);
-		actionTitleImg.setBackgroundDrawable(mResources.getDrawable(R.drawable.icon_back));
+//		actionTitleImg.setBackgroundDrawable(mResources.getDrawable(R.drawable.icon_back));
 		actionTitleImg2.setBackgroundDrawable(mResources.getDrawable(R.drawable.plus));
 		actionTitleImg2.setVisibility(View.VISIBLE);
-		actionTitleImg.setOnClickListener(new View.OnClickListener() {
+		actionTitleLay.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View arg0) {
 				// TODO Auto-generated method stub
 				getFragmentManager().popBackStack();
+				getActivity().finish();
 			}
 		});
 		actionTitleImg2.setOnClickListener(new View.OnClickListener() {

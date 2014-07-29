@@ -50,7 +50,7 @@ public class LeftMenuFragment extends Fragment{
 	private RelativeLayout naviTitle;
 	private LeftMenuAdapter leftMenuAdapter;
 	public static ImageView userImage;
-	private TextView userText,userName;
+	public static TextView userText,userName;
 	private ArrayList<HashMap<String,Object>> mData;
 	private HashMap<String,Object> tmpmap;
 	private List<Integer> focus;
@@ -109,7 +109,8 @@ public class LeftMenuFragment extends Fragment{
 				//initial components contents
 				try {
 					String name = jsonCache.getString("name");
-					userName.setText(name);
+					
+					userName.setText(name.equals("")?"ÄäÃû":name);
 					JuhuoConfig.userId = jsonCache.getInt("id");
 					if(jsonCache.has("suc_photos")){
 						userText.setText("");
@@ -121,6 +122,7 @@ public class LeftMenuFragment extends Fragment{
 					e.printStackTrace();
 				}
 			}
+			
 		}else{
 			naviTitle.setOnClickListener(new View.OnClickListener() {
 				
@@ -159,7 +161,7 @@ public class LeftMenuFragment extends Fragment{
 			}else{
 				try {
 					String name = result.getString("name");
-					userName.setText(name);
+					userName.setText(name.equals("")?"ÄäÃû":name);
 					JuhuoConfig.userId = result.getInt("id");
 					if(result.has("suc_photos")){
 						userText.setText("");
@@ -220,6 +222,16 @@ public class LeftMenuFragment extends Fragment{
 			};
 		});
 	}
+	@Override
+    public void onDestroyView()
+    {
+        for(int index = 0;index < mAsyncTask.size();index ++)
+        {
+            if(!(mAsyncTask.get(index).getStatus() == AsyncTask.Status.FINISHED) )
+                mAsyncTask.get(index).setStop();
+        }
+        super.onDestroyView();
+    }
 	private static class AnimateFirstDisplayListener extends SimpleImageLoadingListener {
 
 		static final List<String> displayedImages = Collections.synchronizedList(new LinkedList<String>());

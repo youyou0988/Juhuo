@@ -57,12 +57,17 @@ public class FeedBackActivity extends Activity {
 			@Override
 			public void onClick(View arg0) {
 				// TODO Auto-generated method stub
-				HashMap<String,Object> params = new HashMap<String,Object>();
-				params.put("token", JuhuoConfig.token);
-				params.put("feedback", detail.getText().toString());
-				FeedBackTask task = new FeedBackTask();
-				mAsyncTask.add(task);
-				task.execute(params);
+				if(!detail.getText().toString().trim().equals("")){
+					HashMap<String,Object> params = new HashMap<String,Object>();
+					params.put("token", JuhuoConfig.token);
+					params.put("feedback", detail.getText().toString());
+					FeedBackTask task = new FeedBackTask();
+					mAsyncTask.add(task);
+					task.execute(params);
+				}else{
+					Tool.myToast(FeedBackActivity.this, mResources.getString(R.string.please_enter_feedback));
+				}
+				
 			}
 		});
 	}
@@ -71,7 +76,6 @@ public class FeedBackActivity extends Activity {
 		@Override
 	    protected void onPreExecute() {
 	        super.onPreExecute();
-	        mPgDialog.setMessage(mResources.getString(R.string.pulling_eventlist));
 	        mPgDialog.show();
 	    }
 		@Override
